@@ -1,0 +1,12 @@
+*.DS_Store
+*.idea/
+*.metadata/
+*local.properties
+*obj/
+*bin/
+*gen/
+*.so
+*.classpath
+*.project
+*.cproject
+*.settings
