@@ -36,29 +36,34 @@ MultiLogger* App::initLogger() {
 }
 
 void App::initOpenGL() {
-    TextureManager::init();
-
-    testTexture = TextureManager::require("images/test.png");
-    testShader = new Shader("shaders/main");
-    testShader->vertexAttrib("aVertexPosition");
-    testShader->colorAttrib("aColor");
-    testShader->texUVAttrib("aTextureCoord");
-    testShader->projectionMatrixUniform("uProjectionMatrix");
-    testShader->viewMatrixUniform("uViewMatrix");
-    testShader->uniform("uSampler");
+    if(testTexture == null) {
+        TextureManager::init();
+        testTexture = TextureManager::require("images/test.png");
+    }
+    if(testShader == null) {
+        testShader = new Shader("shaders/main");
+        testShader->vertexAttrib("aVertexPosition");
+        testShader->colorAttrib("aColor");
+        testShader->texUVAttrib("aTextureCoord");
+        testShader->projectionMatrixUniform("uProjectionMatrix");
+        testShader->viewMatrixUniform("uViewMatrix");
+        testShader->uniform("uSampler");
+    }
     //testShader->uniform("uFragmentColor");
     //glUniform4f(testShader->uniform("uFragmentColor"), 1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_CULL_FACE);
 
-    StaticRenderObjectBuilder builder (6, true, false, true);/*
+    if(testObject == null) {
+        StaticRenderObjectBuilder builder(6, true, false, true);/*
     builder.vertex(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
     builder.vertex(270.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
     builder.vertex(0.0f, 270.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);*/
-    //builder.rect2d(0, 0, 200, 200, 1.0f, 0.0f, 0.0f, 1.0f);
-    builder.rect2d(0, 0, 200, 200, 0, 0, 1, 1, 0, 1, 1, 1, 1);
-    static RenderObject object = builder.getRenderObject();
-    this->testObject = &object;
+        //builder.rect2d(0, 0, 200, 200, 1.0f, 0.0f, 0.0f, 1.0f);
+        builder.rect2d(0, 0, 200, 200, 0, 0, 1, 1, 0, 1, 1, 1, 1);
+        static RenderObject object = builder.getRenderObject();
+        this->testObject = &object;
+    }
 }
 
 void App::resize(int newWidth, int newHeight) {

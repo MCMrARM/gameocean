@@ -18,39 +18,56 @@ MultiLogger* AndroidApp::initLogger() {
 void AndroidApp::initOpenGL() {
     Logger::main->trace("AndroidApp", "Initializing EGL context...");
 
-    const EGLint attribs[] = {
-            EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-            EGL_BLUE_SIZE, 8,
-            EGL_GREEN_SIZE, 8,
-            EGL_RED_SIZE, 8,
-            EGL_DEPTH_SIZE, 16,
-            EGL_NONE
-    };
+
+    if(display == EGL_NO_DISPLAY) {
+        const EGLint attribs[] = {
+                EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+                EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                EGL_BLUE_SIZE, 8,
+                EGL_GREEN_SIZE, 8,
+                EGL_RED_SIZE, 8,
+                EGL_DEPTH_SIZE, 16,
+                EGL_NONE
+        };
+
+        display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+
+        eglInitialize(display, 0, 0);
+
+        EGLint numConfigs;
+        eglChooseConfig(display, attribs, &eglConfig, 1, &numConfigs);
+
+        EGLint format;
+        eglGetConfigAttrib(display, eglConfig, EGL_NATIVE_VISUAL_ID, &format);
+        Logger::main->debug("AndroidApp", "EGL Format: %i", format);
+        ANativeWindow_setBuffersGeometry(androidApp->window, 0, 0, format);
+    }
+
+    surface = eglCreateWindowSurface(display, eglConfig, androidApp->window, NULL);
+
     const EGLint contextAttribs[] = {
             EGL_CONTEXT_CLIENT_VERSION, 2,
             EGL_NONE
     };
 
-    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-
-    eglInitialize(display, 0, 0);
-
-    EGLConfig config;
-    EGLint numConfigs;
-    eglChooseConfig(display, attribs, &config, 1, &numConfigs);
-
-    EGLint format;
-    eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format);
-    Logger::main->debug("AndroidApp", "EGL Format: %i", format);
-    ANativeWindow_setBuffersGeometry(androidApp->window, 0, 0, format);
-
-    surface = eglCreateWindowSurface(display, config, androidApp->window, NULL);
-
-    context = eglCreateContext(display, config, NULL, contextAttribs);
+    if(context == EGL_NO_CONTEXT) {
+        context = eglCreateContext(display, eglConfig, NULL, contextAttribs);
+    }
 
     if(eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
         Logger::main->error("AndroidApp", "Unable to eglMakeCurrent");
+
+        int err = eglGetError();
+        if(err == EGL_CONTEXT_LOST) {
+            context = eglCreateContext(display, eglConfig, NULL, contextAttribs);
+            if(eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
+                return;
+            } else {
+                this->destroyOpenGL();
+                this->initOpenGL();
+            }
+        }
+
         return;
     }
 
@@ -63,6 +80,15 @@ void AndroidApp::initOpenGL() {
     Logger::main->trace("AndroidApp", "EGL has been initialized!");
 
     App::initOpenGL();
+}
+
+void AndroidApp::suspend() {
+    Logger::main->trace("AndroidApp", "Destroying EGL surface...");
+
+    if(surface != EGL_NO_SURFACE) {
+        eglDestroySurface(display, surface);
+        surface = EGL_NO_SURFACE;
+    }
 }
 
 void AndroidApp::destroyOpenGL() {

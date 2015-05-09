@@ -9,6 +9,7 @@ class AndroidApp : public App {
     EGLDisplay display = EGL_NO_DISPLAY;
     EGLSurface surface = EGL_NO_SURFACE;
     EGLContext context = EGL_NO_CONTEXT;
+    EGLConfig eglConfig;
     android_app* androidApp;
 
 public:
@@ -17,6 +18,7 @@ public:
 	virtual MultiLogger* initLogger();
     virtual void initOpenGL();
     virtual void destroyOpenGL();
+    void suspend();
 
     virtual void render();
     

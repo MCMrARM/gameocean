@@ -24,7 +24,8 @@ void handle_cmd(android_app* state, int32_t cmd) {
             break;
         case APP_CMD_TERM_WINDOW:
             Logger::main->info("Main", "Terminate window");
-            app->destroyOpenGL();
+            //app->destroyOpenGL();
+            app->suspend();
             app->active = false;
             break;
         case APP_CMD_GAINED_FOCUS:
