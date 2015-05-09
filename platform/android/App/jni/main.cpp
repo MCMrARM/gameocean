@@ -9,12 +9,9 @@
 #include "AndroidApp.h"
 #include "AndroidLogger.h"
 
-void handle_cmd(android_app* state, int32_t cmd) {
-    AndroidApp* app = (AndroidApp*) state->userData;
-    if(app == null) {
-        return;
-    }
+AndroidApp* app;
 
+void handle_cmd(android_app* state, int32_t cmd) {
     switch(cmd) {
         case APP_CMD_INIT_WINDOW:
             Logger::main->info("Main", "Initialize window");
@@ -51,12 +48,12 @@ void android_main(android_app* state) {
 
     state->onAppCmd = handle_cmd;
 
-    AndroidApp* app = new AndroidApp(state);
-    app->init();
+    if(app == null) {
+        app = new AndroidApp(state);
+        app->init();
 
-    state->userData = app;
-
-    startupLogger.info("Main", "Initialized!");
+        startupLogger.info("Main", "Initialized!");
+    }
 
     android_poll_source* source;
     int eId;
@@ -70,7 +67,8 @@ void android_main(android_app* state) {
 
             if(state->destroyRequested != 0) {
                 Logger::main->info("Main", "Destroy requested");
-                app->destroyOpenGL();
+                app->suspend();
+                //app->destroyOpenGL();
                 return;
             }
         }
