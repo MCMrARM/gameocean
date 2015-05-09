@@ -19,5 +19,7 @@ public:
     virtual void destroyOpenGL();
 
     virtual void render();
+    
+    virtual byte* readGameFile(std::string name, unsigned int& size);
 
 };

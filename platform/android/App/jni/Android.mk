@@ -9,10 +9,11 @@ LOCAL_LDLIBS := -llog -landroid -lEGL -lGLESv2
 LOCAL_STATIC_LIBRARIES := android_native_app_glue
 
 GAME_SOURCES := $(CWD)/../../../src
+LIBS_SOURCES := $(CWD)/../../../libs
 
 LOCAL_SRC_FILES := $(shell find $(CWD)/jni -name '*.cpp') $(shell find $(GAME_SOURCES) -name '*.cpp')
 
-LOCAL_C_INCLUDES += $(GAME_SOURCES)
+LOCAL_C_INCLUDES += $(GAME_SOURCES) $(LIBS_SOURCES)
 
 include $(BUILD_SHARED_LIBRARY)
 

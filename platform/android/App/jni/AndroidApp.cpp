@@ -1,9 +1,11 @@
 #include "AndroidApp.h"
 
+#include <android/asset_manager.h>
+
 #include "utils/Logger.h"
 #include "AndroidLogger.h"
 
-AndroidApp::AndroidApp(android_app* state) {
+AndroidApp::AndroidApp(android_app* state) : App() {
     this->androidApp = state;
 }
 
@@ -22,6 +24,7 @@ void AndroidApp::initOpenGL() {
             EGL_BLUE_SIZE, 8,
             EGL_GREEN_SIZE, 8,
             EGL_RED_SIZE, 8,
+            EGL_DEPTH_SIZE, 16,
             EGL_NONE
     };
     const EGLint contextAttribs[] = {
@@ -39,7 +42,7 @@ void AndroidApp::initOpenGL() {
 
     EGLint format;
     eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format);
-    Logger::main->debug("AndroidApp", "EGL Format: %i %i", format, androidApp->window);
+    Logger::main->debug("AndroidApp", "EGL Format: %i", format);
     ANativeWindow_setBuffersGeometry(androidApp->window, 0, 0, format);
 
     surface = eglCreateWindowSurface(display, config, androidApp->window, NULL);
@@ -51,11 +54,15 @@ void AndroidApp::initOpenGL() {
         return;
     }
 
-    eglQuerySurface(display, surface, EGL_WIDTH, &this->screenWidth);
-    eglQuerySurface(display, surface, EGL_HEIGHT, &this->screenHeight);
+    int w, h;
+    eglQuerySurface(display, surface, EGL_WIDTH, &w);
+    eglQuerySurface(display, surface, EGL_HEIGHT, &h);
+    
+    this->resize(w, h);
 
     Logger::main->trace("AndroidApp", "EGL has been initialized!");
 
+    App::initOpenGL();
 }
 
 void AndroidApp::destroyOpenGL() {
@@ -79,4 +86,26 @@ void AndroidApp::destroyOpenGL() {
 void AndroidApp::render() {
     App::render();
     eglSwapBuffers(display, surface);
+}
+
+byte* AndroidApp::readGameFile(std::string name, unsigned int& size) {
+    AAssetManager* assets = androidApp->activity->assetManager;
+    AAsset* asset = AAssetManager_open(assets, name.c_str(), AASSET_MODE_UNKNOWN);
+    if(asset == null) {
+        Logger::main->error("AndroidApp", "Couldn't read asset: %s", name.c_str());
+        size = 0;
+        return null;
+    }
+    long s = AAsset_getLength(asset);
+    if(s >= UINT_MAX) {
+        Logger::main->error("AndroidApp", "Asset %s is too big [%d]", name.c_str(), s);
+        return null;
+    }
+    Logger::main->trace("AndroidApp", "Reading asset: %s, size: %i", name.c_str(), s);
+    size = (unsigned int) s;
+    byte* arr = (byte*) malloc(size);
+    AAsset_read(asset, arr, (size_t) size);
+    AAsset_close(asset);
+
+    return arr;
 }
