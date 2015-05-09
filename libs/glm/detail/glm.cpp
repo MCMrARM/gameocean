@@ -30,6 +30,7 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
+/*
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/dual_quaternion.hpp>
@@ -283,4 +284,4 @@ template struct tdualquat<float32, highp>;
 template struct tdualquat<float64, highp>;
 
 }//namespace glm
-
+*/

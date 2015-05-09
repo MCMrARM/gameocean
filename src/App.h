@@ -35,6 +35,6 @@ public:
 
     virtual byte* readGameFile(std::string name, unsigned int& size) = 0;
     virtual std::string readGameTextFile(std::string name);
-    //virtual char* readGameImageFile(std::string name);
+    virtual byte* readGameImageFile(std::string name, unsigned int& width, unsigned int& height, unsigned int& byteSize);
 
 };

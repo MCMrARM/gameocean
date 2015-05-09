@@ -3,6 +3,7 @@
 #include "opengl.h"
 #include "../common.h"
 #include "TextureManager.h"
+#include "../App.h"
 
 Texture::Texture() {
     //
@@ -27,10 +28,15 @@ void Texture::load(std::string name) {
 
     Logger::main->trace("Texture", "Initialized texture: %i", tex[0]);
 
-    this->id = tex[0] - 1;
+    this->id = tex[0];
 
-    GLint data[] = {255, 0, 0, 255};
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    unsigned int w, h, size;
+    GLbyte* data = (GLbyte*) App::instance->readGameImageFile(name, w, h, size);
+    Logger::main->debug("Texture", "Loaded! [w: %i, h: %i, byte size: %i] %i", w, h, size, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
+    delete[] data;
 }
 
 int Texture::bind() {

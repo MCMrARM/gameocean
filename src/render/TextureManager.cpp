@@ -26,6 +26,7 @@ Texture* TextureManager::require(std::string name) {
 
     Texture* tex = new Texture(name);
     textures->push_back(tex);
+    return tex;
 }
 
 void TextureManager::unload(Texture* texture) {

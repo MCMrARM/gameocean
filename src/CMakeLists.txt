@@ -10,4 +10,4 @@ include_directories(../clion/)
 include_directories(../libs/)
 
 add_executable(lbclient ${SOURCE_FILES} App.cpp App.h)
-target_link_libraries(lbclient ../libs)
+target_link_libraries(lbclient ../libs/)
