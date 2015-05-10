@@ -110,6 +110,7 @@ void AndroidApp::destroyOpenGL() {
 }
 
 void AndroidApp::render() {
+    glViewport(0, 0, screenWidth, screenHeight);
     App::render();
     eglSwapBuffers(display, surface);
 }

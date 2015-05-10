@@ -30,6 +30,11 @@ void Texture::load(std::string name) {
 
     this->id = tex[0];
 
+    /*
+    GLint data[] = {255, 0, 0, 255};
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    */
+
     unsigned int w, h, size;
     GLbyte* data = (GLbyte*) App::instance->readGameImageFile(name, w, h, size);
     Logger::main->debug("Texture", "Loaded! [w: %i, h: %i, byte size: %i] %i", w, h, size, data);

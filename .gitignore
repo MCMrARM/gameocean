@@ -2,6 +2,7 @@
 *.idea/
 *.metadata/
 *local.properties
+*xcuserdata/
 *obj/
 *bin/
 *gen/

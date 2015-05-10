@@ -15,6 +15,9 @@ void TextureManager::init() {
     TextureManager::MAX_TEXTURES = res[0];
     Logger::main->debug("TextureManager", "Max textures: %i", TextureManager::MAX_TEXTURES);
     TextureManager::activeTextures = new Texture*[TextureManager::MAX_TEXTURES];
+    for(int i = 0; i < TextureManager::MAX_TEXTURES; i++) {
+        TextureManager::activeTextures[i] = null;
+    }
 }
 
 Texture* TextureManager::require(std::string name) {

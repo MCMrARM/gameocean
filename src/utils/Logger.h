@@ -5,7 +5,11 @@
 #include <vector>
 
 enum class LogLevel {
-    TRACE, DEBUG, INFO, WARN, ERROR
+    LOG_TRACE,
+    LOG_DEBUG,
+    LOG_INFO,
+    LOG_WARN,
+    LOG_ERROR
 };
 
 class Logger {
