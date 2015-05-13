@@ -7,12 +7,16 @@ class MultiLogger;
 class Texture;
 class Shader;
 class RenderObject;
+class GuiElementContainer;
+class GuiImageElement;
 
 class App {
 
     Texture* testTexture;
     Shader* testShader;
-    RenderObject* testObject;
+    //RenderObject* testObject;
+    GuiElementContainer* container;
+    GuiImageElement * el;
 
 public:
     static App* instance;
@@ -22,7 +26,7 @@ public:
     bool active = false;
     int screenWidth, screenHeight;
     int guiWidth, guiHeight;
-    int pixelSize = 2;
+    int pixelSize = 8;
 
     virtual void init();
     virtual MultiLogger* initLogger();

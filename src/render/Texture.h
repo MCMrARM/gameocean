@@ -7,6 +7,7 @@ class Texture {
     std::string name = "None";
     unsigned int id;
     unsigned int bindId;
+    unsigned int width, height;
 
 public:
     Texture();
@@ -15,6 +16,8 @@ public:
 
     inline std::string getName() { return name; };
     inline int getBindTextureId() { return bindId; };
+    inline unsigned int getWidth() { return width; };
+    inline unsigned int getHeight() { return height; };
 
     void load(std::string name);
 

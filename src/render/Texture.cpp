@@ -42,6 +42,9 @@ void Texture::load(std::string name) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
     delete[] data;
+
+    width = w;
+    height = h;
 }
 
 int Texture::bind() {

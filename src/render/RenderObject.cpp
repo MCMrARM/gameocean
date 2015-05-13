@@ -39,14 +39,14 @@ void RenderObject::render() {
         glBindBuffer(GL_ARRAY_BUFFER, texUVBufferId);
         glVertexAttribPointer(texUVAttrib, 2, GL_FLOAT, false, 0, 0);
     }
-
+/*
     if(texIdBufferId != 0) {
         int texIdAttrib = Shader::current->texIdAttrib();
         if(texIdAttrib == -1) { Logger::main->warn("Shader", "Texture ID attribute not definied in the current shader!"); }
         glBindBuffer(GL_ARRAY_BUFFER, texIdBufferId);
         glVertexAttribPointer(texIdAttrib, 1, GL_FLOAT, false, 0, 0);
     }
-
+*/
     if(colorBufferId != 0) {
         int colorAttrib = Shader::current->colorAttrib();
         if(colorAttrib == -1) { Logger::main->warn("Shader", "Color attribute not definied in the current shader!"); }
@@ -94,5 +94,24 @@ void RenderObject::update() {
         }
         glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
         glBufferData(GL_ARRAY_BUFFER, size * 4 * 4, colorArray, bufferType);
+    }
+}
+
+void RenderObject::updateFragment(int offset, int size, bool vertex, bool texUV, bool texId, bool color) {
+    if(vertex && vertexArray != null) {
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * 3 * sizeof(float), size * 3 * sizeof(float), &vertexArray[offset * 3]);
+    }
+    if(texUV && textureUVArray != null) {
+        glBindBuffer(GL_ARRAY_BUFFER, texUVBufferId);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * 2 * sizeof(float), size * 2 * sizeof(float), &textureUVArray[offset * 2]);
+    }
+    if(texId && textureIdArray != null) {
+        glBindBuffer(GL_ARRAY_BUFFER, texIdBufferId);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(float), size * sizeof(float), &textureIdArray[offset]);
+    }
+    if(color && colorArray != null) {
+        glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * 4 * sizeof(float), size * 4 * sizeof(float), &colorArray[offset * 4]);
     }
 }

@@ -26,6 +26,8 @@ public:
 
     void update();
 
+    void updateFragment(int offset, int size, bool vertex, bool texUV, bool texId, bool color);
+
     void render();
 
 };

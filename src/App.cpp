@@ -8,6 +8,8 @@
 #include "render/Shader.h"
 #include "render/RenderObject.h"
 #include "render/RenderObjectBuilder.h"
+#include "gui/GuiImageElement.h"
+#include "gui/GuiElementContainer.h"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
@@ -38,7 +40,7 @@ MultiLogger* App::initLogger() {
 void App::initOpenGL() {
     if(testTexture == null) {
         TextureManager::init();
-        testTexture = TextureManager::require("images/test.png");
+        testTexture = TextureManager::require("images/gui.png");
     }
     if(testShader == null) {
         testShader = new Shader("shaders/main");
@@ -53,17 +55,13 @@ void App::initOpenGL() {
     //glUniform4f(testShader->uniform("uFragmentColor"), 1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_CULL_FACE);
-
-    if(testObject == null) {
-        StaticRenderObjectBuilder builder(6, true, false, true);/*
-    builder.vertex(0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f);
-    builder.vertex(270.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-    builder.vertex(0.0f, 270.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f);*/
-        //builder.rect2d(0, 0, 200, 200, 1.0f, 0.0f, 0.0f, 1.0f);
-        builder.rect2d(0, 0, 100, 100, 0, 0, 1, 1, 0, 1, 1, 1, 1);
-        static RenderObject object = builder.getRenderObject();
-        this->testObject = &object;
-    }
+    testTexture->bind(0);
+    container = new GuiElementContainer();
+    el = new GuiImageElement(10, 10, testTexture, 0, 0, 8, 8);
+    container->addElement(el);
+    //GuiImageElement* el2 = new GuiImageElement(12, 12, testTexture, 0, 0, 8, 8);
+    //container->addElement(el2);
+    testTexture->unbind();
 }
 
 void App::resize(int newWidth, int newHeight) {
@@ -94,7 +92,9 @@ void App::render() {
         //view = glm::scale(view, glm::vec3(3.0f));
         glUniformMatrix4fv(testShader->viewMatrixUniform(), 1, false, glm::value_ptr(view));
 
-        testObject->render();
+        //testObject->render();
+        container->render();
+        el->setPosition(el->getX() + 1, 10);
 
         this->testTexture->unbind();
     }

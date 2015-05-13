@@ -37,7 +37,7 @@
     
     self.app = new iOSApp();
     self.app->init();
-    self.app->pixelSize = 2;
+    self.app->pixelSize = [UIScreen mainScreen].scale * 2;
     
     [self setupGL];
 }
@@ -90,8 +90,8 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    int w = rect.size.width;
-    int h = rect.size.height;
+    int w = rect.size.width * [UIScreen mainScreen].scale;
+    int h = rect.size.height * [UIScreen mainScreen].scale;
     if(self.lastWidth != w || self.lastHeight != h) {
         self.app->resize(w, h);
         self.lastWidth = w;

@@ -2,6 +2,8 @@
 
 #include <android/asset_manager.h>
 
+#include "opengl.h"
+
 #include "utils/Logger.h"
 #include "AndroidLogger.h"
 
