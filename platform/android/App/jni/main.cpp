@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <android/log.h>
 #include <errno.h>
+#include <math.h>
 
 #include <android_native_app_glue.h>
 
@@ -8,6 +9,7 @@
 #include "App.h"
 #include "AndroidApp.h"
 #include "AndroidLogger.h"
+#include "input/TouchHandler.h"
 
 AndroidApp* app;
 
@@ -40,6 +42,37 @@ void handle_cmd(android_app* state, int32_t cmd) {
     }
 }
 
+int32_t handle_input(android_app* state, AInputEvent* event) {
+    if(AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
+        int a = AMotionEvent_getAction(event);
+        int action = a & AMOTION_EVENT_ACTION_MASK;
+
+        if(action == AMOTION_EVENT_ACTION_DOWN || action == AMOTION_EVENT_ACTION_UP || action == AMOTION_EVENT_ACTION_CANCEL) {
+            int index = (a & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+            int id = AMotionEvent_getPointerId(event, index);
+            int x = round(AMotionEvent_getX(event, index));
+            int y = round(AMotionEvent_getY(event, index));
+
+            if(action == AMOTION_EVENT_ACTION_DOWN) {
+                TouchHandler::press(id, x, y);
+            } else {
+                TouchHandler::release(id, x, y);
+            }
+        } else if(action == AMOTION_EVENT_ACTION_MOVE) {
+            int pCount = AMotionEvent_getPointerCount(event);
+            for (int i = 0; i < pCount; i++) {
+                int id = AMotionEvent_getPointerId(event, i);
+                int x = round(AMotionEvent_getX(event, i));
+                int y = round(AMotionEvent_getY(event, i));
+
+                TouchHandler::move(id, x, y);
+            }
+        }
+        return 1;
+    }
+    return 0;
+}
+
 
 void android_main(android_app* state) {
     app_dummy();
@@ -47,6 +80,7 @@ void android_main(android_app* state) {
     AndroidLogger startupLogger;
 
     state->onAppCmd = handle_cmd;
+    state->onInputEvent = handle_input;
 
     if(app == null) {
         app = new AndroidApp(state);

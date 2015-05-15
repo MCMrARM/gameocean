@@ -6,17 +6,13 @@
 class MultiLogger;
 class Texture;
 class Shader;
-class RenderObject;
-class GuiElementContainer;
-class GuiImageElement;
+class Screen;
 
 class App {
 
     Texture* testTexture;
     Shader* testShader;
-    //RenderObject* testObject;
-    GuiElementContainer* container;
-    GuiImageElement * el;
+    Screen* currentScreen;
 
 public:
     static App* instance;
@@ -36,6 +32,8 @@ public:
     virtual void resize(int newWidth, int newHeight);
 
     virtual void render();
+
+    inline Screen* getScreen() { return currentScreen; };
 
     virtual byte* readGameFile(std::string name, unsigned int& size) = 0;
     virtual std::string readGameTextFile(std::string name);

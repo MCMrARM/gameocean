@@ -26,6 +26,15 @@ void DynamicGuiElement::rebuildDynamic() {
     }
 }
 
+DynamicGuiElement::~DynamicGuiElement() {
+    if(this->renderObject != null) {
+        delete this->renderObject;
+    }
+    if(this->renderObjectBuilder != null) {
+        delete this->renderObjectBuilder;
+    }
+}
+
 void DynamicGuiElement::updateDynamic() {
     renderObjectBuilder->pos = 0;
     GuiUpdateFlags flags = update(renderObjectBuilder);

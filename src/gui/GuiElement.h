@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../input/MouseEvent.h"
+
 class RenderObjectBuilder;
 
 struct GuiUpdateFlags {
@@ -44,6 +46,13 @@ public:
     inline int getX() { return x; };
     inline int getY() { return y; };
     void setPositionAndSize(int x, int y, int w, int h) { setPosition(x, y); setSize(w, h); };
+
+    virtual bool isPointInside(int x, int y);
+    virtual bool supportsMultitouch() { return false; }
+    virtual bool onMousePress(MousePressEvent& event) { return true; };
+    virtual void onMouseMove(MouseMoveEvent& event) { };
+    virtual void onMouseRelease(MouseReleaseEvent& event);
+    virtual void click() { };
 
 };
 

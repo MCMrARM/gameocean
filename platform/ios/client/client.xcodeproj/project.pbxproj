@@ -14,6 +14,9 @@
 		04BF56991AFFDADB00C880E4 /* gui.png in Resources */ = {isa = PBXBuildFile; fileRef = 04BF56981AFFDADB00C880E4 /* gui.png */; };
 		04BF56E01B023BF600C880E4 /* DynamicGuiElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF56DE1B023BF600C880E4 /* DynamicGuiElement.cpp */; };
 		04BF56E61B03CD4200C880E4 /* GuiImageElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF56E41B03CD4200C880E4 /* GuiImageElement.cpp */; };
+		04BF56EF1B064A1600C880E4 /* MouseHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF56EA1B064A1500C880E4 /* MouseHandler.cpp */; };
+		04BF56F01B064A1600C880E4 /* TouchHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF56ED1B064A1600C880E4 /* TouchHandler.cpp */; };
+		04BF56F31B064A3600C880E4 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04BF56F11B064A3600C880E4 /* Screen.cpp */; };
 		04D67F441AFF625F00CAFE46 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04D67F431AFF625F00CAFE46 /* Foundation.framework */; };
 		04D67F461AFF625F00CAFE46 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04D67F451AFF625F00CAFE46 /* CoreGraphics.framework */; };
 		04D67F481AFF625F00CAFE46 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04D67F471AFF625F00CAFE46 /* UIKit.framework */; };
@@ -196,6 +199,15 @@
 		04BF56DF1B023BF600C880E4 /* DynamicGuiElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicGuiElement.h; sourceTree = "<group>"; };
 		04BF56E41B03CD4200C880E4 /* GuiImageElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GuiImageElement.cpp; sourceTree = "<group>"; };
 		04BF56E51B03CD4200C880E4 /* GuiImageElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiImageElement.h; sourceTree = "<group>"; };
+		04BF56E81B064A1500C880E4 /* InputEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InputEvent.h; sourceTree = "<group>"; };
+		04BF56E91B064A1500C880E4 /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseEvent.h; sourceTree = "<group>"; };
+		04BF56EA1B064A1500C880E4 /* MouseHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MouseHandler.cpp; sourceTree = "<group>"; };
+		04BF56EB1B064A1600C880E4 /* MouseHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MouseHandler.h; sourceTree = "<group>"; };
+		04BF56EC1B064A1600C880E4 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchEvent.h; sourceTree = "<group>"; };
+		04BF56ED1B064A1600C880E4 /* TouchHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TouchHandler.cpp; sourceTree = "<group>"; };
+		04BF56EE1B064A1600C880E4 /* TouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchHandler.h; sourceTree = "<group>"; };
+		04BF56F11B064A3600C880E4 /* Screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen.cpp; sourceTree = "<group>"; };
+		04BF56F21B064A3600C880E4 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
 		04D67F401AFF625F00CAFE46 /* client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = client.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04D67F431AFF625F00CAFE46 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		04D67F451AFF625F00CAFE46 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -563,6 +575,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04BF56E71B064A1500C880E4 /* input */ = {
+			isa = PBXGroup;
+			children = (
+				04BF56E81B064A1500C880E4 /* InputEvent.h */,
+				04BF56E91B064A1500C880E4 /* MouseEvent.h */,
+				04BF56EA1B064A1500C880E4 /* MouseHandler.cpp */,
+				04BF56EB1B064A1600C880E4 /* MouseHandler.h */,
+				04BF56EC1B064A1600C880E4 /* TouchEvent.h */,
+				04BF56ED1B064A1600C880E4 /* TouchHandler.cpp */,
+				04BF56EE1B064A1600C880E4 /* TouchHandler.h */,
+			);
+			path = input;
+			sourceTree = "<group>";
+		};
 		04D67F371AFF625F00CAFE46 = {
 			isa = PBXGroup;
 			children = (
@@ -658,6 +684,7 @@
 				04D67F961AFF63A800CAFE46 /* game */,
 				04D67F9D1AFF63A800CAFE46 /* gui */,
 				04D67FA21AFF63A800CAFE46 /* net */,
+				04BF56E71B064A1500C880E4 /* input */,
 				04D67FA31AFF63A800CAFE46 /* render */,
 				04D67FAF1AFF63A800CAFE46 /* utils */,
 			);
@@ -695,6 +722,8 @@
 		04D67F9D1AFF63A800CAFE46 /* gui */ = {
 			isa = PBXGroup;
 			children = (
+				04BF56F11B064A3600C880E4 /* Screen.cpp */,
+				04BF56F21B064A3600C880E4 /* Screen.h */,
 				04BF56E41B03CD4200C880E4 /* GuiImageElement.cpp */,
 				04BF56E51B03CD4200C880E4 /* GuiImageElement.h */,
 				04BF56DE1B023BF600C880E4 /* DynamicGuiElement.cpp */,
@@ -1343,6 +1372,7 @@
 				04D6815D1AFF63CB00CAFE46 /* pngrtran.c in Sources */,
 				04D67FC21AFF63A800CAFE46 /* TextureManager.cpp in Sources */,
 				04D67FB81AFF63A800CAFE46 /* App.cpp in Sources */,
+				04BF56F01B064A1600C880E4 /* TouchHandler.cpp in Sources */,
 				04D6815C1AFF63CB00CAFE46 /* pngrio.c in Sources */,
 				04D680EF1AFF63CB00CAFE46 /* glm.cpp in Sources */,
 				04D681561AFF63CB00CAFE46 /* png.c in Sources */,
@@ -1355,7 +1385,9 @@
 				04D6815E1AFF63CB00CAFE46 /* pngrutil.c in Sources */,
 				04D681691AFF655200CAFE46 /* iOSLogger.mm in Sources */,
 				04D681571AFF63CB00CAFE46 /* pngerror.c in Sources */,
+				04BF56EF1B064A1600C880E4 /* MouseHandler.cpp in Sources */,
 				04D6815F1AFF63CB00CAFE46 /* pngset.c in Sources */,
+				04BF56F31B064A3600C880E4 /* Screen.cpp in Sources */,
 				04D67F651AFF625F00CAFE46 /* lbclientViewController.mm in Sources */,
 				04D67FC11AFF63A800CAFE46 /* Texture.cpp in Sources */,
 				04D681611AFF63CB00CAFE46 /* pngtrans.c in Sources */,

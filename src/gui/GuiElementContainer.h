@@ -2,15 +2,24 @@
 
 #include <vector>
 #include "DynamicGuiElement.h"
+#include "../input/TouchHandler.h"
 
 class GuiElementContainer : public DynamicGuiElement {
 
+protected:
+    GuiElement* clickedElement = null;
+    GuiElement** touchedElements;
+
 public:
     std::vector<GuiElement*> children;
+    bool clip = true;
 
-    GuiElementContainer() : DynamicGuiElement() {};
+    GuiElementContainer();
+    ~GuiElementContainer();
 
     inline void addElement(GuiElement* element) { children.push_back(element); };
+
+    virtual void render();
 
     virtual bool needsUpdate();
     virtual bool hasVertexCountUpdate();
@@ -21,6 +30,11 @@ public:
         return flags;
     };
     virtual void updateDynamic();
+
+    virtual bool supportsMultitouch() { return true; }
+    virtual bool onMousePress(MousePressEvent& event);
+    virtual void onMouseMove(MouseMoveEvent& event);
+    virtual void onMouseRelease(MouseReleaseEvent& event);
 
 };
 

@@ -13,6 +13,7 @@ protected:
 
 public:
     DynamicGuiElement() : GuiElement() {};
+    ~DynamicGuiElement();
 
     virtual bool isDynamic() { return true; };
 

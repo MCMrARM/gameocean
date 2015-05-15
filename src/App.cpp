@@ -6,10 +6,10 @@
 #include "render/TextureManager.h"
 #include "render/Texture.h"
 #include "render/Shader.h"
-#include "render/RenderObject.h"
-#include "render/RenderObjectBuilder.h"
 #include "gui/GuiImageElement.h"
-#include "gui/GuiElementContainer.h"
+#include "gui/Screen.h"
+#include "input/MouseHandler.h"
+#include "input/TouchHandler.h"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
@@ -28,6 +28,9 @@ void App::init() {
     this->initLogger();
 
     Logger::main->trace("App", "Start");
+
+    MouseHandler::reset();
+    TouchHandler::reset();
 }
 
 MultiLogger* App::initLogger() {
@@ -56,9 +59,9 @@ void App::initOpenGL() {
 
     glEnable(GL_CULL_FACE);
     testTexture->bind(0);
-    container = new GuiElementContainer();
-    el = new GuiImageElement(10, 10, testTexture, 0, 0, 8, 8);
-    container->addElement(el);
+    currentScreen = new Screen(this);
+    GuiImageElement* el = new GuiImageElement(10, 10, testTexture, 0, 0, 8, 8);
+    currentScreen->addElement(el);
     //GuiImageElement* el2 = new GuiImageElement(12, 12, testTexture, 0, 0, 8, 8);
     //container->addElement(el2);
     testTexture->unbind();
@@ -74,6 +77,7 @@ void App::resize(int newWidth, int newHeight) {
 }
 
 void App::render() {
+    glViewport(0, 0, screenWidth, screenHeight);
     glClearColor(0.5, 0.7, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
@@ -93,8 +97,7 @@ void App::render() {
         glUniformMatrix4fv(testShader->viewMatrixUniform(), 1, false, glm::value_ptr(view));
 
         //testObject->render();
-        container->render();
-        el->setPosition(el->getX() + 1, 10);
+        this->currentScreen->render();
 
         this->testTexture->unbind();
     }
