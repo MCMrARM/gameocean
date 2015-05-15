@@ -108,7 +108,7 @@
         for (int i = 0; i < MAX_TOUCHES; i++) {
             if (touches[i] == touch) {
                 CGPoint loc = [touch locationInView:self.view];
-                TouchHandler::release(i, loc.x * scale, loc.y * scale);
+                TouchHandler::move(i, loc.x * scale, loc.y * scale);
                 break;
             }
         }
