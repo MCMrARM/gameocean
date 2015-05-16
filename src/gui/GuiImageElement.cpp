@@ -8,12 +8,17 @@ GuiImageElement::GuiImageElement(int x, int y, Texture *texture, int texX, int t
 }
 
 void GuiImageElement::setTexture(Texture *texture, int x, int y, int w, int h) {
-    this->texture = texture;
+    if(texture == null) {
+        this->texture = GuiElement::texture;
+    } else {
+        this->texture = texture;
+    }
     texX = x;
     texY = y;
     texW = w;
     texH = h;
-    this->shouldUpdate = true;
+    this->textureUpdate = true;
+    this->requireUpdate();
 }
 
 void GuiImageElement::updateTextureId() {
@@ -32,7 +37,7 @@ GuiUpdateFlags GuiImageElement::update(RenderObjectBuilder *builder) {
     if(!this->shouldUpdate) return flags;
     this->shouldUpdate = false;
 
-    builder->rect2d(x, y, x + width, y + height, texX, texY, texX + texW, texY + texH, this->texture, r, g, b, a);
+    this->rebuild(builder);
     if(this->posUpdate) {
         flags.updateVertex = true;
         this->posUpdate = false;

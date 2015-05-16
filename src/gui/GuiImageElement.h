@@ -6,6 +6,8 @@ class Texture;
 
 class GuiImageElement : public GuiElement {
 
+protected:
+
     Texture* texture;
     int texX, texY, texW, texH;
 

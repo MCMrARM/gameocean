@@ -7,6 +7,8 @@
 #include "render/Texture.h"
 #include "render/Shader.h"
 #include "gui/GuiImageElement.h"
+#include "gui/GuiNinePathImageElement.h"
+#include "gui/GuiButtonElement.h"
 #include "gui/Screen.h"
 #include "input/MouseHandler.h"
 #include "input/TouchHandler.h"
@@ -57,11 +59,18 @@ void App::initOpenGL() {
     //testShader->uniform("uFragmentColor");
     //glUniform4f(testShader->uniform("uFragmentColor"), 1.0f, 1.0f, 1.0f, 1.0f);
 
+    GuiElement::initTexture();
+
     glEnable(GL_CULL_FACE);
     testTexture->bind(0);
     currentScreen = new Screen(this);
     GuiImageElement* el = new GuiImageElement(10, 10, testTexture, 0, 0, 8, 8);
     currentScreen->addElement(el);
+    GuiNinePathImageElement* el2 = new GuiNinePathImageElement(50, 10, 60, 20, testTexture, 0, 0, 8, 8, 2);
+    currentScreen->addElement(el2);
+    GuiButtonElement * btn = new GuiButtonElement(100, 100, 100, 20);
+    currentScreen->addElement(btn);
+
     //GuiImageElement* el2 = new GuiImageElement(12, 12, testTexture, 0, 0, 8, 8);
     //container->addElement(el2);
     testTexture->unbind();

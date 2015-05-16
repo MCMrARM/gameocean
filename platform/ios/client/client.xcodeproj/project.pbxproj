@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04A053E31B07AA26000B56FA /* GuiNinePathImageElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053E11B07AA26000B56FA /* GuiNinePathImageElement.cpp */; };
+		04A053E91B07B206000B56FA /* GuiButtonElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053E71B07B206000B56FA /* GuiButtonElement.cpp */; };
 		04BF56481AFFA8AF00C880E4 /* color.fragment in Resources */ = {isa = PBXBuildFile; fileRef = 04D681711AFF841F00CAFE46 /* color.fragment */; };
 		04BF56491AFFA8B100C880E4 /* color.vertex in Resources */ = {isa = PBXBuildFile; fileRef = 04D681721AFF841F00CAFE46 /* color.vertex */; };
 		04BF564A1AFFA8B400C880E4 /* main.fragment in Resources */ = {isa = PBXBuildFile; fileRef = 04D681731AFF841F00CAFE46 /* main.fragment */; };
@@ -194,6 +196,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04A053E11B07AA26000B56FA /* GuiNinePathImageElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GuiNinePathImageElement.cpp; sourceTree = "<group>"; };
+		04A053E21B07AA26000B56FA /* GuiNinePathImageElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiNinePathImageElement.h; sourceTree = "<group>"; };
+		04A053E71B07B206000B56FA /* GuiButtonElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GuiButtonElement.cpp; sourceTree = "<group>"; };
+		04A053E81B07B206000B56FA /* GuiButtonElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiButtonElement.h; sourceTree = "<group>"; };
 		04BF56981AFFDADB00C880E4 /* gui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gui.png; sourceTree = "<group>"; };
 		04BF56DE1B023BF600C880E4 /* DynamicGuiElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicGuiElement.cpp; sourceTree = "<group>"; };
 		04BF56DF1B023BF600C880E4 /* DynamicGuiElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicGuiElement.h; sourceTree = "<group>"; };
@@ -732,6 +738,10 @@
 				04D67F9F1AFF63A800CAFE46 /* GuiElement.h */,
 				04D67FA01AFF63A800CAFE46 /* GuiElementContainer.cpp */,
 				04D67FA11AFF63A800CAFE46 /* GuiElementContainer.h */,
+				04A053E11B07AA26000B56FA /* GuiNinePathImageElement.cpp */,
+				04A053E21B07AA26000B56FA /* GuiNinePathImageElement.h */,
+				04A053E71B07B206000B56FA /* GuiButtonElement.cpp */,
+				04A053E81B07B206000B56FA /* GuiButtonElement.h */,
 			);
 			path = gui;
 			sourceTree = "<group>";
@@ -1356,6 +1366,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04A053E91B07B206000B56FA /* GuiButtonElement.cpp in Sources */,
 				04D67FBE1AFF63A800CAFE46 /* RenderObject.cpp in Sources */,
 				04D6816C1AFF822C00CAFE46 /* iOSApp.mm in Sources */,
 				04D67FC31AFF63A800CAFE46 /* Logger.cpp in Sources */,
@@ -1380,6 +1391,7 @@
 				04D67FBF1AFF63A800CAFE46 /* RenderObjectBuilder.cpp in Sources */,
 				04D681581AFF63CB00CAFE46 /* pngget.c in Sources */,
 				04D67FC01AFF63A800CAFE46 /* Shader.cpp in Sources */,
+				04A053E31B07AA26000B56FA /* GuiNinePathImageElement.cpp in Sources */,
 				04D681591AFF63CB00CAFE46 /* pngmem.c in Sources */,
 				04D681651AFF63CB00CAFE46 /* pngwutil.c in Sources */,
 				04D6815E1AFF63CB00CAFE46 /* pngrutil.c in Sources */,

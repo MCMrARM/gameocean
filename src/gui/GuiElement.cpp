@@ -1,6 +1,13 @@
 #include "GuiElement.h"
 
 #include "../utils/Logger.h"
+#include "../render/TextureManager.h"
+
+Texture* GuiElement::texture = null;
+
+void GuiElement::initTexture() {
+    GuiElement::texture = TextureManager::require("images/gui.png");
+}
 
 void GuiElement::setPosition(int x, int y) {
     this->x = x;

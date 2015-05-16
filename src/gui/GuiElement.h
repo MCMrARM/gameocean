@@ -3,6 +3,7 @@
 #include "../input/MouseEvent.h"
 
 class RenderObjectBuilder;
+class Texture;
 
 struct GuiUpdateFlags {
     bool updateVertex = false;
@@ -21,6 +22,9 @@ protected:
     bool posUpdate = false;
 
 public:
+    static Texture* texture;
+    static void initTexture();
+
     int builderOffset = -1;
 
     float r = 1.0f;
