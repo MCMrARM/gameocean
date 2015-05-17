@@ -38,18 +38,26 @@ Font::Font(std::string fontName, int charW, int charH) {
                 charSize++;
             }
             //charSizes[j * charsPerLine + i] = charSize;
-            Logger::main->trace("Logger", "log %i %i %i %i", i, j, i * charsH + j, charSize);
             charSizes[j * charsPerLine + i] = charSize;
         }
     }
     charSizes[32] = 4;
 }
 
+int Font::getWidth(std::string text) {
+    int w = 0;
+    for(char& c : text) {
+        int cW = charSizes[c];
+
+        w += cW + 1;
+    }
+    return w;
+}
+
 void Font::buildWordWrap(RenderObjectBuilder *builder, int x, int y, int w, std::string text, Color color) {
     bool bold = false;
     bool italic = false;
     bool underline = false;
-    Logger::main->trace("Font:build", "buildstart %i", x);
     for(char& c : text) {
         unsigned char& cId = (unsigned char&) c;
         int cW = charSizes[c];
@@ -60,10 +68,7 @@ void Font::buildWordWrap(RenderObjectBuilder *builder, int x, int y, int w, std:
         builder->rect2d(x, y, x + cW, y + charH, cX, cY, cX + cW, cY + charH, texture, color);
 
         x += cW + 1;
-
-        Logger::main->trace("Font:build", "build %i %i %i %i %i %i", x, cId, cX, cY, cW, charH);
     }
-    Logger::main->trace("Font:build", "buildend %i", x);
 }
 
 int Font::getVertexCount(std::string text) {

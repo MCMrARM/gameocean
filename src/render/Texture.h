@@ -7,7 +7,7 @@ class Texture {
 
     std::string name = "None";
     unsigned int id;
-    unsigned int bindId;
+    unsigned int bindId = -1;
     unsigned int width, height;
 
 public:

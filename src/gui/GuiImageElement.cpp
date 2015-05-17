@@ -1,5 +1,6 @@
 #include "GuiImageElement.h"
 
+#include "../utils/Logger.h"
 #include "../render/RenderObjectBuilder.h"
 
 GuiImageElement::GuiImageElement(int x, int y, Texture *texture, int texX, int texY, int w, int h) : GuiElement(x, y, w, h) {
@@ -18,6 +19,7 @@ void GuiImageElement::setTexture(Texture *texture, int x, int y, int w, int h) {
     texW = w;
     texH = h;
     this->textureUpdate = true;
+    this->textureIdUpdate = true;
     this->requireUpdate();
 }
 
@@ -41,6 +43,10 @@ GuiUpdateFlags GuiImageElement::update(RenderObjectBuilder *builder) {
     if(this->posUpdate) {
         flags.updateVertex = true;
         this->posUpdate = false;
+    }
+    if(this->colorUpdate) {
+        flags.updateColor = true;
+        this->colorUpdate = false;
     }
     if(this->textureUpdate) {
         flags.updateTextureUV = true;

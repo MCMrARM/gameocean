@@ -8,6 +8,8 @@ class GuiButtonElement : public GuiNinePathImageElement {
     int inactiveTexX, inactiveTexY;
     int activeTexX, activeTexY;
     std::string text;
+    int textW;
+    Color textBg, inactiveBg, activeBg;
 
 public:
     GuiButtonElement(int x, int y, int w, int h, std::string text);

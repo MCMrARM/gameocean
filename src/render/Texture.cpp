@@ -50,9 +50,9 @@ void Texture::load(std::string name) {
     unsigned int w, h, size;
     byte* data = App::instance->readGameImageFile(name, w, h, size);
     Logger::main->debug("Texture", "Loaded! [w: %i, h: %i, byte size: %i] %i", w, h, size, data);
-    delete[] data;
 
     Texture::load(data, w, h);
+    delete[] data;
 }
 
 int Texture::bind() {

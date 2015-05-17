@@ -39,14 +39,14 @@ void RenderObject::render() {
         glBindBuffer(GL_ARRAY_BUFFER, texUVBufferId);
         glVertexAttribPointer(texUVAttrib, 2, GL_FLOAT, false, 0, 0);
     }
-/*
+
     if(texIdBufferId != 0) {
         int texIdAttrib = Shader::current->texIdAttrib();
         if(texIdAttrib == -1) { Logger::main->warn("Shader", "Texture ID attribute not definied in the current shader!"); }
         glBindBuffer(GL_ARRAY_BUFFER, texIdBufferId);
         glVertexAttribPointer(texIdAttrib, 1, GL_FLOAT, false, 0, 0);
     }
-*/
+
     if(colorBufferId != 0) {
         int colorAttrib = Shader::current->colorAttrib();
         if(colorAttrib == -1) { Logger::main->warn("Shader", "Color attribute not definied in the current shader!"); }

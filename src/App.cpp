@@ -44,42 +44,44 @@ MultiLogger* App::initLogger() {
 }
 
 void App::initOpenGL() {
-    if(testTexture == null) {
-        TextureManager::init();
-        testTexture = TextureManager::require("images/gui.png");
-    }
+    TextureManager::init();
+
     if(testShader == null) {
         testShader = new Shader("shaders/main");
         testShader->vertexAttrib("aVertexPosition");
         testShader->colorAttrib("aColor");
+        testShader->texIdAttrib("aTextureId");
         testShader->texUVAttrib("aTextureCoord");
         testShader->projectionMatrixUniform("uProjectionMatrix");
         testShader->viewMatrixUniform("uViewMatrix");
-        testShader->uniform("uSampler");
+        testShader->uniform("uSamplers");
     }
     //testShader->uniform("uFragmentColor");
     //glUniform4f(testShader->uniform("uFragmentColor"), 1.0f, 1.0f, 1.0f, 1.0f);
 
-    GuiElement::initTexture();
-
     Font::main = new Font("images/font.png", 8, 8);
+    GuiElement::initTexture();
 
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    testTexture->bind(0);
+    GuiElement::texture->bind(1);
+    Font::main->getTexture()->bind(0);
+
     currentScreen = new Screen(this);
-    GuiImageElement* el = new GuiImageElement(10, 10, testTexture, 0, 0, 8, 8);
+
+    GuiImageElement* el = new GuiImageElement(10, 10, GuiElement::texture, 0, 0, 8, 8);
     currentScreen->addElement(el);
+
     GuiNinePathImageElement* el2 = new GuiNinePathImageElement(50, 10, 60, 20, testTexture, 0, 0, 8, 8, 2);
     currentScreen->addElement(el2);
+
     GuiButtonElement * btn = new GuiButtonElement(100, 100, 100, 20, "Testing");
     currentScreen->addElement(btn);
 
-    //GuiImageElement* el2 = new GuiImageElement(12, 12, testTexture, 0, 0, 8, 8);
-    //container->addElement(el2);
-    testTexture->unbind();
+    GuiElement::texture->unbind();
+    Font::main->getTexture()->unbind();
 }
 
 void App::resize(int newWidth, int newHeight) {
@@ -99,23 +101,28 @@ void App::render() {
     if(testShader->getId() == 0) {
         return;
     }
-    if(this->testTexture != null) {
-        testShader->use();
+    testShader->use();
 
-        int texId = Font::main->getTexture()->bind();//this->testTexture->bind();
-        glUniform1i(testShader->uniform("uSampler"), texId);
-
-        glm::mat4 projection = glm::ortho(0.0f, guiWidth + 0.0f, 0.0f, guiHeight + 0.0f, 0.1f, 100.f);//glm::perspective(60.0f, (float) guiWidth / guiHeight, 0.1f, 100.0f);
-        glUniformMatrix4fv(testShader->projectionMatrixUniform(), 1, false, glm::value_ptr(projection));
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-        //view = glm::scale(view, glm::vec3(3.0f));
-        glUniformMatrix4fv(testShader->viewMatrixUniform(), 1, false, glm::value_ptr(view));
-
-        //testObject->render();
-        this->currentScreen->render();
-
-        this->testTexture->unbind();
+    Font::main->getTexture()->bind(0);
+    GuiElement::texture->bind(1);
+    GLint textures[TextureManager::MAX_TEXTURES];
+    for(int i = 0; i < TextureManager::MAX_TEXTURES; i++) {
+        textures[i] = i;
     }
+    glUniform1iv(testShader->uniform("uSamplers"), TextureManager::MAX_TEXTURES, textures);
+
+    glm::mat4 projection = glm::ortho(0.0f, guiWidth + 0.0f, 0.0f, guiHeight + 0.0f, 0.1f, 100.f);//glm::perspective(60.0f, (float) guiWidth / guiHeight, 0.1f, 100.0f);
+    glUniformMatrix4fv(testShader->projectionMatrixUniform(), 1, false, glm::value_ptr(projection));
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+    //view = glm::scale(view, glm::vec3(3.0f));
+    glUniformMatrix4fv(testShader->viewMatrixUniform(), 1, false, glm::value_ptr(view));
+
+    //testObject->render();
+    this->currentScreen->render();
+
+    //testTexture->unbind();
+    GuiElement::texture->unbind();
+    Font::main->getTexture()->unbind();
 
 }
 

@@ -23,6 +23,7 @@ public:
         Font::buildWordWrap(builder, x, y, -1, text, color);
     };
 
+    int getWidth(std::string text);
     int getVertexCount(std::string text);
 
 };

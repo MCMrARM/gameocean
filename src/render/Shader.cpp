@@ -1,13 +1,20 @@
 #include "Shader.h"
 
+#include <sstream>
+
 #include "../common.h"
 #include "../App.h"
+#include "TextureManager.h"
 
 Shader* Shader::current = null;
 
 Shader::Shader(std::string vertexShaderFile, std::string fragmentShaderFile) {
     std::string vcode = App::instance->readGameTextFile(vertexShaderFile);
     std::string fcode = App::instance->readGameTextFile(fragmentShaderFile);
+
+    std::stringstream stream;
+    stream << "#define MAX_TEXTURES " << TextureManager::MAX_TEXTURES << "\n" << fcode;
+    fcode = stream.str();
 
     id = Shader::linkProgram(vcode, fcode);
 }
@@ -41,7 +48,7 @@ int Shader::uniform(std::string name) {
     }
     int loc = glGetUniformLocation(this->id, name.c_str());
     if(loc == -1) {
-        Logger::main->warn("Shader", "Attribute %s is unknown!", name.c_str());
+        Logger::main->warn("Shader", "Uniform %s is unknown!", name.c_str());
         return -1;
     }
 

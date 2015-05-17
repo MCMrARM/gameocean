@@ -21,6 +21,7 @@ protected:
     bool shouldUpdate = false;
     bool shouldRebuild = true;
     bool posUpdate = false;
+    bool colorUpdate = false;
 
 public:
     static Texture* texture;
