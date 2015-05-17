@@ -6,6 +6,7 @@
 #include "render/TextureManager.h"
 #include "render/Texture.h"
 #include "render/Shader.h"
+#include "render/Font.h"
 #include "gui/GuiImageElement.h"
 #include "gui/GuiNinePathImageElement.h"
 #include "gui/GuiButtonElement.h"
@@ -61,14 +62,19 @@ void App::initOpenGL() {
 
     GuiElement::initTexture();
 
+    Font::main = new Font("images/font.png", 8, 8);
+
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     testTexture->bind(0);
     currentScreen = new Screen(this);
     GuiImageElement* el = new GuiImageElement(10, 10, testTexture, 0, 0, 8, 8);
     currentScreen->addElement(el);
     GuiNinePathImageElement* el2 = new GuiNinePathImageElement(50, 10, 60, 20, testTexture, 0, 0, 8, 8, 2);
     currentScreen->addElement(el2);
-    GuiButtonElement * btn = new GuiButtonElement(100, 100, 100, 20);
+    GuiButtonElement * btn = new GuiButtonElement(100, 100, 100, 20, "Testing");
     currentScreen->addElement(btn);
 
     //GuiImageElement* el2 = new GuiImageElement(12, 12, testTexture, 0, 0, 8, 8);
@@ -96,7 +102,7 @@ void App::render() {
     if(this->testTexture != null) {
         testShader->use();
 
-        int texId = this->testTexture->bind();
+        int texId = Font::main->getTexture()->bind();//this->testTexture->bind();
         glUniform1i(testShader->uniform("uSampler"), texId);
 
         glm::mat4 projection = glm::ortho(0.0f, guiWidth + 0.0f, 0.0f, guiHeight + 0.0f, 0.1f, 100.f);//glm::perspective(60.0f, (float) guiWidth / guiHeight, 0.1f, 100.0f);

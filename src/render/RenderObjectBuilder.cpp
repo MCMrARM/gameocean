@@ -28,14 +28,14 @@ RenderObjectBuilder::RenderObjectBuilder(RenderObject& object) : RenderObjectBui
 }
 
 void RenderObjectBuilder::rect2d(float x, float y, float x2, float y2, float texU1, float texV1, float texU2,
-                                 float texV2, int texId, float r, float g, float b, float a) {
-    vertex(x, y, 0.0f, texU1, texV1, texId, r, g, b, a);
-    vertex(x2, y, 0.0f, texU2, texV1, texId, r, g, b, a);
-    vertex(x, y2, 0.0f, texU1, texV2, texId, r, g, b, a);
+                                 float texV2, int texId, Color color) {
+    vertex(x, y, 0.0f, texU1, texV1, texId, color);
+    vertex(x2, y, 0.0f, texU2, texV1, texId, color);
+    vertex(x, y2, 0.0f, texU1, texV2, texId, color);
 
-    vertex(x2, y, 0.0f, texU2, texV1, texId, r, g, b, a);
-    vertex(x2, y2, 0.0f, texU2, texV2, texId, r, g, b, a);
-    vertex(x, y2, 0.0f, texU1, texV2, texId, r, g, b, a);
+    vertex(x2, y, 0.0f, texU2, texV1, texId, color);
+    vertex(x2, y2, 0.0f, texU2, texV2, texId, color);
+    vertex(x, y2, 0.0f, texU1, texV2, texId, color);
 }
 
 void RenderObjectBuilder::addVertex(float x, float y, float z,

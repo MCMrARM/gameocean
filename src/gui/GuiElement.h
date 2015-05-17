@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../input/MouseEvent.h"
+#include "../render/Color.h"
 
 class RenderObjectBuilder;
 class Texture;
@@ -27,10 +28,7 @@ public:
 
     int builderOffset = -1;
 
-    float r = 1.0f;
-    float g = 1.0f;
-    float b = 1.0f;
-    float a = 1.0f;
+    Color color;
 
     GuiElement() {};
     GuiElement(int x, int y, int w, int h) : x(x), y(y), width(w), height(h) {};
