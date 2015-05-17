@@ -22,7 +22,7 @@ public:
     bool active = false;
     int screenWidth, screenHeight;
     int guiWidth, guiHeight;
-    int pixelSize = 8;
+    int pixelSize = 6;
 
     virtual void init();
     virtual MultiLogger* initLogger();
