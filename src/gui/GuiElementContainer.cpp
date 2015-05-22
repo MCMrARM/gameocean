@@ -76,6 +76,9 @@ bool GuiElementContainer::onMousePress(MousePressEvent& event) {
                 }
             }
             if (!el->onMousePress(event)) continue;
+            if (focusedElement != null) { focusedElement->blur(); }
+            focusedElement = el;
+            el->focus();
             if (touch) {
                 int fId = ((TouchPressEvent&) event).fingerId;
                 touchedElements[fId] = el;
@@ -85,6 +88,8 @@ bool GuiElementContainer::onMousePress(MousePressEvent& event) {
             return true;
         }
     }
+    if (focusedElement != null) { focusedElement->blur(); }
+    focusedElement = null;
     return true;
 }
 
@@ -119,6 +124,12 @@ void GuiElementContainer::onMouseRelease(MouseReleaseEvent& event) {
             clickedElement->onMouseRelease(event);
             clickedElement = null;
         }
+    }
+}
+
+void GuiElementContainer::setText(std::string text) {
+    if (this->focusedElement != null) {
+        this->focusedElement->setText(text);
     }
 }
 

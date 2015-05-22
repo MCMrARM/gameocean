@@ -2,6 +2,7 @@
 
 #include "../input/MouseEvent.h"
 #include "../render/Color.h"
+#include <string>
 
 class RenderObjectBuilder;
 class Texture;
@@ -50,12 +51,17 @@ public:
     inline int getY() { return y; };
     void setPositionAndSize(int x, int y, int w, int h) { setPosition(x, y); setSize(w, h); };
 
+    virtual void focus() { };
+    virtual void blur() { };
+
     virtual bool isPointInside(int x, int y);
     virtual bool supportsMultitouch() { return false; }
     virtual bool onMousePress(MousePressEvent& event) { return true; };
     virtual void onMouseMove(MouseMoveEvent& event) { };
     virtual void onMouseRelease(MouseReleaseEvent& event);
     virtual void click() { };
+
+    virtual void setText(std::string newText) {};
 
 };
 

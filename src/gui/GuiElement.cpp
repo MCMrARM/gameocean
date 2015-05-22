@@ -32,7 +32,6 @@ bool GuiElement::isPointInside(int x, int y) {
 
 void GuiElement::onMouseRelease(MouseReleaseEvent& event) {
     if(this->isPointInside(event.x, event.y)) {
-        Logger::main->info("Gui", "Element clicked!");
         this->click();
     }
 }

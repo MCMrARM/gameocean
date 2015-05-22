@@ -18,6 +18,9 @@ void TextureManager::init() {
     for(int i = 0; i < TextureManager::MAX_TEXTURES; i++) {
         TextureManager::activeTextures[i] = null;
     }
+
+    Texture::EMPTY = new Texture();
+    Texture::EMPTY->load();
 }
 
 Texture* TextureManager::require(std::string name) {

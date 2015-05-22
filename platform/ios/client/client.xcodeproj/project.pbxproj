@@ -11,6 +11,10 @@
 		04A053E91B07B206000B56FA /* GuiButtonElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053E71B07B206000B56FA /* GuiButtonElement.cpp */; };
 		04A053EC1B08BC9C000B56FA /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053EA1B08BC9C000B56FA /* Font.cpp */; };
 		04A053EE1B08C704000B56FA /* font.png in Resources */ = {isa = PBXBuildFile; fileRef = 04A053ED1B08C704000B56FA /* font.png */; };
+		04A053F11B0E1F48000B56FA /* KeyboardView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F01B0E1F48000B56FA /* KeyboardView.mm */; };
+		04A053F41B0FB1B7000B56FA /* GuiTextBoxElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F21B0FB1B7000B56FA /* GuiTextBoxElement.cpp */; };
+		04A053F71B0FB1C6000B56FA /* KeyboardHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F51B0FB1C6000B56FA /* KeyboardHandler.cpp */; };
+		04A053FA1B0FB9E4000B56FA /* Time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F81B0FB9E4000B56FA /* Time.cpp */; };
 		04BF56481AFFA8AF00C880E4 /* color.fragment in Resources */ = {isa = PBXBuildFile; fileRef = 04D681711AFF841F00CAFE46 /* color.fragment */; };
 		04BF56491AFFA8B100C880E4 /* color.vertex in Resources */ = {isa = PBXBuildFile; fileRef = 04D681721AFF841F00CAFE46 /* color.vertex */; };
 		04BF564A1AFFA8B400C880E4 /* main.fragment in Resources */ = {isa = PBXBuildFile; fileRef = 04D681731AFF841F00CAFE46 /* main.fragment */; };
@@ -205,6 +209,14 @@
 		04A053EA1B08BC9C000B56FA /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Font.cpp; sourceTree = "<group>"; };
 		04A053EB1B08BC9C000B56FA /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
 		04A053ED1B08C704000B56FA /* font.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = font.png; sourceTree = "<group>"; };
+		04A053EF1B0E1F48000B56FA /* KeyboardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardView.h; sourceTree = "<group>"; };
+		04A053F01B0E1F48000B56FA /* KeyboardView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = KeyboardView.mm; sourceTree = "<group>"; };
+		04A053F21B0FB1B7000B56FA /* GuiTextBoxElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GuiTextBoxElement.cpp; sourceTree = "<group>"; };
+		04A053F31B0FB1B7000B56FA /* GuiTextBoxElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiTextBoxElement.h; sourceTree = "<group>"; };
+		04A053F51B0FB1C6000B56FA /* KeyboardHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyboardHandler.cpp; sourceTree = "<group>"; };
+		04A053F61B0FB1C6000B56FA /* KeyboardHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardHandler.h; sourceTree = "<group>"; };
+		04A053F81B0FB9E4000B56FA /* Time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Time.cpp; sourceTree = "<group>"; };
+		04A053F91B0FB9E4000B56FA /* Time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Time.h; sourceTree = "<group>"; };
 		04BF56981AFFDADB00C880E4 /* gui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gui.png; sourceTree = "<group>"; };
 		04BF56DE1B023BF600C880E4 /* DynamicGuiElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicGuiElement.cpp; sourceTree = "<group>"; };
 		04BF56DF1B023BF600C880E4 /* DynamicGuiElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicGuiElement.h; sourceTree = "<group>"; };
@@ -596,6 +608,8 @@
 				04BF56EC1B064A1600C880E4 /* TouchEvent.h */,
 				04BF56ED1B064A1600C880E4 /* TouchHandler.cpp */,
 				04BF56EE1B064A1600C880E4 /* TouchHandler.h */,
+				04A053F51B0FB1C6000B56FA /* KeyboardHandler.cpp */,
+				04A053F61B0FB1C6000B56FA /* KeyboardHandler.h */,
 			);
 			path = input;
 			sourceTree = "<group>";
@@ -648,6 +662,8 @@
 				04D67F661AFF625F00CAFE46 /* Images.xcassets */,
 				04D67F4E1AFF625F00CAFE46 /* Supporting Files */,
 				04D681661AFF63E100CAFE46 /* opengl.h */,
+				04A053EF1B0E1F48000B56FA /* KeyboardView.h */,
+				04A053F01B0E1F48000B56FA /* KeyboardView.mm */,
 				04D681671AFF655200CAFE46 /* iOSLogger.mm */,
 				04D681681AFF655200CAFE46 /* iOSLogger.h */,
 				04D6816A1AFF822C00CAFE46 /* iOSApp.mm */,
@@ -747,6 +763,8 @@
 				04A053E21B07AA26000B56FA /* GuiNinePathImageElement.h */,
 				04A053E71B07B206000B56FA /* GuiButtonElement.cpp */,
 				04A053E81B07B206000B56FA /* GuiButtonElement.h */,
+				04A053F21B0FB1B7000B56FA /* GuiTextBoxElement.cpp */,
+				04A053F31B0FB1B7000B56FA /* GuiTextBoxElement.h */,
 			);
 			path = gui;
 			sourceTree = "<group>";
@@ -783,6 +801,8 @@
 			children = (
 				04D67FB01AFF63A800CAFE46 /* Logger.cpp */,
 				04D67FB11AFF63A800CAFE46 /* Logger.h */,
+				04A053F81B0FB9E4000B56FA /* Time.cpp */,
+				04A053F91B0FB9E4000B56FA /* Time.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1381,8 +1401,10 @@
 				04D67FC31AFF63A800CAFE46 /* Logger.cpp in Sources */,
 				04D67F541AFF625F00CAFE46 /* main.m in Sources */,
 				04A053EC1B08BC9C000B56FA /* Font.cpp in Sources */,
+				04A053F41B0FB1B7000B56FA /* GuiTextBoxElement.cpp in Sources */,
 				04D681631AFF63CB00CAFE46 /* pngwrite.c in Sources */,
 				04BF56E61B03CD4200C880E4 /* GuiImageElement.cpp in Sources */,
+				04A053FA1B0FB9E4000B56FA /* Time.cpp in Sources */,
 				04D67FBA1AFF63A800CAFE46 /* GameRenderer.cpp in Sources */,
 				04D681621AFF63CB00CAFE46 /* pngwio.c in Sources */,
 				04D681641AFF63CB00CAFE46 /* pngwtran.c in Sources */,
@@ -1414,8 +1436,10 @@
 				04D67FC11AFF63A800CAFE46 /* Texture.cpp in Sources */,
 				04D681611AFF63CB00CAFE46 /* pngtrans.c in Sources */,
 				04D67F581AFF625F00CAFE46 /* lbclientAppDelegate.m in Sources */,
+				04A053F11B0E1F48000B56FA /* KeyboardView.mm in Sources */,
 				04D680E51AFF63CB00CAFE46 /* dummy.cpp in Sources */,
 				04D67FBC1AFF63A800CAFE46 /* GuiElement.cpp in Sources */,
+				04A053F71B0FB1C6000B56FA /* KeyboardHandler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,13 +1,20 @@
 #include "AndroidApp.h"
 
 #include <android/asset_manager.h>
+#include <jni.h>
 
 #include "opengl.h"
+#include "JNI.h"
 
 #include "utils/Logger.h"
 #include "AndroidLogger.h"
 
-AndroidApp::AndroidApp(android_app* state) : App() {
+EGLDisplay AndroidApp::display = EGL_NO_DISPLAY;
+EGLSurface AndroidApp::surface = EGL_NO_SURFACE;
+EGLContext AndroidApp::context = EGL_NO_CONTEXT;
+EGLConfig AndroidApp::eglConfig = null;
+
+AndroidApp::AndroidApp(android_app* state) : App(), jni(state) {
     this->androidApp = state;
 }
 
@@ -112,6 +119,9 @@ void AndroidApp::destroyOpenGL() {
 }
 
 void AndroidApp::render() {
+    if(surface == EGL_NO_SURFACE) {
+        return;
+    }
     glViewport(0, 0, screenWidth, screenHeight);
     App::render();
     eglSwapBuffers(display, surface);
@@ -137,4 +147,12 @@ byte* AndroidApp::readGameFile(std::string name, unsigned int& size) {
     AAsset_close(asset);
 
     return arr;
+}
+
+void AndroidApp::showKeyboard(std::string text) {
+    jni.showKeyboard(text);
+}
+
+void AndroidApp::hideKeyboard() {
+    jni.hideKeyboard();
 }

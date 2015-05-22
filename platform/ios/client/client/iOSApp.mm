@@ -3,15 +3,28 @@
 #include "App.h"
 
 #include "iOSLogger.h"
-//#include "CPPUtils.h"
+
+iOSApp::iOSApp(lbclientViewController* controller) : App() {
+    this->controller = controller;
+}
 
 MultiLogger* iOSApp::initLogger() {
     MultiLogger* logger = App::initLogger();
 	logger->addLogger(new iOSLogger());
 	return logger;
 }
+
 void iOSApp::destroyOpenGL() {
     //
+}
+
+void iOSApp::showKeyboard(std::string text) {
+    [controller.kb setText:text];
+    [controller.kb becomeFirstResponder];
+}
+
+void iOSApp::hideKeyboard() {
+    [controller.kb resignFirstResponder];
 }
 
 byte* iOSApp::readGameFile(std::string name, unsigned int &size) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include "DynamicGuiElement.h"
 #include "../input/TouchHandler.h"
@@ -7,6 +8,7 @@
 class GuiElementContainer : public DynamicGuiElement {
 
 protected:
+    GuiElement* focusedElement = null;
     GuiElement* clickedElement = null;
     GuiElement** touchedElements;
 
@@ -31,10 +33,14 @@ public:
     };
     virtual void updateDynamic();
 
-    virtual bool supportsMultitouch() { return true; }
+    inline GuiElement* getFocusedElement() { return focusedElement; };
+
+    virtual bool supportsMultitouch() { return true; };
     virtual bool onMousePress(MousePressEvent& event);
     virtual void onMouseMove(MouseMoveEvent& event);
     virtual void onMouseRelease(MouseReleaseEvent& event);
+
+    virtual void setText(std::string newText);
 
 };
 

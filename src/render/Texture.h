@@ -11,6 +11,8 @@ class Texture {
     unsigned int width, height;
 
 public:
+    static Texture* EMPTY;
+
     Texture();
     Texture(std::string name);
     ~Texture();

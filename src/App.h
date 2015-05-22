@@ -39,4 +39,7 @@ public:
     virtual std::string readGameTextFile(std::string name);
     virtual byte* readGameImageFile(std::string name, unsigned int& width, unsigned int& height, unsigned int& byteSize);
 
+    virtual void showKeyboard(std::string text) = 0;
+    virtual void hideKeyboard() = 0;
+
 };

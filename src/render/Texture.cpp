@@ -5,6 +5,8 @@
 #include "TextureManager.h"
 #include "../App.h"
 
+Texture* Texture::EMPTY = null;
+
 Texture::Texture() {
     GLuint tex[1];
     glGenTextures(1, &tex[0]);
@@ -28,8 +30,8 @@ Texture::~Texture() {
 }
 
 void Texture::load() {
-    GLint data[] = {255, 255, 255, 255};
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    GLubyte data[] = {255, 255, 255, 255};
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &data[0]);
 
     width = 1;
     height = 1;

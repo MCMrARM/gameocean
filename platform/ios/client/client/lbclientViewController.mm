@@ -2,6 +2,7 @@
 
 #import "iOSApp.h"
 #import "TouchHandler.h"
+#import "KeyboardView.h"
 
 #define MAX_TOUCHES 10
 
@@ -37,7 +38,10 @@
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
-    self.app = new iOSApp();
+    self.kb = [[KeyboardView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];
+    [self.view addSubview:self.kb];
+    
+    self.app = new iOSApp(self);
     self.app->init();
     self.app->pixelSize = [UIScreen mainScreen].scale * 2;
     

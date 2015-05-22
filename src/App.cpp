@@ -10,6 +10,7 @@
 #include "gui/GuiImageElement.h"
 #include "gui/GuiNinePathImageElement.h"
 #include "gui/GuiButtonElement.h"
+#include "gui/GuiTextBoxElement.h"
 #include "gui/Screen.h"
 #include "input/MouseHandler.h"
 #include "input/TouchHandler.h"
@@ -66,8 +67,9 @@ void App::initOpenGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    Texture::EMPTY->bind(0);
     GuiElement::texture->bind(1);
-    Font::main->getTexture()->bind(0);
+    Font::main->getTexture()->bind(2);
 
     currentScreen = new Screen(this);
 
@@ -77,9 +79,13 @@ void App::initOpenGL() {
     GuiNinePathImageElement* el2 = new GuiNinePathImageElement(50, 10, 60, 20, testTexture, 0, 0, 8, 8, 2);
     currentScreen->addElement(el2);
 
-    GuiButtonElement * btn = new GuiButtonElement(100, 100, 100, 20, "Testing");
+    GuiButtonElement* btn = new GuiButtonElement(100, 100, 100, 20, "Testing");
     currentScreen->addElement(btn);
 
+    GuiTextBoxElement* textBox = new GuiTextBoxElement(10, 100, 70, 20, "Test");
+    currentScreen->addElement(textBox);
+
+    Texture::EMPTY->unbind();
     GuiElement::texture->unbind();
     Font::main->getTexture()->unbind();
 }
@@ -98,13 +104,15 @@ void App::render() {
     glClearColor(0.5, 0.7, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if(testShader->getId() == 0) {
+    if(testShader == null || testShader->getId() == 0) {
         return;
     }
     testShader->use();
 
-    Font::main->getTexture()->bind(0);
+    Texture::EMPTY->bind(0);
     GuiElement::texture->bind(1);
+    Font::main->getTexture()->bind(2);
+
     GLint textures[TextureManager::MAX_TEXTURES];
     for(int i = 0; i < TextureManager::MAX_TEXTURES; i++) {
         textures[i] = i;
@@ -120,10 +128,9 @@ void App::render() {
     //testObject->render();
     this->currentScreen->render();
 
-    //testTexture->unbind();
+    Texture::EMPTY->unbind();
     GuiElement::texture->unbind();
     Font::main->getTexture()->unbind();
-
 }
 
 std::string App::readGameTextFile(std::string name) {

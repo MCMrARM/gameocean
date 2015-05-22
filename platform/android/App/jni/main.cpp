@@ -27,12 +27,12 @@ void handle_cmd(android_app* state, int32_t cmd) {
             app->suspend();
             app->active = false;
             break;
-        case APP_CMD_GAINED_FOCUS:
-            Logger::main->info("Main", "Gained focus");
+        case APP_CMD_RESUME:
+            Logger::main->info("Main", "Resume");
             app->active = true;
             break;
-        case APP_CMD_LOST_FOCUS:
-            Logger::main->info("Main", "Lost focus");
+        case APP_CMD_PAUSE:
+            Logger::main->info("Main", "Pause");
             app->active = false;
             break;
         case APP_CMD_SAVE_STATE:
@@ -103,11 +103,12 @@ void android_main(android_app* state) {
                 Logger::main->info("Main", "Destroy requested");
                 app->suspend();
                 //app->destroyOpenGL();
+                delete app;
+                app = null;
                 return;
             }
         }
 
         app->render();
     }
-
 }
