@@ -14,6 +14,11 @@
 #include "gui/Screen.h"
 #include "input/MouseHandler.h"
 #include "input/TouchHandler.h"
+#include "net/Socket.h"
+#include "net/Packet.h"
+#include "net/Connection.h"
+#include "net/ConnectionHandler.h"
+#include "net/Network.h"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
@@ -22,16 +27,58 @@
 
 #include <png/png.h>
 
+std::string Network::GAME_NAME = "TEST";
+int Network::GAME_VERSION = 1;
+int Network::MIN_GAME_VERSION = 1;
+
+class MyConnectionHandler : public ClientConnectionHandler {
+
+public:
+    MyConnectionHandler(Connection& connection) : ClientConnectionHandler(connection) {};
+
+    virtual void connected() {
+        Logger::main->debug("MyConnectionHandler", "Connected!");
+    };
+
+};
+
 App* App::instance = null;
 
 App::App() {
     App::instance = this;
+
+    version.set(0, 0, 0, 1);
+    version.channel = Version::Channel::DEV;
+    version.netVersion = 1;
 }
 
 void App::init() {
     this->initLogger();
 
     Logger::main->trace("App", "Start");
+    signal(SIGCHLD, SIG_IGN);
+
+    Packet::registerCommonPackets();
+
+    /*
+    Socket socket;
+    if(socket.connect("127.0.0.1", 8089, Socket::Protocol::TCP)) {
+        FileBinaryStream& stream = socket.getStream();
+        ConnectPacket packet;
+        packet.gameName = "test";
+        packet.gameVersion = version.netVersion;
+        Packet::sendPacket(stream, packet);
+
+        while(true) {
+            Packet *pk = Packet::getPacket(stream);
+            if(pk == null) break;
+            Logger::main->debug("Socket", "Received packet: %i", pk->getId());
+        }
+    }*/
+    Connection connection ("127.0.0.1", 8089);
+    MyConnectionHandler handler (connection);
+    connection.setHandler(handler);
+    connection.loop();
 
     MouseHandler::reset();
     TouchHandler::reset();

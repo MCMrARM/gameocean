@@ -15,6 +15,10 @@
 		04A053F41B0FB1B7000B56FA /* GuiTextBoxElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F21B0FB1B7000B56FA /* GuiTextBoxElement.cpp */; };
 		04A053F71B0FB1C6000B56FA /* KeyboardHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F51B0FB1C6000B56FA /* KeyboardHandler.cpp */; };
 		04A053FA1B0FB9E4000B56FA /* Time.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053F81B0FB9E4000B56FA /* Time.cpp */; };
+		04A054021B10C6C8000B56FA /* Packet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A053FE1B10C6C8000B56FA /* Packet.cpp */; };
+		04A054031B10C6C8000B56FA /* Socket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A054001B10C6C8000B56FA /* Socket.cpp */; };
+		04A054061B122888000B56FA /* BinaryStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A054041B122888000B56FA /* BinaryStream.cpp */; };
+		04A054101B177A13000B56FA /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04A0540A1B177A13000B56FA /* Connection.cpp */; };
 		04BF56481AFFA8AF00C880E4 /* color.fragment in Resources */ = {isa = PBXBuildFile; fileRef = 04D681711AFF841F00CAFE46 /* color.fragment */; };
 		04BF56491AFFA8B100C880E4 /* color.vertex in Resources */ = {isa = PBXBuildFile; fileRef = 04D681721AFF841F00CAFE46 /* color.vertex */; };
 		04BF564A1AFFA8B400C880E4 /* main.fragment in Resources */ = {isa = PBXBuildFile; fileRef = 04D681731AFF841F00CAFE46 /* main.fragment */; };
@@ -217,6 +221,19 @@
 		04A053F61B0FB1C6000B56FA /* KeyboardHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardHandler.h; sourceTree = "<group>"; };
 		04A053F81B0FB9E4000B56FA /* Time.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Time.cpp; sourceTree = "<group>"; };
 		04A053F91B0FB9E4000B56FA /* Time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Time.h; sourceTree = "<group>"; };
+		04A053FE1B10C6C8000B56FA /* Packet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Packet.cpp; sourceTree = "<group>"; };
+		04A053FF1B10C6C8000B56FA /* Packet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Packet.h; sourceTree = "<group>"; };
+		04A054001B10C6C8000B56FA /* Socket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Socket.cpp; sourceTree = "<group>"; };
+		04A054011B10C6C8000B56FA /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
+		04A054041B122888000B56FA /* BinaryStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinaryStream.cpp; sourceTree = "<group>"; };
+		04A054051B122888000B56FA /* BinaryStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryStream.h; sourceTree = "<group>"; };
+		04A054081B177A13000B56FA /* ConnectedPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectedPacket.h; sourceTree = "<group>"; };
+		04A054091B177A13000B56FA /* DisconnectedPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisconnectedPacket.h; sourceTree = "<group>"; };
+		04A0540A1B177A13000B56FA /* Connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
+		04A0540B1B177A13000B56FA /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
+		04A0540C1B177A13000B56FA /* ConnectionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionHandler.h; sourceTree = "<group>"; };
+		04A0540D1B177A13000B56FA /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Network.h; sourceTree = "<group>"; };
+		04A0540F1B177A13000B56FA /* ConnectPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectPacket.h; sourceTree = "<group>"; };
 		04BF56981AFFDADB00C880E4 /* gui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gui.png; sourceTree = "<group>"; };
 		04BF56DE1B023BF600C880E4 /* DynamicGuiElement.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DynamicGuiElement.cpp; sourceTree = "<group>"; };
 		04BF56DF1B023BF600C880E4 /* DynamicGuiElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DynamicGuiElement.h; sourceTree = "<group>"; };
@@ -598,6 +615,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		04A054071B177A13000B56FA /* client */ = {
+			isa = PBXGroup;
+			children = (
+				04A054081B177A13000B56FA /* ConnectedPacket.h */,
+				04A054091B177A13000B56FA /* DisconnectedPacket.h */,
+			);
+			path = client;
+			sourceTree = "<group>";
+		};
+		04A0540E1B177A13000B56FA /* server */ = {
+			isa = PBXGroup;
+			children = (
+				04A0540F1B177A13000B56FA /* ConnectPacket.h */,
+			);
+			path = server;
+			sourceTree = "<group>";
+		};
 		04BF56E71B064A1500C880E4 /* input */ = {
 			isa = PBXGroup;
 			children = (
@@ -772,6 +806,16 @@
 		04D67FA21AFF63A800CAFE46 /* net */ = {
 			isa = PBXGroup;
 			children = (
+				04A053FE1B10C6C8000B56FA /* Packet.cpp */,
+				04A053FF1B10C6C8000B56FA /* Packet.h */,
+				04A054001B10C6C8000B56FA /* Socket.cpp */,
+				04A054011B10C6C8000B56FA /* Socket.h */,
+				04A054071B177A13000B56FA /* client */,
+				04A0540A1B177A13000B56FA /* Connection.cpp */,
+				04A0540B1B177A13000B56FA /* Connection.h */,
+				04A0540C1B177A13000B56FA /* ConnectionHandler.h */,
+				04A0540D1B177A13000B56FA /* Network.h */,
+				04A0540E1B177A13000B56FA /* server */,
 			);
 			path = net;
 			sourceTree = "<group>";
@@ -803,6 +847,8 @@
 				04D67FB11AFF63A800CAFE46 /* Logger.h */,
 				04A053F81B0FB9E4000B56FA /* Time.cpp */,
 				04A053F91B0FB9E4000B56FA /* Time.h */,
+				04A054041B122888000B56FA /* BinaryStream.cpp */,
+				04A054051B122888000B56FA /* BinaryStream.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -1420,6 +1466,7 @@
 				04D680EF1AFF63CB00CAFE46 /* glm.cpp in Sources */,
 				04D681561AFF63CB00CAFE46 /* png.c in Sources */,
 				04D6815A1AFF63CB00CAFE46 /* pngpread.c in Sources */,
+				04A054101B177A13000B56FA /* Connection.cpp in Sources */,
 				04D67FBF1AFF63A800CAFE46 /* RenderObjectBuilder.cpp in Sources */,
 				04D681581AFF63CB00CAFE46 /* pngget.c in Sources */,
 				04D67FC01AFF63A800CAFE46 /* Shader.cpp in Sources */,
@@ -1429,6 +1476,7 @@
 				04D6815E1AFF63CB00CAFE46 /* pngrutil.c in Sources */,
 				04D681691AFF655200CAFE46 /* iOSLogger.mm in Sources */,
 				04D681571AFF63CB00CAFE46 /* pngerror.c in Sources */,
+				04A054061B122888000B56FA /* BinaryStream.cpp in Sources */,
 				04BF56EF1B064A1600C880E4 /* MouseHandler.cpp in Sources */,
 				04D6815F1AFF63CB00CAFE46 /* pngset.c in Sources */,
 				04BF56F31B064A3600C880E4 /* Screen.cpp in Sources */,
@@ -1437,7 +1485,9 @@
 				04D681611AFF63CB00CAFE46 /* pngtrans.c in Sources */,
 				04D67F581AFF625F00CAFE46 /* lbclientAppDelegate.m in Sources */,
 				04A053F11B0E1F48000B56FA /* KeyboardView.mm in Sources */,
+				04A054031B10C6C8000B56FA /* Socket.cpp in Sources */,
 				04D680E51AFF63CB00CAFE46 /* dummy.cpp in Sources */,
+				04A054021B10C6C8000B56FA /* Packet.cpp in Sources */,
 				04D67FBC1AFF63A800CAFE46 /* GuiElement.cpp in Sources */,
 				04A053F71B0FB1C6000B56FA /* KeyboardHandler.cpp in Sources */,
 			);

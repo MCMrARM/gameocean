@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "version.h"
 #include <string>
 
 class MultiLogger;
@@ -10,9 +11,9 @@ class Screen;
 
 class App {
 
-    Texture* testTexture;
-    Shader* testShader;
-    Screen* currentScreen;
+    Texture* testTexture = null;
+    Shader* testShader = null;
+    Screen* currentScreen = null;
 
 public:
     static App* instance;
@@ -23,6 +24,7 @@ public:
     int screenWidth, screenHeight;
     int guiWidth, guiHeight;
     int pixelSize = 6;
+    Version version;
 
     virtual void init();
     virtual MultiLogger* initLogger();
