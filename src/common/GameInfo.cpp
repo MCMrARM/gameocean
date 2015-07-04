@@ -1,0 +1,5 @@
+#include "GameInfo.h"
+
+#include "common.h"
+
+GameInfo* GameInfo::current = null;
