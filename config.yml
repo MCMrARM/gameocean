@@ -1,0 +1,4 @@
+name: Lifeboat Test Server
+protocols:
+  mcpe:
+    enabled: true
