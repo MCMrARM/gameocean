@@ -6,6 +6,7 @@ class Server {
 
 public:
     std::string name;
+    int maxPlayers = 100;
 
     void start();
 

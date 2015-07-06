@@ -2,3 +2,5 @@ name: Lifeboat Test Server
 protocols:
   mcpe:
     enabled: true
+    bind: any
+    port: 19132

@@ -5,6 +5,7 @@ project(lbclient)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(OpenGL)
+find_package(ZLIB REQUIRED)
 
 #set(SOURCE_FILES ../clion/opengl.h)
 include_directories(../clion/)
@@ -16,3 +17,4 @@ file(GLOB_RECURSE COMMON_SOURCES "common/*.cpp")
 file(GLOB_RECURSE SERVER_SOURCES "server/*.cpp")
 
 add_executable(lbclient ${COMMON_SOURCES} ${SERVER_SOURCES})
+target_link_libraries(lbclient ${ZLIB_LIBRARY})
