@@ -103,7 +103,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
                 this->handlePacket(packet, *pk);
                 delete pk;
             } else {
-                Logger::main->debug("MCPE/Packet", "Unknown packet id: %i", pk);
+                Logger::main->debug("MCPE/Packet", "Unknown packet id: %i", packet->data[0]);
             }
             break;
     }

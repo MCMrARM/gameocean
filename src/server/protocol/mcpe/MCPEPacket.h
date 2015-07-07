@@ -202,6 +202,7 @@ public:
     };
 };
 
+class Chunk;
 class MCPEFullChunkDataPacket : public MCPEPacket {
 public:
     MCPEFullChunkDataPacket() {
@@ -209,14 +210,7 @@ public:
         channel = MCPEChannel::WORLD_CHUNKS;
     };
 
-    int chunkX, chunkZ;
-    unsigned int dataSize;
-    char* data = null;
+    Chunk* chunk;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(chunkX);
-        stream.Write(chunkZ);
-        stream.Write(dataSize);
-        stream.Write(data, dataSize);
-    };
+    virtual void write(RakNet::BitStream& stream);
 };
