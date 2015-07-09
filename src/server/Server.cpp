@@ -1,10 +1,14 @@
 #include "Server.h"
 
+#include "utils/Logger.h"
 #include "GameInfo.h"
 #include "utils/Config.h"
-#include "utils/Logger.h"
 #include "protocol/mcpe/MCPEProtocol.h"
 #include "world/World.h"
+#include "world/mcanvil/MCAnvilProvider.h"
+#include "PlayerChunkQueueThread.h"
+#include "utils/BinaryStream.h"
+#include "utils/NBT.h"
 
 Server::Server() {
     mainWorld = new World("test");
@@ -18,18 +22,16 @@ void Server::start() {
 
     Logger::main->info("Main", "Server name: %s", this->name.c_str());
 
-    Chunk* chunk = new Chunk(0, 0);
+    MCAnvilProvider* provider = new MCAnvilProvider(*mainWorld);
+    mainWorld->setWorldProvider(provider);
 
-    for (int x = 0; x < 16; x++) {
-        for (int z = 0; z < 16; z++) {
-            for (int y = 0; y < 8; y++) {
-                chunk->setBlock(x, y, z, rand() % 3 + 1, rand() % 3);
-            }
-        }
-    }
+    mainWorld->spawn.x = 10;
+    mainWorld->spawn.y = 100;
+    mainWorld->spawn.z = 10;
+    mainWorld->loadSpawnTerrain();
 
-    mainWorld->setChunk(chunk);
-    mainWorld->spawn.y = 10;
+    PlayerChunkQueueThread chunkQueueThread (*this);
+    chunkQueueThread.start();
 
     MCPEProtocol protocol (*this);
     protocol.bind(19132);

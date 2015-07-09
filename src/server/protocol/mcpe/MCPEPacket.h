@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 #include "common.h"
 #include "../../libs/RakNet/BitStream.h"
 
@@ -71,6 +72,8 @@ private:
 public:
     int id;
     MCPEChannel channel = MCPEChannel::NONE;
+    bool reliable = true;
+    bool needsACK = false;
 
     template<typename T>
     static void registerPacket(int id) {
@@ -151,6 +154,58 @@ public:
     };
 };
 
+class MCPETextPacket : public MCPEPacket {
+public:
+    MCPETextPacket() {
+        id = MCPE_TEXT_PACKET;
+        channel = MCPEChannel::TEXT;
+    };
+
+    enum class MessageType {
+        RAW, CHAT, TRANSLATION, POPUP, TIP
+    };
+
+    MessageType type = MessageType::RAW;
+    RakNet::RakString source;
+    RakNet::RakString message;
+    std::vector<RakNet::RakString> parameters;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read((byte&) type);
+
+        if (type == MessageType::CHAT) stream.Read(source);
+        stream.Read(message);
+        if (type == MessageType::TRANSLATION) {
+            byte count;
+            stream.Read(count);
+            parameters.clear();
+            parameters.resize(count);
+
+            RakNet::RakString p;
+            for (int i = 0; i < count; i++) {
+                stream.Read(p);
+                parameters.push_back(p);
+            }
+        }
+    };
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write((byte) type);
+
+        if (type == MessageType::CHAT) stream.Write(source);
+        stream.Write(message);
+        if (type == MessageType::TRANSLATION) {
+            byte count = (byte) parameters.size();
+            stream.Write(count);
+            for (RakNet::RakString p : parameters) {
+                stream.Write(p);
+            }
+        }
+    };
+
+    virtual void handle(MCPEPlayer& player);
+};
+
 class MCPEStartGamePacket : public MCPEPacket {
 public:
     MCPEStartGamePacket() {
@@ -184,6 +239,53 @@ public:
         stream.Write(y);
         stream.Write(z);
     };
+};
+
+class MCPEMovePlayerPacket : public MCPEPacket {
+public:
+    MCPEMovePlayerPacket() {
+        id = MCPE_MOVE_PLAYER_PACKET;
+        channel = MCPEChannel::MOVEMENT;
+    };
+
+    enum class Mode : byte {
+        NORMAL, RESET, ROTATION
+    };
+
+    long long eid;
+    float x, y, z;
+    float yaw, bodyYaw, pitch;
+    Mode mode;
+    bool onGround;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+        stream.Write(yaw);
+        stream.Write(bodyYaw);
+        stream.Write(pitch);
+        stream.Write((byte) mode);
+        byte _onGround = onGround ? 1 : 0;
+        stream.Write(_onGround);
+    };
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(eid);
+        stream.Read(x);
+        stream.Read(y);
+        stream.Read(z);
+        stream.Read(yaw);
+        stream.Read(bodyYaw);
+        stream.Read(pitch);
+        stream.Read((byte&) mode);
+        byte _onGround;
+        stream.Read(_onGround);
+        onGround = _onGround > 0;
+    };
+
+    virtual void handle(MCPEPlayer& player);
 };
 
 class MCPERespawnPacket : public MCPEPacket {

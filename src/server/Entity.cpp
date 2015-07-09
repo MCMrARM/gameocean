@@ -20,10 +20,11 @@ void Entity::setPos(float x, float y, float z) {
     int newChunkX = ((int) x) >> 4;
     int newChunkZ = ((int) z) >> 4;
     if (chunk == null) {
-        chunk = world->getChunkAt(newChunkX, newChunkZ);
-    } else if (newChunkX != chunk->pos.x && newChunkZ != chunk->pos.z) {
+        chunk = world.getChunkAt(newChunkX, newChunkZ);
+        chunk->addEntity(this);
+    } else if (newChunkX != chunk->pos.x || newChunkZ != chunk->pos.z) {
         chunk->removeEntity(this);
-        chunk = world->getChunkAt(newChunkX, newChunkZ);
+        chunk = world.getChunkAt(newChunkX, newChunkZ, true);
         chunk->addEntity(this);
     }
 }

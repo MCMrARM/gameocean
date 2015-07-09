@@ -9,6 +9,8 @@ std::map<int, MCPEPacket::CreatePacket *> MCPEPacket::packets;
 
 void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPELoginPacket>(MCPE_LOGIN_PACKET);
+    MCPEPacket::registerPacket<MCPETextPacket>(MCPE_TEXT_PACKET);
+    MCPEPacket::registerPacket<MCPEMovePlayerPacket>(MCPE_MOVE_PLAYER_PACKET);
 }
 
 void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
@@ -29,9 +31,10 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     pk.status = MCPEPlayStatusPacket::Status::SUCCESS;
     player.writePacket(pk);
 
-    int x = player.getWorld()->spawn.x;
-    int y = player.getWorld()->spawn.y;
-    int z = player.getWorld()->spawn.z;
+    int x = player.getWorld().spawn.x;
+    int y = player.getWorld().spawn.y;
+    int z = player.getWorld().spawn.z;
+    player.setPos(x, y, z);
 
     MCPEStartGamePacket pk2;
     pk2.spawnX = x;
@@ -42,29 +45,12 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     pk2.z = z;
     pk2.gamemode = MCPEStartGamePacket::GameMode::CREATIVE;
     player.writePacket(pk2);
+}
 
-    for (int x = -5; x <= 5; x++) {
-        for (int z = -5; z <= 5; z++) {
-            MCPEFullChunkDataPacket pk3;
-            Chunk* sendChunk = player.getWorld()->getChunkAt(x, z);
-            if (sendChunk == null) {
-                sendChunk = Chunk::empty;
-                sendChunk->pos.x = x;
-                sendChunk->pos.z = z;
-            }
-            pk3.chunk = sendChunk;
-            player.writePacket(pk3);
-        }
-    }
+void MCPETextPacket::handle(MCPEPlayer &player) {
+    player.sendMessage(std::string(message));
+}
 
-
-    MCPERespawnPacket pk4;
-    pk4.x = x;
-    pk4.y = y;
-    pk4.z = z;
-    player.writePacket(pk4);
-
-    MCPEPlayStatusPacket pk5;
-    pk5.status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
-    player.writePacket(pk5);
+void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
+    player.tryMove(x, y, z);
 }

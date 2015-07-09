@@ -16,12 +16,12 @@ public:
 
 /**
  * This class allows reading and writing binary data.
- *
- * Warning: This class requires the OS to be little-endian (all Android, iOS, Intel Macs and Windows devices are fine)
  */
 class BinaryStream {
 
 public:
+    bool swapEndian = false;
+
     virtual void read(byte *data, unsigned int size) = 0;
 
     virtual void write(const byte *data, unsigned int size) = 0;
@@ -30,26 +30,43 @@ public:
     static const int INT_SIZE = 4;
     static const int SHORT_SIZE = 2;
     static const int BYTE_SIZE = 1;
+    static const int FLOAT_SIZE = 4;
+    static const int DOUBLE_SIZE = 8;
 
     static inline unsigned int getStringSize(const std::string &str) { return (unsigned int) (INT_SIZE + str.length()); };
 
+    BinaryStream &operator<<(float val) {
+        if(swapEndian) swapBytes((byte*) &val, FLOAT_SIZE);
+        this->write((byte *) &val, FLOAT_SIZE);
+        return *this;
+    }
+
+    BinaryStream &operator<<(double val) {
+        if(swapEndian) swapBytes((byte*) &val, DOUBLE_SIZE);
+        this->write((byte *) &val, DOUBLE_SIZE);
+        return *this;
+    }
+
     BinaryStream &operator<<(long long val) {
-        this->write((byte *) &val, 8);
+        if(swapEndian) swapBytes((byte*) &val, LONG_SIZE);
+        this->write((byte *) &val, LONG_SIZE);
         return *this;
     }
 
     BinaryStream &operator<<(int val) {
-        this->write((byte *) &val, 4);
+        if(swapEndian) swapBytes((byte*) &val, INT_SIZE);
+        this->write((byte *) &val, INT_SIZE);
         return *this;
     }
 
     BinaryStream &operator<<(short val) {
-        this->write((byte *) &val, 2);
+        if(swapEndian) swapBytes((byte*) &val, SHORT_SIZE);
+        this->write((byte *) &val, SHORT_SIZE);
         return *this;
     }
 
     BinaryStream &operator<<(char val) {
-        this->write((byte *) &val, 1);
+        this->write((byte *) &val, BYTE_SIZE);
         return *this;
     }
 
@@ -63,8 +80,23 @@ private:
     byte _buf[LONG_SIZE];
 
 public:
+    BinaryStream &operator>>(float &val) {
+        this->read(_buf, FLOAT_SIZE);
+        if(swapEndian) swapBytes(_buf, FLOAT_SIZE);
+        val = ((float *) _buf)[0];
+        return *this;
+    }
+
+    BinaryStream &operator>>(double &val) {
+        this->read(_buf, DOUBLE_SIZE);
+        if(swapEndian) swapBytes(_buf, DOUBLE_SIZE);
+        val = ((double *) _buf)[0];
+        return *this;
+    }
+
     BinaryStream &operator>>(long long &val) {
         this->read(_buf, LONG_SIZE);
+        if(swapEndian) swapBytes(_buf, LONG_SIZE);
         val = ((int64_t *) _buf)[0];
         return *this;
     }
@@ -76,6 +108,7 @@ public:
 
     BinaryStream &operator>>(int &val) {
         this->read(_buf, INT_SIZE);
+        if(swapEndian) swapBytes(_buf, INT_SIZE);
         val = ((int32_t *) _buf)[0];
         return *this;
     }
@@ -87,6 +120,7 @@ public:
 
     BinaryStream &operator>>(short &val) {
         this->read(_buf, SHORT_SIZE);
+        if(swapEndian) swapBytes(_buf, SHORT_SIZE);
         val = ((int16_t *) _buf)[0];
         return *this;
     }
@@ -114,6 +148,14 @@ public:
         this->read(&buf[0], strLen);
         val = std::string((char *) buf, strLen);
         return *this;
+    }
+
+    static void swapBytes(byte* array, int size) {
+        byte* array2 = new byte[size];
+        memcpy(array2, array, size);
+        for (int i = size - 1; i >= 0; i--) {
+            array[size - 1 - i] = array2[i];
+        }
     }
 
 };
