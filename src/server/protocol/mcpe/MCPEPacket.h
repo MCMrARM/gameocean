@@ -288,6 +288,39 @@ public:
     virtual void handle(MCPEPlayer& player);
 };
 
+class MCPEUseItemPacket : public MCPEPacket {
+public:
+    MCPEUseItemPacket() {
+        id = MCPE_USE_ITEM_PACKET;
+        channel = MCPEChannel::BLOCKS;
+    };
+
+    int x, y, z;
+    byte side;
+    short itemId, itemDamage;
+    long long eid;
+    float fx, fy, fz;
+    float posX, posY, posZ;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+        stream.Write(side);
+        stream.Write(itemId);
+        stream.Write(itemDamage);
+        stream.Write(eid);
+        stream.Write(fx);
+        stream.Write(fy);
+        stream.Write(fz);
+        stream.Write(posX);
+        stream.Write(posY);
+        stream.Write(posZ);
+    };
+
+    virtual void handle(MCPEPlayer& player);
+};
+
 class MCPERespawnPacket : public MCPEPacket {
 public:
     MCPERespawnPacket() {

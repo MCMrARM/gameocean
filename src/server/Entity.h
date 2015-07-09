@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common.h"
+#include <mutex>
+#include "utils/Vector3D.h"
 
 typedef long long EntityId;
 
@@ -14,10 +16,11 @@ protected:
     EntityId id;
     Chunk* chunk = null;
 
+    std::mutex generalMutex;
+    float x, y, z;
+
 public:
     static EntityId currentId;
-
-    float x, y, z;
 
     Entity(World& world) : world(world) {
         id = Entity::currentId++;
@@ -30,6 +33,13 @@ public:
     inline Chunk* getChunk() { return chunk; };
 
     virtual void setPos(float x, float y, float z);
+
+    inline Vector3D getPos() {
+        generalMutex.lock();
+        Vector3D ret = Vector3D(x, y, z);
+        generalMutex.unlock();
+        return ret;
+    };
 
 };
 

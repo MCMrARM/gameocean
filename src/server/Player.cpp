@@ -1,6 +1,10 @@
 #include "Player.h"
 
+#include <iostream>
+#include <algorithm>
 #include "world/World.h"
+#include "command/Command.h"
+#include "utils/StringUtils.h"
 
 bool Player::sendChunk(int x, int z) {
     ChunkPos pos (x, z);
@@ -40,7 +44,7 @@ bool Player::tryMove(float x, float y, float z) {
     if (!spawned)
         return false;
     if (teleporting)
-        return false;
+        return true; // return true so the position won't be reverted
 
     setPos(x, y, z);
     return true;
@@ -50,9 +54,13 @@ void Player::sendQueuedChunks() {
     if (chunk == null)
         return;
 
+    chunkArrayMutex.lock();
     int sent = 0;
     for (auto it = sendChunksQueue.begin(); it != sendChunksQueue.end(); ) {
-        if (sent > server.sendChunksCount) return;
+        if (sent > server.sendChunksCount) {
+            chunkArrayMutex.unlock();
+            return;
+        }
         ChunkPos pos = *it;
         if (sendChunk(pos.x, pos.z)) {
             it = sendChunksQueue.erase(it);
@@ -61,6 +69,9 @@ void Player::sendQueuedChunks() {
             it++;
         }
     }
+    chunkArrayMutex.unlock();
+
+    updateTeleportState();
 }
 
 void Player::updateChunkQueue() {
@@ -114,5 +125,48 @@ void Player::updateChunkQueue() {
     for (auto entry : remReceivedChunks) {
         receivedChunks.erase(entry.first);
     }
+
     chunkArrayMutex.unlock();
+}
+
+void Player::updateTeleportState() {
+    if (!teleporting) return;
+
+    chunkArrayMutex.lock();
+    int posX = chunk->pos.x;
+    int posZ = chunk->pos.z;
+    for (int x = posX - 1; x <= posX + 1; x++) {
+        for (int z = posZ - 1; z <= posZ + 1; z++) {
+            ChunkPos pos (x, z);
+            if (receivedChunks.count(pos) <= 0) {
+                chunkArrayMutex.unlock();
+                return;
+            }
+        }
+    }
+    teleporting = false;
+    chunkArrayMutex.unlock();
+
+    generalMutex.lock();
+    sendPosition(x, y, z);
+    generalMutex.unlock();
+}
+
+void Player::processMessage(std::string text) {
+    if (text[0] == '/') { // command
+        std::vector<std::string> v = StringUtils::split(text.substr(1), " ");
+
+        if (v.size() <= 0)
+            return;
+
+        std::string commandName = v[0];
+        std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::tolower);
+
+        Command* c = Command::getCommand(commandName);
+        if (c == null) {
+            sendMessage("Command not found.");
+            return;
+        }
+        c->process(*this, v);
+    }
 }

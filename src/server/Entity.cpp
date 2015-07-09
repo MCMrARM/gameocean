@@ -13,6 +13,7 @@ Entity::~Entity() {
 }
 
 void Entity::setPos(float x, float y, float z) {
+    generalMutex.lock();
     this->x = x;
     this->y = y;
     this->z = z;
@@ -27,4 +28,5 @@ void Entity::setPos(float x, float y, float z) {
         chunk = world.getChunkAt(newChunkX, newChunkZ, true);
         chunk->addEntity(this);
     }
+    generalMutex.unlock();
 }

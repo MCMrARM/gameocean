@@ -37,6 +37,7 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     player.setPos(x, y, z);
 
     MCPEStartGamePacket pk2;
+    pk2.eid = 0;
     pk2.spawnX = x;
     pk2.spawnY = y;
     pk2.spawnZ = z;
@@ -48,9 +49,22 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
 }
 
 void MCPETextPacket::handle(MCPEPlayer &player) {
-    player.sendMessage(std::string(message));
+    player.processMessage(std::string(message));
 }
 
 void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
-    player.tryMove(x, y, z);
+    if (!player.tryMove(x, y, z)) {
+        MCPEMovePlayerPacket pk;
+        pk.eid = 0;
+        Vector3D v = player.getPos();
+        pk.x = v.x;
+        pk.y = v.y;
+        pk.z = v.z;
+        pk.mode = MCPEMovePlayerPacket::Mode::NORMAL;
+        player.writePacket(pk);
+    }
+}
+
+void MCPEUseItemPacket::handle(MCPEPlayer &player) {
+    //
 }

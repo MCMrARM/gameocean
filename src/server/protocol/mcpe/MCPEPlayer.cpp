@@ -1,5 +1,6 @@
 #include "MCPEPlayer.h"
 
+#include <iostream>
 #include <string>
 #include "../../libs/RakNet/RakPeerInterface.h"
 #include "MCPEPacket.h"
@@ -30,6 +31,7 @@ bool MCPEPlayer::sendChunk(int x, int z) {
 void MCPEPlayer::receivedChunk(int x, int z) {
     Player::receivedChunk(x, z);
 
+    chunkArrayMutex.lock();
     if (!spawned && receivedChunks.size() > 54) {
         spawned = true;
 
@@ -43,6 +45,7 @@ void MCPEPlayer::receivedChunk(int x, int z) {
         pk2.status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
         writePacket(pk2);
     }
+    chunkArrayMutex.unlock();
 }
 
 void MCPEPlayer::receivedACK(int packetId) {
@@ -56,5 +59,15 @@ void MCPEPlayer::sendMessage(std::string text) {
     MCPETextPacket pk;
     pk.type = MCPETextPacket::MessageType::RAW;
     pk.message = text.c_str();
+    writePacket(pk);
+}
+
+void MCPEPlayer::sendPosition(float x, float y, float z) {
+    MCPEMovePlayerPacket pk;
+    pk.eid = 0;
+    pk.x = x;
+    pk.y = y;
+    pk.z = z;
+    pk.mode = MCPEMovePlayerPacket::Mode::RESET;
     writePacket(pk);
 }

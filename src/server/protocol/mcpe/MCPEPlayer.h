@@ -20,6 +20,8 @@ protected:
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
 
+    virtual void sendPosition(float x, float y, float z);
+
 public:
     MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {};
 
