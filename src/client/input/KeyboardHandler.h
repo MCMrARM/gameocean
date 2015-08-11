@@ -5,7 +5,7 @@
 class KeyboardHandler {
 
 public:
-    static const int MAX_KEYS = 255;
+    static const int MAX_KEYS = 512;
 
 public:
     static bool keys [MAX_KEYS];

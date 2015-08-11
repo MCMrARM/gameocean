@@ -1,7 +1,7 @@
 #include "Logger.h"
 
 #include "Time.h"
-
+#include <stdarg.h>
 #include <iostream>
 
 Logger* Logger::main = null;

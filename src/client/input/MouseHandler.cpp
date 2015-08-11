@@ -2,6 +2,7 @@
 #include "MouseEvent.h"
 #include "../App.h"
 #include "../gui/Screen.h"
+#include "utils/Logger.h"
 
 int MouseHandler::x = -1;
 int MouseHandler::y = -1;
@@ -36,6 +37,9 @@ void MouseHandler::release(int button) {
 }
 
 void MouseHandler::move(int x, int y) {
+    x /= App::instance->pixelSize;
+    y = (App::instance->screenHeight - y) / App::instance->pixelSize;
+
     int dX = x - MouseHandler::x;
     int dY = y - MouseHandler::y;
     if(dX == 0 && dY == 0) return;

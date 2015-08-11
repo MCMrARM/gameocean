@@ -4,6 +4,8 @@
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <atomic>
+#include "common.h"
 #include "Entity.h"
 #include "Server.h"
 #include "world/ChunkPos.h"

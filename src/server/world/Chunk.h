@@ -3,6 +3,7 @@
 #include "common.h"
 #include "ChunkPos.h"
 #include <map>
+#include <cstring>
 #include "../Entity.h"
 #include "Block.h"
 #include "utils/NibbleArray.h"

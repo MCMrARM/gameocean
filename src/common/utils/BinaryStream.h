@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstring>
 #include "../common.h"
 #include <string>
 #include <memory>

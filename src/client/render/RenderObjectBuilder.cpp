@@ -1,6 +1,7 @@
 #include "RenderObjectBuilder.h"
 
 #include <algorithm>
+#include <cstring>
 
 RenderObjectBuilder::RenderObjectBuilder(int size, bool texUV, bool texId, bool color) : buildTexUV(texUV),
                                                                                          buildTexId(texId),

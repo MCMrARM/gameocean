@@ -1,6 +1,7 @@
 #include "App.h"
 
 #include <sstream>
+#include <csignal>
 
 #include "opengl.h"
 #include "render/TextureManager.h"
@@ -26,7 +27,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <png/png.h>
+#include <png.h>
 
 class MyConnectionHandler : public ClientConnectionHandler {
 

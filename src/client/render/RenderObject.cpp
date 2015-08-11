@@ -1,6 +1,7 @@
 #include "RenderObject.h"
 
 #include "common.h"
+#include "opengl.h"
 #include "Shader.h"
 
 RenderObject::~RenderObject() {
