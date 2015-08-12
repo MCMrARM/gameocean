@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <string>
-#include "../../libs/RakNet/RakPeerInterface.h"
+#include <RakNet/RakPeerInterface.h>
 #include "MCPEPacket.h"
 #include "../../world/World.h"
 #include "../../world/Chunk.h"

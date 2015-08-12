@@ -2,10 +2,10 @@
 
 #include "common.h"
 #include <zlib.h>
-#include "../../libs/RakNet/RakPeerInterface.h"
-#include "../../libs/RakNet/MessageIdentifiers.h"
-#include "../../libs/RakNet/BitStream.h"
-#include "../../libs/RakNet/RakNetTypes.h"
+#include <RakNet/RakPeerInterface.h>
+#include <RakNet/MessageIdentifiers.h>
+#include <RakNet/BitStream.h>
+#include <RakNet/RakNetTypes.h>
 #include "MCPEPacket.h"
 #include "MCPEPlayer.h"
 

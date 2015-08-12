@@ -2,7 +2,7 @@
 
 #include <map>
 #include "../Protocol.h"
-#include "../../libs/RakNet/RakNetTypes.h"
+#include <RakNet/RakNetTypes.h>
 
 namespace RakNet {
     class Packet;

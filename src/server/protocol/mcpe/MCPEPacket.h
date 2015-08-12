@@ -2,8 +2,8 @@
 
 #include <map>
 #include <vector>
+#include <RakNet/BitStream.h>
 #include "common.h"
-#include "../../libs/RakNet/BitStream.h"
 
 enum class MCPEChannel : unsigned char {
     NONE, PRIORITY, WORLD_CHUNKS, MOVEMENT, BLOCKS, WORLD_EVENTS, ENTITY_SPAWNING, TEXT

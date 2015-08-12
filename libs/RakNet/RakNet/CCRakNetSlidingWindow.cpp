@@ -22,7 +22,7 @@ static const CCTimeType SYN=10000;
 
 #include "MTUSize.h"
 #include <stdio.h>
-#include <math.h>
+#include <cmath>
 #include <stdlib.h>
 #include "RakAssert.h"
 #include "RakAlloca.h"
@@ -198,9 +198,9 @@ void CCRakNetSlidingWindow::OnNAK(CCTimeType curTime, DatagramSequenceNumberType
 	}
 }
 // ----------------------------------------------------------------------------------------------------------------------------
-void CCRakNetSlidingWindow::OnAck(CCTimeType curTime, CCTimeType rtt, bool hasBAndAS, BytesPerMicrosecond _B, BytesPerMicrosecond _AS, double totalUserDataBytesAcked, bool isContinuousSend, DatagramSequenceNumberType sequenceNumber )
+void CCRakNetSlidingWindow::OnAck(CCTimeType curTime, CCTimeType rtt, bool hasBAndAS, BytesPerMicrosecond _BB, BytesPerMicrosecond _AS, double totalUserDataBytesAcked, bool isContinuousSend, DatagramSequenceNumberType sequenceNumber )
 {
-	(void) _B;
+	(void) _BB;
 	(void) totalUserDataBytesAcked;
 	(void) _AS;
 	(void) hasBAndAS;
@@ -218,7 +218,7 @@ void CCRakNetSlidingWindow::OnAck(CCTimeType curTime, CCTimeType rtt, bool hasBA
 		double d = .05;
 		double difference = rtt - estimatedRTT;
 		estimatedRTT = estimatedRTT + d * difference;
-		deviationRtt = deviationRtt + d * (abs(difference) - deviationRtt);
+		deviationRtt = deviationRtt + d * (std::abs(difference) - deviationRtt);
 	}
 
 	_isContinuousSend=isContinuousSend;
@@ -261,10 +261,10 @@ void CCRakNetSlidingWindow::OnDuplicateAck( CCTimeType curTime, DatagramSequence
 	(void) sequenceNumber;
 }
 // ----------------------------------------------------------------------------------------------------------------------------
-void CCRakNetSlidingWindow::OnSendAckGetBAndAS(CCTimeType curTime, bool *hasBAndAS, BytesPerMicrosecond *_B, BytesPerMicrosecond *_AS)
+void CCRakNetSlidingWindow::OnSendAckGetBAndAS(CCTimeType curTime, bool *hasBAndAS, BytesPerMicrosecond *_BB, BytesPerMicrosecond *_AS)
 {
 	(void) curTime;
-	(void) _B;
+	(void) _BB;
 	(void) _AS;
 
 	*hasBAndAS=false;

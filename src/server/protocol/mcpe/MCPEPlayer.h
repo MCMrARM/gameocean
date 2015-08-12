@@ -2,7 +2,7 @@
 
 #include "../../Player.h"
 #include "MCPEProtocol.h"
-#include "../../libs/RakNet/RakNetTypes.h"
+#include <RakNet/RakNetTypes.h>
 #include "../../world/ChunkPos.h"
 
 class MCPEPacket;
