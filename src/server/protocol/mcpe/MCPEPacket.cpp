@@ -11,11 +11,13 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPELoginPacket>(MCPE_LOGIN_PACKET);
     MCPEPacket::registerPacket<MCPETextPacket>(MCPE_TEXT_PACKET);
     MCPEPacket::registerPacket<MCPEMovePlayerPacket>(MCPE_MOVE_PLAYER_PACKET);
+    MCPEPacket::registerPacket<MCPEEntityEventPacket>(MCPE_ENTITY_EVENT_PACKET);
 }
 
 void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
     stream.Write(chunk->pos.x);
     stream.Write(chunk->pos.z);
+    stream.Write((byte) 1); // order type
     int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) + sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors);
     stream.Write(dataSize);
     stream.Write((char*) chunk->blockId, sizeof(chunk->blockId));

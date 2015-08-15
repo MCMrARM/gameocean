@@ -96,18 +96,29 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
 
             RakNet::BitStream dbs(decompressed, zs.total_out, false);
 
+            int pkSize;
             byte pkId;
 
             while (dbs.GetNumberOfUnreadBits() > 0) {
+                dbs.Read(pkSize);
                 dbs.Read(pkId);
+                Logger::main->trace("MCPE/BatchPacket", "Reading: %i", pkId);
 
                 MCPEPacket* pk = MCPEPacket::getPacket(pkId);
                 if (pk != null) {
-                    pk->read(dbs);
+                    //int s = dbs.GetReadOffset();
+                    pk->read(dbs);/*
+                    int used = dbs.GetReadOffset() - s;
+                    if (used != pkSize) {
+                        Logger::main->debug("MCPE/BatchPacket", "Read %i instead of %i bytes (packet id: %i)", used, pkSize, pkId);
+                        delete pk;
+                        break;
+                    }*/
+
                     this->handlePacket(packet, *pk);
                     delete pk;
                 } else {
-                    Logger::main->warn("MCPE/BatchPacket", "Unknown packet id: %i", pkId);
+                    Logger::main->debug("MCPE/BatchPacket", "Unknown packet id: %i", pkId);
                     break;
                 }
             }

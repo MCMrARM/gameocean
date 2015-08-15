@@ -47,14 +47,15 @@ public:
     };
 
     inline int getBlockPos(int x, int y, int z) {
-        return ((x << 11) | (z << 7) | y);
+        return ((y << 8) | (z << 4) | x);
     };
 
     void setBlock(int x, int y, int z, BlockId id, byte data) {
-        blockId[getBlockPos(x, y, z)] = id;
-        blockMeta.set(getBlockPos(x, y, z), data);
-        blockLight.set(getBlockPos(x, y, z), 15);
-        blockSkylight.set(getBlockPos(x, y, z), 0);
+        int pos = getBlockPos(x, y, z);
+        blockId[pos] = id;
+        blockMeta.set(pos, data);
+        blockLight.set(pos, 15);
+        blockSkylight.set(pos, 0);
 
         if (id != 0 && heightmap[(z << 4) | x] < y) {
             heightmap[(z << 4) | x] = y;

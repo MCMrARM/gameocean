@@ -11,7 +11,7 @@ int MCPEPlayer::writePacket(MCPEPacket &packet) {
     RakNet::BitStream bs;
     bs.Write((RakNet::MessageID) packet.id);
     packet.write(bs);
-    return this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet.reliable ? (packet.needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, (char) packet.channel, address, false);
+    return this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet.reliable ? (packet.needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
 }
 
 bool MCPEPlayer::sendChunk(int x, int z) {

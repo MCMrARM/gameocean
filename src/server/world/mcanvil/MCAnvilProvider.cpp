@@ -144,12 +144,13 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
 
         char sectionY = ((NBTByte*) section->val["Y"])->val;
         if (sectionY >= 8) continue;
-        int offsetY = sectionY * 16;
+        int offsetY = sectionY * 16 * 16 * 16;
 
         byte* ids = ((NBTByteArray*) section->val["Blocks"])->val;
         NibbleArray<2048>* meta = (NibbleArray<2048>*) ((NBTByteArray*) section->val["Data"])->val;
         NibbleArray<2048>* light = (NibbleArray<2048>*) ((NBTByteArray*) section->val["BlockLight"])->val;
         NibbleArray<2048>* skylight = (NibbleArray<2048>*) ((NBTByteArray*) section->val["SkyLight"])->val;
+        /*
         int i = 0;
         for (int y = 0; y < 16; y++) {
             for (int z = 0; z < 16; z++) {
@@ -162,13 +163,18 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
                     i++;
                 }
             }
-        }
+        }*/
+        memcpy(&c->blockId[offsetY], &ids[0], 16 * 16 * 16);
+        memcpy(&c->blockMeta.array[offsetY / 2], &meta[0], 16 * 16 * 16 / 2);
+        memcpy(&c->blockLight.array[offsetY / 2], &light[0], 16 * 16 * 16 / 2);
+        memcpy(&c->blockSkylight.array[offsetY / 2], &skylight[0], 16 * 16 * 16 / 2);
     }
 
     NBTIntArray* heightmap = (NBTIntArray*) tag->val["HeightMap"];
     for (int i = 0; i < heightmap->val.size(); i++) {
         c->heightmap[i] = (byte) heightmap->val[i];
     }
+
     c->ready = true;
     delete tag;
 }

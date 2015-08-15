@@ -4,60 +4,63 @@
 #include <vector>
 #include <RakNet/BitStream.h>
 #include "common.h"
-
-enum class MCPEChannel : unsigned char {
-    NONE, PRIORITY, WORLD_CHUNKS, MOVEMENT, BLOCKS, WORLD_EVENTS, ENTITY_SPAWNING, TEXT
-};
+#include "utils/UUID.h"
 
 enum MCPEMessages {
-    MCPE_LOGIN_PACKET = 0x82,
-    MCPE_PLAY_STATUS_PACKET = 0x83,
-    MCPE_DISCONNECT_PACKET = 0x84,
-    MCPE_TEXT_PACKET = 0x85,
-    MCPE_SET_TIME_PACKET = 0x86,
-    MCPE_START_GAME_PACKET = 0x87,
-    MCPE_ADD_PLAYER_PACKET = 0x88,
-    MCPE_REMOVE_PLAYER_PACKET = 0x89,
-    MCPE_ADD_ENTITY_PACKET = 0x8a,
-    MCPE_REMOVE_ENTITY_PACKET = 0x8b,
-    MCPE_ADD_ITEM_ENTITY_PACKET = 0x8c,
-    MCPE_TAKE_ITEM_ENTITY_PACKET = 0x8d,
-    MCPE_MOVE_ENTITY_PACKET = 0x8e,
-    MCPE_MOVE_PLAYER_PACKET = 0x8f,
-    MCPE_REMOVE_BLOCK_PACKET = 0x90,
-    MCPE_UPDATE_BLOCK_PACKET = 0x91,
-    MCPE_ADD_PAINTING_PACKET = 0x92,
-    MCPE_EXPLODE_PACKET = 0x93,
-    MCPE_LEVEL_EVENT_PACKET = 0x94,
-    MCPE_TILE_EVENT_PACKET = 0x95,
-    MCPE_ENTITY_EVENT_PACKET = 0x96,
-    MCPE_MOB_EFFECT_PACKET = 0x97,
-    MCPE_PLAYER_EQUIPMENT_PACKET = 0x98,
-    MCPE_PLAYER_ARMOR_EQUIPMENT_PACKET = 0x99,
-    MCPE_INTERACT_PACKET = 0x9a,
-    MCPE_USE_ITEM_PACKET = 0x9b,
-    MCPE_PLAYER_ACTION_PACKET = 0x9c,
-    MCPE_HURT_ARMOR_PACKET = 0x9d,
-    MCPE_SET_ENTITY_DATA_PACKET = 0x9e,
-    MCPE_SET_ENTITY_MOTION_PACKET = 0x9f,
-    MCPE_SET_ENTITY_LINK_PACKET = 0xa0,
-    MCPE_SET_HEALTH_PACKET = 0xa1,
-    MCPE_SET_SPAWN_POSITION_PACKET = 0xa2,
-    MCPE_ANIMATE_PACKET = 0xa3,
-    MCPE_RESPAWN_PACKET = 0xa4,
-    MCPE_DROP_ITEM_PACKET = 0xa5,
-    MCPE_CONTAINER_OPEN_PACKET = 0xa6,
-    MCPE_CONTAINER_CLOSE_PACKET = 0xa7,
-    MCPE_CONTAINER_SET_SLOT_PACKET = 0xa8,
-    MCPE_CONTAINER_SET_DATA_PACKET = 0xa9,
-    MCPE_CONTAINER_SET_CONTENT_PACKET = 0xaa,
-    MCPE_CONTAINER_ACK_PACKET = 0xab,
-    MCPE_ADVENTURE_SETTINGS_PACKET = 0xac,
-    MCPE_TILE_ENTITY_DATA_PACKET = 0xad,
-    MCPE_PLAYER_INPUT_PACKET = 0xae,
-    MCPE_FULL_CHUNK_DATA_PACKET = 0xaf,
-    MCPE_SET_DIFFICULTY_PACKET = 0xb0,
-    MCPE_BATCH_PACKET = 0xb1
+    MCPE_LOGIN_PACKET = 0x8f,
+    MCPE_PLAY_STATUS_PACKET = 0x90,
+    MCPE_DISCONNECT_PACKET = 0x91,
+    MCPE_BATCH_PACKET = 0x92,
+    MCPE_TEXT_PACKET = 0x93,
+    MCPE_SET_TIME_PACKET = 0x94,
+    MCPE_START_GAME_PACKET = 0x95,
+    MCPE_ADD_PLAYER_PACKET = 0x96,
+    MCPE_REMOVE_PLAYER_PACKET = 0x97,
+    MCPE_ADD_ENTITY_PACKET = 0x98,
+    MCPE_REMOVE_ENTITY_PACKET = 0x99,
+    MCPE_ADD_ITEM_ENTITY_PACKET = 0x9a,
+    MCPE_TAKE_ITEM_ENTITY_PACKET = 0x9b,
+    MCPE_MOVE_ENTITY_PACKET = 0x9c,
+    MCPE_MOVE_PLAYER_PACKET = 0x9d,
+    MCPE_REMOVE_BLOCK_PACKET = 0x9e,
+    MCPE_UPDATE_BLOCK_PACKET = 0x9f,
+    MCPE_ADD_PAINTING_PACKET = 0xa0,
+    MCPE_EXPLODE_PACKET = 0xa1,
+    MCPE_LEVEL_EVENT_PACKET = 0xa2,
+    MCPE_TILE_EVENT_PACKET = 0xa3,
+    MCPE_ENTITY_EVENT_PACKET = 0xa4,
+    MCPE_MOB_EFFECT_PACKET = 0xa5,
+    MCPE_UPDATE_ATTRIBUTES_PACKET = 0xa6,
+    MCPE_MOB_EQUIPMENT_PACKET = 0xa7,
+    MCPE_MOB_ARMOR_EQUIPMENT_PACKET = 0xa8,
+    MCPE_INTERACT_PACKET = 0xa9,
+    MCPE_USE_ITEM_PACKET = 0xaa,
+    MCPE_PLAYER_ACTION_PACKET = 0xab,
+    MCPE_HURT_ARMOR_PACKET = 0xac,
+    MCPE_SET_ENTITY_DATA_PACKET = 0xad,
+    MCPE_SET_ENTITY_MOTION_PACKET = 0xae,
+    MCPE_SET_ENTITY_LINK_PACKET = 0xaf,
+    MCPE_SET_HEALTH_PACKET = 0xb0,
+    MCPE_SET_SPAWN_POSITION_PACKET = 0xb1,
+    MCPE_ANIMATE_PACKET = 0xb2,
+    MCPE_RESPAWN_PACKET = 0xb3,
+    MCPE_DROP_ITEM_PACKET = 0xb4,
+    MCPE_CONTAINER_OPEN_PACKET = 0xb5,
+    MCPE_CONTAINER_CLOSE_PACKET = 0xb6,
+    MCPE_CONTAINER_SET_SLOT_PACKET = 0xb7,
+    MCPE_CONTAINER_SET_DATA_PACKET = 0xb8,
+    MCPE_CONTAINER_SET_CONTENT_PACKET = 0xb9,
+    MCPE_CRAFTING_DATA_PACKET = 0xba,
+    MCPE_CRAFTING_EVENT_PACKET = 0xbb,
+    MCPE_ADVENTURE_SETTINGS_PACKET = 0xbc,
+    MCPE_TILE_ENTITY_DATA_PACKET = 0xbd,
+    MCPE_PLAYER_INPUT_PACKET = 0xbe,
+    MCPE_FULL_CHUNK_DATA_PACKET = 0xbf,
+    MCPE_SET_DIFFICULTY_PACKET = 0xc0,
+    MCPE_CHANGE_DIMENSION_PACKET = 0xc1,
+    MCPE_SET_PLAYER_GAMETYPE_PACKET = 0xc2,
+    MCPE_PLAYER_LIST_PACKET = 0xc3,
+    MCPE_TELEMETRY_EVENT_PACKET = 0xc4
 };
 
 class MCPEPlayer;
@@ -69,9 +72,29 @@ private:
 
     static std::map<int, CreatePacket*> packets;
 
+protected:
+    bool readBool(RakNet::BitStream& stream) {
+        byte r;
+        stream.Read(r);
+        return r;
+    }
+    void writeBool(RakNet::BitStream& stream, bool b) {
+        byte v = b ? 1 : 0;
+        stream.Write(v);
+    }
+    UUID readUUID(RakNet::BitStream& stream) {
+        long long p1, p2;
+        stream.Read(p1);
+        stream.Read(p2);
+        return UUID { p1, p2 };
+    }
+    void writeUUID(RakNet::BitStream& stream, UUID uuid) {
+        stream.Write(uuid.part1);
+        stream.Write(uuid.part2);
+    }
+
 public:
     int id;
-    MCPEChannel channel = MCPEChannel::NONE;
     bool reliable = true;
     bool needsACK = false;
 
@@ -99,12 +122,14 @@ class MCPELoginPacket : public MCPEPacket {
 public:
     MCPELoginPacket() {
         id = MCPE_LOGIN_PACKET;
-        channel = MCPEChannel::PRIORITY;
     };
 
     RakNet::RakString username;
     int protocol1, protocol2;
-    int clientId;
+    long long clientId;
+    UUID clientUUID;
+    RakNet::RakString serverAddress;
+    RakNet::RakString clientSecret;
     bool skinSlim;
     RakNet::RakString skin;
 
@@ -113,9 +138,10 @@ public:
         stream.Read(protocol1);
         stream.Read(protocol2);
         stream.Read(clientId);
-        unsigned char _skinSlim;
-        stream.Read(_skinSlim);
-        skinSlim = _skinSlim > 0;
+        clientUUID = readUUID(stream);
+        stream.Read(serverAddress);
+        stream.Read(clientSecret);
+        skinSlim = readBool(stream);
         stream.Read(skin);
     };
 
@@ -126,7 +152,6 @@ class MCPEPlayStatusPacket : public MCPEPacket {
 public:
     MCPEPlayStatusPacket() {
         id = MCPE_PLAY_STATUS_PACKET;
-        channel = MCPEChannel::PRIORITY;
     };
 
     enum class Status {
@@ -144,7 +169,6 @@ class MCPEDisconnectPacket : public MCPEPacket {
 public:
     MCPEDisconnectPacket() {
         id = MCPE_DISCONNECT_PACKET;
-        channel = MCPEChannel::PRIORITY;
     };
 
     RakNet::RakString message;
@@ -158,11 +182,10 @@ class MCPETextPacket : public MCPEPacket {
 public:
     MCPETextPacket() {
         id = MCPE_TEXT_PACKET;
-        channel = MCPEChannel::TEXT;
     };
 
     enum class MessageType {
-        RAW, CHAT, TRANSLATION, POPUP, TIP
+        RAW, CHAT, TRANSLATION, POPUP, TIP, SYSTEM
     };
 
     MessageType type = MessageType::RAW;
@@ -173,7 +196,8 @@ public:
     virtual void read(RakNet::BitStream& stream) {
         stream.Read((byte&) type);
 
-        if (type == MessageType::CHAT) stream.Read(source);
+        if (type == MessageType::POPUP || type == MessageType::CHAT)
+            stream.Read(source);
         stream.Read(message);
         if (type == MessageType::TRANSLATION) {
             byte count;
@@ -192,7 +216,8 @@ public:
     virtual void write(RakNet::BitStream& stream) {
         stream.Write((byte) type);
 
-        if (type == MessageType::CHAT) stream.Write(source);
+        if (type == MessageType::POPUP || type == MessageType::CHAT)
+            stream.Write(source);
         stream.Write(message);
         if (type == MessageType::TRANSLATION) {
             byte count = (byte) parameters.size();
@@ -210,11 +235,13 @@ class MCPEStartGamePacket : public MCPEPacket {
 public:
     MCPEStartGamePacket() {
         id = MCPE_START_GAME_PACKET;
-        channel = MCPEChannel::PRIORITY;
     };
 
     enum class Generator {
         OLD, INFINITE, FLAT
+    };
+    enum class Dimension {
+        OVERWORLD, NETHER, END
     };
     enum class GameMode {
         SURVIVAL, CREATIVE
@@ -222,6 +249,7 @@ public:
 
     int seed = 0;
     Generator generator = Generator::INFINITE;
+    Dimension dimension = Dimension::OVERWORLD;
     GameMode gamemode = GameMode::SURVIVAL;
     long long eid = 0;
     int spawnX, spawnY, spawnZ;
@@ -229,6 +257,7 @@ public:
 
     virtual void write(RakNet::BitStream& stream) {
         stream.Write(seed);
+        stream.Write((byte) dimension);
         stream.Write((int) generator);
         stream.Write((int) gamemode);
         stream.Write(eid);
@@ -238,6 +267,7 @@ public:
         stream.Write(x);
         stream.Write(y);
         stream.Write(z);
+        stream.Write((byte) 0); // todo: what is this?
     };
 };
 
@@ -245,7 +275,6 @@ class MCPEMovePlayerPacket : public MCPEPacket {
 public:
     MCPEMovePlayerPacket() {
         id = MCPE_MOVE_PLAYER_PACKET;
-        channel = MCPEChannel::MOVEMENT;
     };
 
     enum class Mode : byte {
@@ -267,8 +296,7 @@ public:
         stream.Write(bodyYaw);
         stream.Write(pitch);
         stream.Write((byte) mode);
-        byte _onGround = onGround ? 1 : 0;
-        stream.Write(_onGround);
+        writeBool(stream, onGround);
     };
 
     virtual void read(RakNet::BitStream& stream) {
@@ -280,19 +308,53 @@ public:
         stream.Read(bodyYaw);
         stream.Read(pitch);
         stream.Read((byte&) mode);
-        byte _onGround;
-        stream.Read(_onGround);
-        onGround = _onGround > 0;
+        onGround = readBool(stream);
     };
 
     virtual void handle(MCPEPlayer& player);
+};
+
+class MCPEEntityEventPacket : public MCPEPacket {
+public:
+    MCPEEntityEventPacket() {
+        id = MCPE_ENTITY_EVENT_PACKET;
+    }
+
+    enum class Event : byte {
+        HURT_ANIMATION = 2,
+        DEATH_ANIMATION = 3,
+        TAME_FAIL = 6,
+        TAME_SUCCESS = 7,
+        SHAKE_WET = 8,
+        USE_ITEM = 9,
+        EAT_GRASS_ANIMATION = 10,
+        FISH_HOOK_BUBBLE = 11,
+        FISH_HOOK_POSITION = 12,
+        FISH_HOOK_HOOK = 13,
+        FISH_HOOK_TEASE = 14,
+        SQUID_INK_CLOUD = 15,
+        AMBIENT_SOUND = 16,
+        RESPAWN = 17
+    };
+
+    long long eid;
+    Event event;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        stream.Write((byte) event);
+    };
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(eid);
+        stream.Read((byte&) event);
+    };
 };
 
 class MCPEUseItemPacket : public MCPEPacket {
 public:
     MCPEUseItemPacket() {
         id = MCPE_USE_ITEM_PACKET;
-        channel = MCPEChannel::BLOCKS;
     };
 
     int x, y, z;
@@ -325,7 +387,6 @@ class MCPERespawnPacket : public MCPEPacket {
 public:
     MCPERespawnPacket() {
         id = MCPE_RESPAWN_PACKET;
-        channel = MCPEChannel::WORLD_CHUNKS;
     };
 
     float x, y, z;
@@ -342,7 +403,6 @@ class MCPEFullChunkDataPacket : public MCPEPacket {
 public:
     MCPEFullChunkDataPacket() {
         id = MCPE_FULL_CHUNK_DATA_PACKET;
-        channel = MCPEChannel::WORLD_CHUNKS;
     };
 
     Chunk* chunk;
