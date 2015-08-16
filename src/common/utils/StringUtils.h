@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <iostream>
 
 class StringUtils {
 
@@ -25,6 +27,18 @@ public:
             p = i + d.size();
         }
         return v;
+    };
+
+    static std::string toLowercase(std::string s) {
+        std::cout << s << std::endl;
+        //std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+        //std::cout << s << std::endl;
+        return s;
+    };
+
+    static std::string toUppercase(std::string s) {
+        std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+        return s;
     };
 
 };

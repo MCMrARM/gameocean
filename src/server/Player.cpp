@@ -1,7 +1,6 @@
 #include "Player.h"
 
 #include <iostream>
-#include <algorithm>
 #include "world/World.h"
 #include "command/Command.h"
 #include "utils/StringUtils.h"
@@ -160,7 +159,6 @@ void Player::processMessage(std::string text) {
             return;
 
         std::string commandName = v[0];
-        std::transform(commandName.begin(), commandName.end(), commandName.begin(), ::tolower);
 
         Command* c = Command::getCommand(commandName);
         if (c == null) {

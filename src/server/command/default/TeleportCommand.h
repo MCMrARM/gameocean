@@ -3,12 +3,13 @@
 #include <iostream>
 #include <sstream>
 #include "../Command.h"
-#include "../../Player.h"
 
 class TeleportCommand : public IngameCommand {
 
 public:
     virtual std::string getName() { return "tp"; };
+    virtual std::string getDescription() { return "Teleports you to the specified coordinates"; };
+    virtual std::string getUsage() { return "/tp <x> <y> <z>"; };
 
     virtual void process(Player& sender, std::vector<std::string> args) {
         try {
@@ -22,7 +23,7 @@ public:
                 sender.sendMessage(ss.str());
                 sender.teleport(std::stoi(args[1]), std::stoi(args[2]), std::stoi(args[3]));
             } else {
-                sender.sendMessage("Please specify coordinates.");
+                sendUsage(sender);
             }
         } catch (std::exception e) {
             sender.sendMessage("Couldn't teleport you to the specified position!");
