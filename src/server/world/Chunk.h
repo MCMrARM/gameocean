@@ -3,8 +3,11 @@
 #include "common.h"
 #include "ChunkPos.h"
 #include <map>
+#include <mutex>
 #include <cstring>
+#include <set>
 #include "../Entity.h"
+#include "../Player.h"
 #include "Block.h"
 #include "utils/NibbleArray.h"
 
@@ -15,6 +18,8 @@ public:
 
     ChunkPos pos;
     std::map<EntityId, Entity*> entities;
+    std::set<Player*> usedBy;
+    std::recursive_mutex mutex;
 
     byte blockId [16 * 16 * 128];
     NibbleArray<16 * 16 * 128 / 2> blockMeta;
@@ -39,11 +44,15 @@ public:
         memset(biomeColors, 0, sizeof(biomeColors));
     };
 
-    inline void addEntity(Entity* entity) {
+    void addEntity(Entity* entity) {
+        mutex.lock();
         entities[entity->getId()] = entity;
+        mutex.unlock();
     };
-    inline void removeEntity(Entity* entity) {
+    void removeEntity(Entity* entity) {
+        mutex.lock();
         entities.erase(entity->getId());
+        mutex.unlock();
     };
 
     inline int getBlockPos(int x, int y, int z) {
@@ -63,6 +72,28 @@ public:
             heightmap[(z << 4) | x] = y - 1;
         }
     };
+
+    inline void setUsedBy(Player* player, bool used) {
+        mutex.lock();
+        if (used) {
+            if (usedBy.count(player) <= 0)
+                usedBy.insert(player);
+
+            if (player->hasSpawned()) {
+                for (auto e : entities) {
+                    e.second->spawnTo(player);
+                }
+            }
+        } else {
+            if (usedBy.count(player) > 0)
+                usedBy.erase(player);
+
+            for (auto e : entities) {
+                e.second->despawnFrom(player);
+            }
+        }
+        mutex.unlock();
+    }
 
 };
 

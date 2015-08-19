@@ -5,6 +5,18 @@
 #include "command/Command.h"
 #include "utils/StringUtils.h"
 
+const std::string Player::TYPE_NAME = "Player";
+
+void Player::close() {
+    Entity::close();
+    for (auto entry : sentChunks) {
+        entry.second->setUsedBy(this, false);
+    }
+    for (auto entry : receivedChunks) {
+        entry.second->setUsedBy(this, false);
+    }
+}
+
 bool Player::sendChunk(int x, int z) {
     ChunkPos pos (x, z);
     Chunk* chunk = world.getChunkAt(pos, true);
@@ -21,6 +33,27 @@ void Player::receivedChunk(int x, int z) {
     ChunkPos pos (x, z);
     if (sentChunks.count(pos) > 0) {
         receivedChunks[pos] = world.getChunkAt(pos);
+    }
+    chunkArrayMutex.unlock();
+
+    Chunk* chunk = world.getChunkAt(pos, false);
+    if (chunk != null)
+        chunk->setUsedBy(this, true);
+}
+
+void Player::setSpawned() {
+    if (spawned)
+        return;
+
+    spawned = true;
+    chunkArrayMutex.lock();
+    for (auto entry : sentChunks) {
+        Chunk* c = entry.second;
+        c->mutex.lock();
+        for (auto e : c->entities) {
+            e.second->spawnTo(this);
+        }
+        c->mutex.unlock();
     }
     chunkArrayMutex.unlock();
 }
@@ -120,9 +153,11 @@ void Player::updateChunkQueue() {
 
     for (auto entry : remSentChunks) {
         sentChunks.erase(entry.first);
+        entry.second->setUsedBy(this, false);
     }
     for (auto entry : remReceivedChunks) {
         receivedChunks.erase(entry.first);
+        entry.second->setUsedBy(this, false);
     }
 
     chunkArrayMutex.unlock();

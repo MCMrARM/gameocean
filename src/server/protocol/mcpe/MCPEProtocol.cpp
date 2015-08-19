@@ -2,6 +2,8 @@
 
 #include "common.h"
 #include <zlib.h>
+#include <sstream>
+#include <iostream>
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/MessageIdentifiers.h>
 #include <RakNet/BitStream.h>
@@ -11,7 +13,9 @@
 
 void MCPEProtocol::bind(int port) {
     peer = RakNet::RakPeerInterface::GetInstance();
-    RakNet::SocketDescriptor sd(port,0);
+    std::string s = "MCPE;A Test Server;34;0.12.1;0;20";
+    peer->SetOfflinePingResponse(s.c_str(), s.length() + 1);
+    RakNet::SocketDescriptor sd(port, 0);
     peer->Startup(server.maxPlayers + 1, &sd, 1);
     peer->SetMaximumIncomingConnections(server.maxPlayers + 1);
 
@@ -30,14 +34,20 @@ void MCPEProtocol::loop() {
 void MCPEProtocol::processPacket(RakNet::Packet *packet) {
     switch (packet->data[0])
     {
+        case ID_UNCONNECTED_PING:
+        case ID_UNCONNECTED_PING_OPEN_CONNECTIONS:
+            break;
         case ID_REMOTE_CONNECTION_LOST:
         case ID_DISCONNECTION_NOTIFICATION:
+        case ID_CONNECTION_LOST:
         {
             printf("* connection lost\n");
             if (players.count(packet->guid) > 0) {
                 MCPEPlayer* player = players.at(packet->guid);
+                player->close();
                 players.erase(packet->guid);
                 server.removePlayer(player);
+                delete player;
             }
         }
             break;

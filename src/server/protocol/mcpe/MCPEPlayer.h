@@ -20,7 +20,13 @@ protected:
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
 
+    virtual void setSpawned();
+
     virtual void sendPosition(float x, float y, float z);
+
+    virtual void spawnEntity(Entity* entity);
+    virtual void despawnEntity(Entity* entity);
+    virtual void updateEntityPos(Entity* entity);
 
 public:
     MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {};

@@ -29,6 +29,8 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
 }
 
 void MCPELoginPacket::handle(MCPEPlayer &player) {
+    player.setName(std::string(username));
+
     MCPEPlayStatusPacket pk;
     pk.status = MCPEPlayStatusPacket::Status::SUCCESS;
     player.writePacket(pk);

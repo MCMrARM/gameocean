@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <set>
 #include <atomic>
 #include "common.h"
 #include "Entity.h"
@@ -17,9 +18,12 @@ class Protocol;
 class Chunk;
 
 class Player : public Entity, public CommandSender {
+    friend class Entity;
 
 protected:
     Server& server;
+
+    std::string name;
 
     bool spawned = false;
     bool teleporting = false;
@@ -31,15 +35,41 @@ protected:
     std::unordered_map<ChunkPos, Chunk*> receivedChunks;
     std::vector<ChunkPos> sendChunksQueue;
 
+    std::set<Entity*> spawnedEntities;
+
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
 
+    virtual void setSpawned();
+
     virtual void sendPosition(float x, float y, float z) = 0;
+
+    virtual void spawnEntity(Entity* entity) {
+        if (closed)
+            return;
+        spawnedEntities.insert(entity);
+    };
+    virtual void despawnEntity(Entity* entity) {
+        if (closed)
+            return;
+        spawnedEntities.erase(entity);
+    };
+    virtual void updateEntityPos(Entity* entity) {};
 
 public:
     Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false) {};
 
-    virtual std::string getName() { return "Player"; };
+    virtual void close();
+
+    virtual std::string getName() { return name; };
+    void setName(std::string name) {
+        this->name = name;
+    }
+
+    inline bool hasSpawned() { return spawned; };
+
+    static const std::string TYPE_NAME;
+    virtual std::string getTypeName() { return TYPE_NAME; };
 
     virtual void setPos(float x, float y, float z);
     void teleport(float x, float y, float z);

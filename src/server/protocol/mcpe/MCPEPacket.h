@@ -5,6 +5,7 @@
 #include <RakNet/BitStream.h>
 #include "common.h"
 #include "utils/UUID.h"
+#include "game/ItemInstance.h"
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -88,9 +89,35 @@ protected:
         stream.Read(p2);
         return UUID { p1, p2 };
     }
-    void writeUUID(RakNet::BitStream& stream, UUID uuid) {
+    void writeUUID(RakNet::BitStream& stream, UUID& uuid) {
         stream.Write(uuid.part1);
         stream.Write(uuid.part2);
+    }
+    ItemInstance readItemInstance(RakNet::BitStream& stream) {
+        short id;
+        stream.Read(id);
+        if (id == 0)
+            return ItemInstance ();
+
+        byte count;
+        short damage;
+        stream.Read(count);
+        stream.Read(damage);
+
+        short nbtLen;
+        stream.Read(nbtLen);
+        if (nbtLen > 0) {
+            byte n [nbtLen];
+            stream.Read((char*) n, nbtLen);
+        }
+    }
+    void writeItemInstance(RakNet::BitStream& stream, ItemInstance& i) {
+        stream.Write((short) i.getId());
+        if (i.getId() == 0)
+            return;
+        stream.Write(i.count);
+        stream.Write(i.damage);
+        stream.Write((short) 0); // no nbt data
     }
 
 public:
@@ -271,6 +298,84 @@ public:
     };
 };
 
+class MCPEAddPlayerPacket : public MCPEPacket {
+public:
+    MCPEAddPlayerPacket() {
+        id = MCPE_ADD_PLAYER_PACKET;
+    };
+
+    UUID uuid;
+    RakNet::RakString username;
+    long long eid = 0;
+    float x, y, z;
+    float speedX = 0.f;
+    float speedY = 0.f;
+    float speedZ = 0.f;
+    float yaw, headYaw, pitch;
+    ItemInstance item;
+
+    virtual void write(RakNet::BitStream& stream) {
+        writeUUID(stream, uuid);
+        stream.Write(username);
+        stream.Write(eid);
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+        stream.Write(speedX);
+        stream.Write(speedY);
+        stream.Write(speedZ);
+        stream.Write(yaw);
+        stream.Write(headYaw);
+        stream.Write(pitch);
+        writeItemInstance(stream, item);
+
+        stream.Write((byte) 127); // no meta
+    };
+};
+
+class MCPERemovePlayerPacket : public MCPEPacket {
+public:
+    MCPERemovePlayerPacket() {
+        id = MCPE_REMOVE_PLAYER_PACKET;
+    };
+
+    long long eid = 0;
+    UUID uuid;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        writeUUID(stream, uuid);
+    };
+};
+
+class MCPEMoveEntityPacket : public MCPEPacket {
+public:
+    MCPEMoveEntityPacket() {
+        id = MCPE_MOVE_ENTITY_PACKET;
+    };
+
+    struct MoveEntry {
+        long long eid;
+        float x, y, z;
+        float yaw, headYaw, pitch;
+    };
+
+    std::vector<MoveEntry> entries;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write((int) entries.size());
+        for (MoveEntry e : entries) {
+            stream.Write(e.eid);
+            stream.Write(e.x);
+            stream.Write(e.y);
+            stream.Write(e.z);
+            stream.Write(e.yaw);
+            stream.Write(e.headYaw);
+            stream.Write(e.pitch);
+        }
+    };
+};
+
 class MCPEMovePlayerPacket : public MCPEPacket {
 public:
     MCPEMovePlayerPacket() {
@@ -283,7 +388,7 @@ public:
 
     long long eid;
     float x, y, z;
-    float yaw, bodyYaw, pitch;
+    float yaw, headYaw, pitch;
     Mode mode;
     bool onGround;
 
@@ -293,7 +398,7 @@ public:
         stream.Write(y);
         stream.Write(z);
         stream.Write(yaw);
-        stream.Write(bodyYaw);
+        stream.Write(headYaw);
         stream.Write(pitch);
         stream.Write((byte) mode);
         writeBool(stream, onGround);
@@ -305,7 +410,7 @@ public:
         stream.Read(y);
         stream.Read(z);
         stream.Read(yaw);
-        stream.Read(bodyYaw);
+        stream.Read(headYaw);
         stream.Read(pitch);
         stream.Read((byte&) mode);
         onGround = readBool(stream);
@@ -408,4 +513,48 @@ public:
     Chunk* chunk;
 
     virtual void write(RakNet::BitStream& stream);
+};
+
+
+class MCPEPlayerListPacket : public MCPEPacket {
+public:
+    MCPEPlayerListPacket() {
+        id = MCPE_PLAYER_LIST_PACKET;
+    };
+
+    enum class Type : unsigned char {
+        ADD, REMOVE
+    };
+    struct AddEntry {
+        UUID uuid;
+        long long eid;
+        RakNet::RakString name;
+        bool isSlim;
+        byte* skin;
+    };
+    struct RemoveEntry {
+        UUID uuid;
+    };
+    Type type;
+    std::vector<AddEntry> addEntries;
+    std::vector<RemoveEntry> removeEntries;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write((unsigned char) type);
+        if (type == Type::ADD) {
+            stream.Write((int) addEntries.size());
+            for (AddEntry e : addEntries) {
+                writeUUID(stream, e.uuid);
+                stream.Write(e.eid);
+                stream.Write(e.name);
+                stream.Write(e.isSlim);
+                stream.Write((char*) e.skin, 64 * 32 * 4);
+            }
+        } else {
+            stream.Write((int) removeEntries.size());
+            for (RemoveEntry e : removeEntries) {
+                writeUUID(stream, e.uuid);
+            }
+        }
+    };
 };

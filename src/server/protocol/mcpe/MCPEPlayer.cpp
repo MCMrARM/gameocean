@@ -33,19 +33,26 @@ void MCPEPlayer::receivedChunk(int x, int z) {
 
     chunkArrayMutex.lock();
     if (!spawned && receivedChunks.size() > 54) {
-        spawned = true;
-
-        MCPERespawnPacket pk;
-        pk.x = x;
-        pk.y = y;
-        pk.z = z;
-        writePacket(pk);
-
-        MCPEPlayStatusPacket pk2;
-        pk2.status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
-        writePacket(pk2);
+        setSpawned();
     }
     chunkArrayMutex.unlock();
+}
+
+void MCPEPlayer::setSpawned() {
+    if (spawned)
+        return;
+
+    Player::setSpawned();
+
+    MCPERespawnPacket pk;
+    pk.x = x;
+    pk.y = y;
+    pk.z = z;
+    writePacket(pk);
+
+    MCPEPlayStatusPacket pk2;
+    pk2.status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
+    writePacket(pk2);
 }
 
 void MCPEPlayer::receivedACK(int packetId) {
@@ -69,5 +76,66 @@ void MCPEPlayer::sendPosition(float x, float y, float z) {
     pk.y = y;
     pk.z = z;
     pk.mode = MCPEMovePlayerPacket::Mode::RESET;
+    writePacket(pk);
+}
+
+void MCPEPlayer::spawnEntity(Entity *entity) {
+    Player::spawnEntity(entity);
+
+    if (closed)
+        return;
+    if (entity->getTypeName() == Player::TYPE_NAME) {
+        Logger::main->debug("MCPE/Player", "Spawning player: %s", ((Player*) entity)->getName().c_str());
+        unsigned char skin[64 * 32 * 4];
+
+        UUID uuid = {1, entity->getId()};
+
+        MCPEPlayerListPacket lpk;
+        lpk.type = MCPEPlayerListPacket::Type::ADD;
+        lpk.addEntries.push_back({uuid, entity->getId(), ((Player*) entity)->getName().c_str(), false, &skin[0]});
+        writePacket(lpk);
+
+        MCPEAddPlayerPacket pk;
+        pk.uuid = uuid;
+        pk.eid = entity->getId();
+        pk.username = ((Player*) entity)->getName().c_str();
+        Vector3D v = entity->getPos();
+        pk.x = v.x;
+        pk.y = v.y;
+        pk.z = v.z;
+        pk.yaw = pk.headYaw = 0;
+        pk.pitch = 0;
+        writePacket(pk);
+
+        updateEntityPos(entity);
+        return;
+    }
+}
+void MCPEPlayer::despawnEntity(Entity *entity) {
+    Player::despawnEntity(entity);
+    if (closed)
+        return;
+    if (entity->getTypeName() == Player::TYPE_NAME) {
+        Logger::main->debug("MCPE/Player", "Despawning player: %s", ((Player*) entity)->getName().c_str());
+
+        UUID uuid = {1, entity->getId()};
+
+        MCPERemovePlayerPacket pk;
+        pk.uuid = uuid;
+        pk.eid = entity->getId();
+        writePacket(pk);
+
+        MCPEPlayerListPacket lpk;
+        lpk.type = MCPEPlayerListPacket::Type::REMOVE;
+        lpk.removeEntries.push_back({uuid});
+        writePacket(lpk);
+        return;
+    }
+}
+
+void MCPEPlayer::updateEntityPos(Entity *entity) {
+    MCPEMoveEntityPacket pk; // TODO: Batch
+    Vector3D pos = entity->getPos();
+    pk.entries.push_back({entity->getId(), pos.x, pos.y, pos.z, 0, 0, 0});
     writePacket(pk);
 }

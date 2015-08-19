@@ -2,21 +2,28 @@
 
 #include "common.h"
 #include <mutex>
+#include <set>
 #include "utils/Vector3D.h"
 
 typedef long long EntityId;
 
 class World;
 class Chunk;
+class Player;
 
 class Entity {
 
 protected:
+    unsigned int typeId = 0;
     World& world;
     EntityId id;
     Chunk* chunk = null;
 
-    std::mutex generalMutex;
+    bool closed = false;
+
+    std::set<Player*> spawnedTo;
+
+    std::recursive_mutex generalMutex;
     float x, y, z;
 
 public:
@@ -26,11 +33,24 @@ public:
         id = Entity::currentId++;
     };
     Entity(World& world, float x, float y, float z) : Entity(world) { setPos(x, y, z); };
-    ~Entity();
 
-    inline World& getWorld() { return world; };
+    virtual void close();
+
+    virtual std::string getTypeName() { return "Entity"; };
+
     inline EntityId getId() { return id; };
-    inline Chunk* getChunk() { return chunk; };
+    inline World& getWorld() {
+        generalMutex.lock();
+        World& w = world;
+        generalMutex.unlock();
+        return w;
+    };
+    inline Chunk* getChunk() {
+        generalMutex.lock();
+        Chunk* c = chunk;
+        generalMutex.unlock();
+        return c;
+    };
 
     virtual void setPos(float x, float y, float z);
 
@@ -40,6 +60,13 @@ public:
         generalMutex.unlock();
         return ret;
     };
+
+    void updateViewers();
+
+    void spawnTo(Player* player);
+    void despawnFrom(Player* player);
+    void spawnToAll();
+    void despawnFromAll();
 
 };
 

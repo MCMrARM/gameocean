@@ -24,6 +24,8 @@ protected:
 public:
     MCPEProtocol(Server& server) : Protocol(server) {};
 
+    static const int CURRENT_VERSION = 34;
+
     inline RakNet::RakPeerInterface* getPeer() { return peer; };
 
     virtual void bind(int port);
