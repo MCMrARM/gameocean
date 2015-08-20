@@ -124,6 +124,7 @@ public:
     int id;
     bool reliable = true;
     bool needsACK = false;
+    bool priority = false;
 
     template<typename T>
     static void registerPacket(int id) {
@@ -196,6 +197,7 @@ class MCPEDisconnectPacket : public MCPEPacket {
 public:
     MCPEDisconnectPacket() {
         id = MCPE_DISCONNECT_PACKET;
+        priority = true;
     };
 
     RakNet::RakString message;

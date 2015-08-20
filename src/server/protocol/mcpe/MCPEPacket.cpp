@@ -31,25 +31,25 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
 void MCPELoginPacket::handle(MCPEPlayer &player) {
     player.setName(std::string(username));
 
-    MCPEPlayStatusPacket pk;
-    pk.status = MCPEPlayStatusPacket::Status::SUCCESS;
-    player.writePacket(pk);
+    std::unique_ptr<MCPEPlayStatusPacket> pk (new MCPEPlayStatusPacket());
+    pk->status = MCPEPlayStatusPacket::Status::SUCCESS;
+    player.writePacket(std::move(pk));
 
     int x = player.getWorld().spawn.x;
     int y = player.getWorld().spawn.y;
     int z = player.getWorld().spawn.z;
     player.setPos(x, y, z);
 
-    MCPEStartGamePacket pk2;
-    pk2.eid = 0;
-    pk2.spawnX = x;
-    pk2.spawnY = y;
-    pk2.spawnZ = z;
-    pk2.x = x;
-    pk2.y = y;
-    pk2.z = z;
-    pk2.gamemode = MCPEStartGamePacket::GameMode::CREATIVE;
-    player.writePacket(pk2);
+    std::unique_ptr<MCPEStartGamePacket> pk2 (new MCPEStartGamePacket());
+    pk2->eid = 0;
+    pk2->spawnX = x;
+    pk2->spawnY = y;
+    pk2->spawnZ = z;
+    pk2->x = x;
+    pk2->y = y;
+    pk2->z = z;
+    pk2->gamemode = MCPEStartGamePacket::GameMode::CREATIVE;
+    player.writePacket(std::move(pk2));
 }
 
 void MCPETextPacket::handle(MCPEPlayer &player) {
@@ -58,14 +58,14 @@ void MCPETextPacket::handle(MCPEPlayer &player) {
 
 void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
     if (!player.tryMove(x, y, z)) {
-        MCPEMovePlayerPacket pk;
-        pk.eid = 0;
+        std::unique_ptr<MCPEMovePlayerPacket> pk (new MCPEMovePlayerPacket());
+        pk->eid = 0;
         Vector3D v = player.getPos();
-        pk.x = v.x;
-        pk.y = v.y;
-        pk.z = v.z;
-        pk.mode = MCPEMovePlayerPacket::Mode::NORMAL;
-        player.writePacket(pk);
+        pk->x = v.x;
+        pk->y = v.y;
+        pk->z = v.z;
+        pk->mode = MCPEMovePlayerPacket::Mode::NORMAL;
+        player.writePacket(std::move(pk));
     }
 }
 

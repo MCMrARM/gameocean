@@ -7,11 +7,29 @@
 #include "../../world/World.h"
 #include "../../world/Chunk.h"
 
-int MCPEPlayer::writePacket(MCPEPacket &packet) {
+void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback) {
+    packetQueueMutex.lock();
+    packetQueue.push_back({ packet.release(), std::move(sentCallback) });
+    packetQueueMutex.unlock();
+}
+
+int MCPEPlayer::directPacket(MCPEPacket *packet) {
     RakNet::BitStream bs;
-    bs.Write((RakNet::MessageID) packet.id);
-    packet.write(bs);
-    return this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet.reliable ? (packet.needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
+    bs.Write((RakNet::MessageID) packet->id);
+    packet->write(bs);
+    return this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet->reliable ? (packet->needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
+}
+
+int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
+    if (batch) {
+        batchPacketCallback(std::move(packet), [](MCPEPlayer *player, MCPEPacket *pk, int pkId) { });
+        return 0;
+    }
+
+    MCPEPacket* pk = packet.release();
+    int ret = directPacket(pk);
+    delete pk;
+    return ret;
 }
 
 bool MCPEPlayer::sendChunk(int x, int z) {
@@ -19,12 +37,13 @@ bool MCPEPlayer::sendChunk(int x, int z) {
     Chunk* chunk = this->world.getChunkAt(x, z, true);
     if (chunk == null) return false;
 
-    MCPEFullChunkDataPacket pk;
-    pk.chunk = chunk;
-    pk.needsACK = true;
-    int id = writePacket(pk);
-
-    raknetChunkQueue[id] = ChunkPos(x, z);
+    std::unique_ptr<MCPEFullChunkDataPacket> pk (new MCPEFullChunkDataPacket());
+    pk->chunk = chunk;
+    pk->needsACK = true;
+    batchPacketCallback(std::move(pk), [](MCPEPlayer* player, MCPEPacket* pk, int pkId) {
+        MCPEFullChunkDataPacket* fpk = (MCPEFullChunkDataPacket*) pk;
+        player->raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
+    });
     return true;
 }
 
@@ -44,39 +63,39 @@ void MCPEPlayer::setSpawned() {
 
     Player::setSpawned();
 
-    MCPERespawnPacket pk;
-    pk.x = x;
-    pk.y = y;
-    pk.z = z;
-    writePacket(pk);
+    std::unique_ptr<MCPERespawnPacket> pk (new MCPERespawnPacket());
+    pk->x = x;
+    pk->y = y;
+    pk->z = z;
+    writePacket(std::move(pk));
 
-    MCPEPlayStatusPacket pk2;
-    pk2.status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
-    writePacket(pk2);
+    std::unique_ptr<MCPEPlayStatusPacket> pk2 (new MCPEPlayStatusPacket());
+    pk2->status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
+    writePacket(std::move(pk2));
 }
 
 void MCPEPlayer::receivedACK(int packetId) {
     if (raknetChunkQueue.count(packetId) > 0) {
-        ChunkPos pos = raknetChunkQueue.at(packetId);
-        MCPEPlayer::receivedChunk(pos.x, pos.z);
+        for (ChunkPos pos : raknetChunkQueue.at(packetId))
+            MCPEPlayer::receivedChunk(pos.x, pos.z);
     }
 }
 
 void MCPEPlayer::sendMessage(std::string text) {
-    MCPETextPacket pk;
-    pk.type = MCPETextPacket::MessageType::RAW;
-    pk.message = text.c_str();
-    writePacket(pk);
+    std::unique_ptr<MCPETextPacket> pk (new MCPETextPacket());
+    pk->type = MCPETextPacket::MessageType::RAW;
+    pk->message = text.c_str();
+    writePacket(std::move(pk));
 }
 
 void MCPEPlayer::sendPosition(float x, float y, float z) {
-    MCPEMovePlayerPacket pk;
-    pk.eid = 0;
-    pk.x = x;
-    pk.y = y;
-    pk.z = z;
-    pk.mode = MCPEMovePlayerPacket::Mode::RESET;
-    writePacket(pk);
+    std::unique_ptr<MCPEMovePlayerPacket> pk (new MCPEMovePlayerPacket());
+    pk->eid = 0;
+    pk->x = x;
+    pk->y = y;
+    pk->z = z;
+    pk->mode = MCPEMovePlayerPacket::Mode::RESET;
+    writePacket(std::move(pk));
 }
 
 void MCPEPlayer::spawnEntity(Entity *entity) {
@@ -90,22 +109,22 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
 
         UUID uuid = {1, entity->getId()};
 
-        MCPEPlayerListPacket lpk;
-        lpk.type = MCPEPlayerListPacket::Type::ADD;
-        lpk.addEntries.push_back({uuid, entity->getId(), ((Player*) entity)->getName().c_str(), false, &skin[0]});
-        writePacket(lpk);
+        std::unique_ptr<MCPEPlayerListPacket> lpk (new MCPEPlayerListPacket());
+        lpk->type = MCPEPlayerListPacket::Type::ADD;
+        lpk->addEntries.push_back({uuid, entity->getId(), ((Player*) entity)->getName().c_str(), false, &skin[0]});
+        writePacket(std::move(lpk));
 
-        MCPEAddPlayerPacket pk;
-        pk.uuid = uuid;
-        pk.eid = entity->getId();
-        pk.username = ((Player*) entity)->getName().c_str();
+        std::unique_ptr<MCPEAddPlayerPacket> pk (new MCPEAddPlayerPacket());
+        pk->uuid = uuid;
+        pk->eid = entity->getId();
+        pk->username = ((Player*) entity)->getName().c_str();
         Vector3D v = entity->getPos();
-        pk.x = v.x;
-        pk.y = v.y;
-        pk.z = v.z;
-        pk.yaw = pk.headYaw = 0;
-        pk.pitch = 0;
-        writePacket(pk);
+        pk->x = v.x;
+        pk->y = v.y;
+        pk->z = v.z;
+        pk->yaw = pk->headYaw = 0;
+        pk->pitch = 0;
+        writePacket(std::move(pk));
 
         updateEntityPos(entity);
         return;
@@ -120,22 +139,22 @@ void MCPEPlayer::despawnEntity(Entity *entity) {
 
         UUID uuid = {1, entity->getId()};
 
-        MCPERemovePlayerPacket pk;
-        pk.uuid = uuid;
-        pk.eid = entity->getId();
-        writePacket(pk);
+        std::unique_ptr<MCPERemovePlayerPacket> pk (new MCPERemovePlayerPacket());
+        pk->uuid = uuid;
+        pk->eid = entity->getId();
+        writePacket(std::move(pk));
 
-        MCPEPlayerListPacket lpk;
-        lpk.type = MCPEPlayerListPacket::Type::REMOVE;
-        lpk.removeEntries.push_back({uuid});
-        writePacket(lpk);
+        std::unique_ptr<MCPEPlayerListPacket> lpk (new MCPEPlayerListPacket());
+        lpk->type = MCPEPlayerListPacket::Type::REMOVE;
+        lpk->removeEntries.push_back({uuid});
+        writePacket(std::move(lpk));
         return;
     }
 }
 
 void MCPEPlayer::updateEntityPos(Entity *entity) {
-    MCPEMoveEntityPacket pk; // TODO: Batch
+    std::unique_ptr<MCPEMoveEntityPacket> pk (new MCPEMoveEntityPacket()); // TODO: Batch
     Vector3D pos = entity->getPos();
-    pk.entries.push_back({entity->getId(), pos.x, pos.y, pos.z, 0, 0, 0});
-    writePacket(pk);
+    pk->entries.push_back({entity->getId(), pos.x, pos.y, pos.z, 0, 0, 0});
+    writePacket(std::move(pk));
 }

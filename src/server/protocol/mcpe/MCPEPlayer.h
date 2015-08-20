@@ -1,21 +1,37 @@
 #pragma once
 
+#include <deque>
+#include <memory>
+#include <functional>
 #include "../../Player.h"
 #include "MCPEProtocol.h"
 #include <RakNet/RakNetTypes.h>
 #include "../../world/ChunkPos.h"
 
 class MCPEPacket;
+class MCPEPacketBatchThread;
 class Chunk;
 
 class MCPEPlayer : public Player {
 
 protected:
+    friend class MCPEPacketBatchThread;
+
     MCPEProtocol& protocol;
     RakNet::RakNetGUID guid;
     RakNet::SystemAddress address;
 
-    std::map<int, ChunkPos> raknetChunkQueue;
+    std::map<int, std::vector<ChunkPos>> raknetChunkQueue;
+
+    typedef std::function<void(MCPEPlayer*, MCPEPacket*, int)> QueuedPacketCallback;
+
+    struct QueuedPacket {
+        MCPEPacket* pk;
+        QueuedPacketCallback callback;
+    };
+
+    std::deque<QueuedPacket> packetQueue;
+    std::mutex packetQueueMutex;
 
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
@@ -33,7 +49,10 @@ public:
 
     inline RakNet::SystemAddress& getAddress() { return address; };
 
-    int writePacket(MCPEPacket &packet);
+    int directPacket(MCPEPacket* packet);
+    int writePacket(std::unique_ptr<MCPEPacket> packet, bool batch);
+    inline int writePacket(std::unique_ptr<MCPEPacket> packet) { return writePacket(std::move(packet), packet->priority); };
+    void batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback&& sentCallback);
     void receivedACK(int packetId);
 
     virtual void sendMessage(std::string text);

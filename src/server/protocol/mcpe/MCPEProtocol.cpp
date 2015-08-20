@@ -10,6 +10,7 @@
 #include <RakNet/RakNetTypes.h>
 #include "MCPEPacket.h"
 #include "MCPEPlayer.h"
+#include "MCPEPacketBatchThread.h"
 
 void MCPEProtocol::bind(int port) {
     peer = RakNet::RakPeerInterface::GetInstance();
@@ -23,12 +24,16 @@ void MCPEProtocol::bind(int port) {
 }
 
 void MCPEProtocol::loop() {
+    batchThread.start();
+
     RakNet::Packet* packet;
     while (1) {
         for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
             processPacket(packet);
         }
     }
+
+    batchThread.stop();
 }
 
 void MCPEProtocol::processPacket(RakNet::Packet *packet) {
@@ -45,7 +50,9 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
             if (players.count(packet->guid) > 0) {
                 MCPEPlayer* player = players.at(packet->guid);
                 player->close();
+                playersMutex.lock();
                 players.erase(packet->guid);
+                playersMutex.unlock();
                 server.removePlayer(player);
                 delete player;
             }
@@ -54,7 +61,9 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
         case ID_NEW_INCOMING_CONNECTION: {
             Logger::main->info("MCPE/Connection", "A new client has connected! %s", packet->systemAddress.ToString(true, ':'));
             MCPEPlayer *player = new MCPEPlayer(this->server, *this, packet->guid, packet->systemAddress);
+            playersMutex.lock();
             players[packet->guid] = player;
+            playersMutex.unlock();
             server.addPlayer(player);
         }
             break;
@@ -64,12 +73,23 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
             if (players.count(packet->guid) <= 0) {
                 break;
             }
+            playersMutex.lock();
             MCPEPlayer* p = players.at(packet->guid);
+            playersMutex.unlock();
             p->receivedACK(msgId);
         }
             break;
         case MCPE_BATCH_PACKET:
         {
+            playersMutex.lock();
+            if (players.count(packet->guid) <= 0) {
+                Logger::main->debug("MCPE/BatchPacket", "Packet was sent from a client that's not in-game!");
+                playersMutex.unlock();
+                return;
+            }
+            MCPEPlayer* p = players.at(packet->guid);
+            playersMutex.unlock();
+
             RakNet::BitStream bs(packet->data, packet->length, false);
             bs.IgnoreBytes(sizeof(RakNet::MessageID));
             int size;
@@ -116,16 +136,16 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
 
                 MCPEPacket* pk = MCPEPacket::getPacket(pkId);
                 if (pk != null) {
-                    //int s = dbs.GetReadOffset();
-                    pk->read(dbs);/*
-                    int used = dbs.GetReadOffset() - s;
-                    if (used != pkSize) {
+                    int s = BITS_TO_BYTES(dbs.GetReadOffset());
+                    pk->read(dbs);
+                    int used = BITS_TO_BYTES(dbs.GetReadOffset()) - s;
+                    if (used != pkSize - 1) {
                         Logger::main->debug("MCPE/BatchPacket", "Read %i instead of %i bytes (packet id: %i)", used, pkSize, pkId);
                         delete pk;
                         break;
-                    }*/
+                    }
 
-                    this->handlePacket(packet, *pk);
+                    pk->handle(*p);
                     delete pk;
                 } else {
                     Logger::main->debug("MCPE/BatchPacket", "Unknown packet id: %i", pkId);
@@ -142,21 +162,21 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
                 RakNet::BitStream bs(packet->data, packet->length, false);
                 bs.IgnoreBytes(sizeof(RakNet::MessageID));
                 pk->read(bs);
-                this->handlePacket(packet, *pk);
+
+                playersMutex.lock();
+                if (players.count(packet->guid) <= 0) {
+                    Logger::main->debug("MCPE/Packet", "Packet was sent from a client that's not in-game!");
+                    playersMutex.unlock();
+                    return;
+                }
+                MCPEPlayer* p = players.at(packet->guid);
+                playersMutex.unlock();
+                pk->handle(*p);
                 delete pk;
             } else {
                 Logger::main->debug("MCPE/Packet", "Unknown packet id: %i", packet->data[0]);
             }
             break;
     }
-}
-
-void MCPEProtocol::handlePacket(RakNet::Packet *raknetPacket, MCPEPacket &packet) {
-    if (players.count(raknetPacket->guid) <= 0) {
-        Logger::main->debug("MCPE/Packet", "A packet was sent but there isn't a Player instance for it!");
-        return;
-    }
-    MCPEPlayer* p = players.at(raknetPacket->guid);
-    packet.handle(*p);
 }
 
