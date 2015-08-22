@@ -94,7 +94,9 @@ void MCPEPlayer::sendPosition(float x, float y, float z) {
     pk->x = x;
     pk->y = y;
     pk->z = z;
+    pk->yaw = pk->headYaw = pk->pitch = 0;
     pk->mode = MCPEMovePlayerPacket::Mode::RESET;
+    pk->onGround = false;
     writePacket(std::move(pk));
 }
 

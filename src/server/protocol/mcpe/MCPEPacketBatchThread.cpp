@@ -18,14 +18,13 @@ void MCPEPacketBatchThread::run() {
             player->packetQueueMutex.lock();
             if (player->packetQueue.size() > 0) {
                 if (player->packetQueue.size() == 1 &&
-                        player->packetQueue.end()->pk->id != MCPE_BATCH_PACKET) {
-                    auto it = player->packetQueue.end();
-                    MCPEPlayer::QueuedPacket& p = *it;
-                    player->packetQueue.clear();
+                        player->packetQueue.back().pk->id != MCPE_FULL_CHUNK_DATA_PACKET) {
+                    auto p = player->packetQueue.back();
                     MCPEPacket* pk = p.pk;
                     int ret = player->directPacket(pk);
                     p.callback(player, pk, ret);
                     delete pk;
+                    player->packetQueue.clear();
                     player->packetQueueMutex.unlock();
                 } else {
                     std::deque<MCPEPlayer::QueuedPacket> packetQueue (player->packetQueue);
@@ -66,7 +65,6 @@ void MCPEPacketBatchThread::run() {
                         pbs.SetWriteOffset(0);
                         pbs.Write(BITS_TO_BYTES(o) - 4);
                         pbs.SetWriteOffset(o);
-                        //((int*) pbs.GetData())[0] = pbs.GetNumberOfBytesUsed() - 4;
 
                         it++;
                         int flush = (it == packetQueue.end() ? Z_FINISH : Z_NO_FLUSH);

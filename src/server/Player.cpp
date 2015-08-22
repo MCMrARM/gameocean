@@ -167,8 +167,10 @@ void Player::updateTeleportState() {
     if (!teleporting) return;
 
     chunkArrayMutex.lock();
+    generalMutex.lock();
     int posX = chunk->pos.x;
     int posZ = chunk->pos.z;
+    generalMutex.unlock();
     for (int x = posX - 1; x <= posX + 1; x++) {
         for (int z = posZ - 1; z <= posZ + 1; z++) {
             ChunkPos pos (x, z);

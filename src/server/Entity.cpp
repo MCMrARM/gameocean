@@ -5,7 +5,7 @@
 #include "world/Chunk.h"
 #include "Player.h"
 
-EntityId Entity::currentId = 0;
+EntityId Entity::currentId = 1;
 
 void Entity::close() {
     generalMutex.lock();
