@@ -203,5 +203,7 @@ void Player::processMessage(std::string text) {
             return;
         }
         c->process(*this, v);
+    } else if (spawned) {
+        server.broadcastMessage(std::string("<") + name + "> " + text);
     }
 }

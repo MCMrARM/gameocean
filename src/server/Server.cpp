@@ -45,3 +45,11 @@ void Server::loadConfiguation() {
     Config c ("config.yml");
     this->name = c.getString("name", "Test Server");
 }
+
+void Server::broadcastMessage(std::string msg) {
+    playersMutex.lock();
+    for (Player* p : players) {
+        p->sendMessage(msg);
+    }
+    playersMutex.unlock();
+}

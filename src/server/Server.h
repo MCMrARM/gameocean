@@ -42,6 +42,7 @@ public:
         players.erase(std::remove(players.begin(), players.end(), player), players.end());
         playersMutex.unlock();
     }
+    void broadcastMessage(std::string msg);
 
 protected:
     void loadConfiguation();
