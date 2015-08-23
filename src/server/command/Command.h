@@ -6,13 +6,18 @@
 #include "CommandSender.h"
 #include "../Player.h"
 
+class Server;
+
 class Command {
 
 public:
     static std::unordered_map<std::string, Command*> commands;
     static void registerCommand(Command* command);
-    static void registerDefaultCommands();
+    static void registerDefaultCommands(Server& server);
     static Command* getCommand(std::string name);
+
+    Server& server;
+    Command(Server& server) : server(server) { };
 
     virtual std::string getName() = 0;
     virtual std::string getDescription() { return ""; };
@@ -31,6 +36,8 @@ public:
 class IngameCommand : public Command {
 
 public:
+    IngameCommand(Server& server) : Command(server) { };
+
     virtual void process(CommandSender& sender, std::vector<std::string> args) {
         sender.sendMessage("You must run this command in-game");
     };

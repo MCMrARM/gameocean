@@ -75,7 +75,6 @@ void MCPEPlayer::setSpawned() {
     writePacket(std::move(pk2));
 
     sendInventory();
-    inventory.setItem(0, ItemInstance (1));
 }
 
 void MCPEPlayer::receivedACK(int packetId) {

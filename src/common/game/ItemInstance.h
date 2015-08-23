@@ -36,7 +36,7 @@ public:
     };
 
     bool isSameType(ItemInstance& i) {
-        return (i.item == item && i.damage == i.damage);
+        return (i.item == item && i.damage == damage);
     };
 
     inline bool operator==(const ItemInstance& s) {

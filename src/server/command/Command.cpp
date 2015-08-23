@@ -2,6 +2,7 @@
 
 #include "default/TeleportCommand.h"
 #include "default/HelpCommand.h"
+#include "default/GiveCommand.h"
 #include "utils/StringUtils.h"
 
 std::unordered_map<std::string, Command*> Command::commands;
@@ -15,9 +16,10 @@ void Command::registerCommand(Command* command) {
     }
 }
 
-void Command::registerDefaultCommands() {
-    Command::registerCommand(new TeleportCommand());
-    Command::registerCommand(new HelpCommand());
+void Command::registerDefaultCommands(Server& server) {
+    Command::registerCommand(new TeleportCommand(server));
+    Command::registerCommand(new HelpCommand(server));
+    Command::registerCommand(new GiveCommand(server));
 }
 
 Command* Command::getCommand(std::string name) {

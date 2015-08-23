@@ -1,8 +1,8 @@
 #include "Server.h"
 
+#include "utils/Logger.h"
 #include "game/Item.h"
 #include "game/Block.h"
-#include "utils/Logger.h"
 #include "GameInfo.h"
 #include "utils/Config.h"
 #include "protocol/mcpe/MCPEProtocol.h"
@@ -10,8 +10,7 @@
 #include "world/mcanvil/MCAnvilProvider.h"
 #include "command/Command.h"
 #include "PlayerChunkQueueThread.h"
-#include "utils/BinaryStream.h"
-#include "utils/NBT.h"
+#include "utils/StringUtils.h"
 
 Server::Server() {
     mainWorld = new World("test");
@@ -25,7 +24,7 @@ void Server::start() {
 
     Logger::main->info("Main", "Server name: %s", this->name.c_str());
 
-    Command::registerDefaultCommands();
+    Command::registerDefaultCommands(*this);
     Item::registerItems();
     Block::registerBlocks();
 
@@ -48,6 +47,28 @@ void Server::start() {
 void Server::loadConfiguation() {
     Config c ("config.yml");
     this->name = c.getString("name", "Test Server");
+}
+
+Player* Server::findPlayer(std::string like) {
+    Player* rp = null;
+    int m = 0;
+
+    playersMutex.lock();
+    for (Player* p : players) {
+        std::string n = p->getName();
+        if (n == like) {
+            return p;
+        }
+
+        int i = StringUtils::compare(like, n);
+        if (i > m) {
+            rp = p;
+            m = i;
+        }
+    }
+    playersMutex.unlock();
+
+    return rp;
 }
 
 void Server::broadcastMessage(std::string msg) {

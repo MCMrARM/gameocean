@@ -42,6 +42,7 @@ public:
         players.erase(std::remove(players.begin(), players.end(), player), players.end());
         playersMutex.unlock();
     }
+    Player* findPlayer(std::string like);
     void broadcastMessage(std::string msg);
 
 protected:

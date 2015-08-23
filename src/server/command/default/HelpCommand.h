@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <sstream>
 #include "common.h"
 #include "../Command.h"
@@ -14,6 +13,8 @@ public:
     virtual std::string getDescription() { return "Displays this help"; };
     virtual std::string getUsage() { return "/help [command|page]"; };
 
+    HelpCommand(Server& server) : Command(server) { };
+
     virtual void process(CommandSender& sender, std::vector<std::string> args) {
         int page = 0;
         if (args.size() > 1 && args[1].length() > 0) {
@@ -23,7 +24,10 @@ public:
                 return;
             }
 
-            page = std::stoi(args[1]) - 1;
+            try {
+                page = std::stoi(args[1]) - 1;
+            } catch (std::exception e) {
+            }
         }
 
         if (Command::commands.size() == 0)
@@ -52,5 +56,3 @@ public:
     };
 
 };
-
-

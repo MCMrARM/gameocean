@@ -11,6 +11,8 @@ public:
     virtual std::string getDescription() { return "Teleports you to the specified coordinates"; };
     virtual std::string getUsage() { return "/tp <x> <y> <z>"; };
 
+    TeleportCommand(Server& server) : IngameCommand(server) { };
+
     virtual void process(Player& sender, std::vector<std::string> args) {
         try {
             if (args.size() >= 4) {

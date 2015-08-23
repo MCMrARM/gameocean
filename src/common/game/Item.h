@@ -21,6 +21,7 @@ public:
             return items.at(id);
         return null;
     };
+    static Item* findItem(std::string id);
     static void registerItems();
 
     Item(int id, std::string stringId);

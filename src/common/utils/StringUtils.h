@@ -30,15 +30,24 @@ public:
     };
 
     static std::string toLowercase(std::string s) {
-        std::cout << s << std::endl;
-        //std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-        //std::cout << s << std::endl;
+        std::transform(s.begin(), s.end(), s.begin(), ::tolower);
         return s;
     };
 
     static std::string toUppercase(std::string s) {
         std::transform(s.begin(), s.end(), s.begin(), ::toupper);
         return s;
+    };
+
+    static int compare(std::string s1, std::string s2) {
+        int i;
+        int l = std::min(s1.length(), s2.length());
+        for (i = 0; i < l; i++) {
+            if (tolower(s1[i]) != tolower(s2[i])) {
+                break;
+            }
+        }
+        return i;
     };
 
 };
