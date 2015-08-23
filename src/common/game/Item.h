@@ -11,7 +11,7 @@ protected:
 
     int maxStackSize = 64;
 
-    static Item* itemsByIds[256];
+    static Item* itemsByIds[512];
     static std::map<std::string, Item*> items;
 
 public:

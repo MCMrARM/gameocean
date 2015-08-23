@@ -423,6 +423,41 @@ public:
     virtual void handle(MCPEPlayer& player);
 };
 
+class World;
+class MCPEUpdateBlockPacket : public MCPEPacket {
+public:
+    MCPEUpdateBlockPacket() {
+        id = MCPE_UPDATE_BLOCK_PACKET;
+    }
+
+    static const int FLAG_NEIGHBORS = 1;
+    static const int FLAG_NETWORK = 2;
+    static const int FLAG_NOGRAPHIC = 4;
+    static const int FLAG_PRIORITY = 4;
+    static const int FLAG_ALL = (FLAG_NEIGHBORS || FLAG_NETWORK);
+
+    struct Entry {
+        int x, z;
+        byte y;
+        byte blockId, blockMeta;
+        byte flags;
+    };
+    std::vector<Entry> entries;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write((int) entries.size());
+        for (Entry const& entry : entries) {
+            stream.Write(entry.x);
+            stream.Write(entry.z);
+            stream.Write(entry.y);
+            stream.Write(entry.blockId);
+            stream.Write((entry.flags << 4) || entry.blockMeta);
+        }
+    };
+
+    void add(World& world, int x, int y, int z, byte flags);
+};
+
 class MCPEEntityEventPacket : public MCPEPacket {
 public:
     MCPEEntityEventPacket() {
@@ -495,25 +530,22 @@ public:
 
     int x, y, z;
     byte side;
-    short itemId, itemDamage;
-    long long eid;
     float fx, fy, fz;
     float posX, posY, posZ;
+    ItemInstance item;
 
     virtual void read(RakNet::BitStream& stream) {
         stream.Read(x);
         stream.Read(y);
         stream.Read(z);
         stream.Read(side);
-        stream.Read(itemId);
-        stream.Read(itemDamage);
-        stream.Read(eid);
         stream.Read(fx);
         stream.Read(fy);
         stream.Read(fz);
         stream.Read(posX);
         stream.Read(posY);
         stream.Read(posZ);
+        item = readItemInstance(stream);
     };
 
     virtual void handle(MCPEPlayer& player);

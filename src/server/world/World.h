@@ -5,7 +5,9 @@
 #include "Chunk.h"
 #include "ChunkPos.h"
 #include "BlockPos.h"
+#include "WorldBlock.h"
 #include "WorldProvider.h"
+#include "game/Block.h"
 
 class WorldProvider;
 
@@ -26,6 +28,31 @@ public:
 
     inline void setWorldProvider(WorldProvider* provider) {
         this->provider = provider;
+    };
+
+    void setBlock(int x, int y, int z, BlockId id, byte data) {
+        Chunk* c = getChunkAt(x >> 4, z >> 4, false);
+        if (c == null)
+            return;
+        c->mutex.lock();
+        c->setBlock(x % 16, y, z % 16, id, data);
+        c->mutex.unlock();
+    };
+    inline void setBlock(BlockPos pos, BlockId id, byte data) {
+        setBlock(pos.x, pos.y, pos.z, id, data);
+    };
+
+    WorldBlock getBlock(int x, int y, int z) {
+        Chunk* c = getChunkAt(x >> 4, z >> 4, false);
+        if (c == null)
+            return { 0, 0 };
+        c->mutex.lock();
+        WorldBlock r = c->getBlock(x % 16, y, z % 16);
+        c->mutex.unlock();
+        return r;
+    };
+    inline WorldBlock getBlock(BlockPos pos) {
+        return getBlock(pos.x, pos.y, pos.z);
     };
 
     Chunk* getChunkAt(ChunkPos pos, bool create);

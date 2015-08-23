@@ -1,14 +1,15 @@
 #pragma once
 
 #include "common.h"
-#include "ChunkPos.h"
 #include <map>
 #include <mutex>
 #include <cstring>
 #include <set>
+#include "ChunkPos.h"
+#include "WorldBlock.h"
 #include "../Entity.h"
 #include "../Player.h"
-#include "Block.h"
+#include "game/Block.h"
 #include "utils/NibbleArray.h"
 
 class Chunk {
@@ -72,6 +73,11 @@ public:
             heightmap[(z << 4) | x] = y - 1;
         }
     };
+
+    WorldBlock getBlock(int x, int y, int z) {
+        int pos = getBlockPos(x, y, z);
+        return { blockId[pos], blockMeta[pos] };
+    }
 
     inline void setUsedBy(Player* player, bool used) {
         mutex.lock();

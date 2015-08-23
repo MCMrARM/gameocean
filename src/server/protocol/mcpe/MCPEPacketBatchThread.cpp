@@ -18,7 +18,9 @@ void MCPEPacketBatchThread::run() {
             player->packetQueueMutex.lock();
             if (player->packetQueue.size() > 0) {
                 if (player->packetQueue.size() == 1 &&
-                        player->packetQueue.back().pk->id != MCPE_FULL_CHUNK_DATA_PACKET) {
+                        player->packetQueue.back().pk->id != MCPE_FULL_CHUNK_DATA_PACKET &&
+                        player->packetQueue.back().pk->id != MCPE_UPDATE_BLOCK_PACKET &&
+                        player->packetQueue.back().pk->id != MCPE_PLAYER_LIST_PACKET) {
                     auto p = player->packetQueue.back();
                     MCPEPacket* pk = p.pk;
                     int ret = player->directPacket(pk);

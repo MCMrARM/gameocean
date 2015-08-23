@@ -201,7 +201,7 @@ void MCPEPlayer::sendInventory() {
 void MCPEPlayer::sendHeldItem() {
     std::unique_ptr<MCPEMobEquipmentPacket> pk (new MCPEMobEquipmentPacket());
     pk->eid = 0;
-    pk->item = inventory.getItem(inventory.getHeldSlot());
+    pk->item = inventory.getHeldItem();
     generalMutex.lock();
     pk->slot = inventory.getHeldSlot();
     pk->hotbarSlot = hotbarSlot;

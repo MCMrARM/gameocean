@@ -1,10 +1,10 @@
 #include "Item.h"
 
 std::map<std::string, Item*> Item::items = std::map<std::string, Item*>();
-Item* Item::itemsByIds [256];
+Item* Item::itemsByIds [512];
 
 void Item::registerItems() {
-    new Item(1, "test");
+    //
 }
 
 Item::Item(int id, std::string stringId) : id(id), stringId(stringId) {

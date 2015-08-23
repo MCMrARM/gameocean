@@ -23,7 +23,10 @@ public:
         mutex.lock();
         heldSlot = v;
         mutex.unlock();
-    }
+    };
+    inline ItemInstance getHeldItem() {
+        return getItem(getHeldSlot());
+    };
 
 };
 

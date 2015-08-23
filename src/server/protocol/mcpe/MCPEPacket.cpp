@@ -1,9 +1,10 @@
 #include "MCPEPacket.h"
-#include "MCPEPlayer.h"
-#include "../../world/World.h"
-#include "../../world/Chunk.h"
 
 #include <algorithm>
+#include "MCPEPlayer.h"
+#include "../../world/BlockPos.h"
+#include "../../world/Chunk.h"
+#include "../../world/World.h"
 
 std::map<int, MCPEPacket::CreatePacket *> MCPEPacket::packets;
 
@@ -73,6 +74,11 @@ void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
     }
 }
 
+void MCPEUpdateBlockPacket::add(World& world, int x, int y, int z, byte flags) {
+    WorldBlock b = world.getBlock(x, y, z);
+    entries.push_back({ x, y, (byte) y, b.id, b.data, flags });
+}
+
 void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
     if (hotbarSlot < 0 || hotbarSlot >= 9) {
         return;
@@ -96,5 +102,20 @@ void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
 }
 
 void MCPEUseItemPacket::handle(MCPEPlayer &player) {
-    //
+    if (player.inventory.getHeldItem() != item) {
+        player.sendInventory();
+        return;
+    }
+
+    if (item.getId() < 256) {
+        std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
+        BlockPos pos = {x, y, z};
+        pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+        if (player.getWorld().getBlock(pos).id != 0) {
+            pos = pos.side((BlockPos::Side) side);
+            player.getWorld().setBlock(pos, item.getId(), item.damage);
+            pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+        }
+        player.writePacket(std::move(pk));
+    }
 }
