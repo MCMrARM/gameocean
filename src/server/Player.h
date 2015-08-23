@@ -12,6 +12,7 @@
 #include "world/ChunkPos.h"
 #include "command/CommandSender.h"
 #include "protocol/mcpe/MCPEPacket.h"
+#include "PlayerInventory.h"
 
 class Server;
 class Protocol;
@@ -57,9 +58,11 @@ protected:
     virtual void updateEntityPos(Entity* entity) {};
 
 public:
-    Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false) {};
+    Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), inventory(*this, 36) {};
 
-    virtual void close();
+    PlayerInventory inventory;
+
+    virtual void close(std::string reason, bool sendToPlayer);
 
     virtual std::string getName() { return name; };
     void setName(std::string name) {
@@ -83,6 +86,10 @@ public:
     virtual void sendMessage(std::string text) {};
 
     void processMessage(std::string text);
+
+    virtual void sendInventorySlot(int slotId) = 0;
+    virtual void sendInventory() = 0;
+    virtual void sendHeldItem() = 0;
 
 };
 

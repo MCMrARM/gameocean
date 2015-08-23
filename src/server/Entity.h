@@ -33,6 +33,7 @@ public:
         id = Entity::currentId++;
     };
     Entity(World& world, float x, float y, float z) : Entity(world) { setPos(x, y, z); };
+    virtual ~Entity() {};
 
     virtual void close();
 

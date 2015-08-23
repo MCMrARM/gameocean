@@ -7,7 +7,10 @@
 
 const std::string Player::TYPE_NAME = "Player";
 
-void Player::close() {
+void Player::close(std::string reason, bool sendToPlayer) {
+    if (closed)
+        return;
+
     Entity::close();
     for (auto entry : sentChunks) {
         entry.second->setUsedBy(this, false);

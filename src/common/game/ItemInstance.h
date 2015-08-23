@@ -21,8 +21,27 @@ public:
 
     void setId(int id);
     int getId();
+    inline Item* getItem() { return item; };
+    void setItem(Item* v) { item = v; nameOverride = ""; };
+    inline bool isEmpty() { return (item == null); };
     inline std::string& getNameOverride() { return nameOverride; };
     inline void overrideName(std::string val) { nameOverride = val; };
-    std::string& getName();
+    std::string getName();
+
+    void setEmpty() {
+        item = null;
+        nameOverride = "";
+        count = 0;
+        damage = 0;
+    };
+
+    bool isSameType(ItemInstance& i) {
+        return (i.item == item && i.damage == i.damage);
+    };
+
+    inline bool operator==(const ItemInstance& s) {
+        return (item == s.item && count == s.count && damage == s.damage && nameOverride == s.nameOverride);
+    };
+    inline bool operator!=(const ItemInstance& r) { return !(*this == r); };
 
 };

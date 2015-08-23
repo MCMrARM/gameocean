@@ -49,7 +49,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
             printf("* connection lost\n");
             if (players.count(packet->guid) > 0) {
                 MCPEPlayer* player = players.at(packet->guid);
-                player->close();
+                player->close("connection lost", false);
                 playersMutex.lock();
                 players.erase(packet->guid);
                 playersMutex.unlock();

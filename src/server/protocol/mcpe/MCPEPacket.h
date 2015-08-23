@@ -110,6 +110,8 @@ protected:
             byte n [nbtLen];
             stream.Read((char*) n, nbtLen);
         }
+
+        return ItemInstance (id, count, damage);
     }
     void writeItemInstance(RakNet::BitStream& stream, ItemInstance& i) {
         stream.Write((short) i.getId());
@@ -458,6 +460,33 @@ public:
     };
 };
 
+class MCPEMobEquipmentPacket : public MCPEPacket {
+public:
+    MCPEMobEquipmentPacket() {
+        id = MCPE_MOB_EQUIPMENT_PACKET;
+    };
+
+    long long eid;
+    ItemInstance item;
+    byte slot, hotbarSlot;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        writeItemInstance(stream, item);
+        stream.Write(slot);
+        stream.Write(hotbarSlot);
+    };
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(eid);
+        item = readItemInstance(stream);
+        stream.Read(slot);
+        stream.Read(hotbarSlot);
+    };
+
+    virtual void handle(MCPEPlayer& player);
+};
+
 class MCPEUseItemPacket : public MCPEPacket {
 public:
     MCPEUseItemPacket() {
@@ -472,19 +501,19 @@ public:
     float posX, posY, posZ;
 
     virtual void read(RakNet::BitStream& stream) {
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
-        stream.Write(side);
-        stream.Write(itemId);
-        stream.Write(itemDamage);
-        stream.Write(eid);
-        stream.Write(fx);
-        stream.Write(fy);
-        stream.Write(fz);
-        stream.Write(posX);
-        stream.Write(posY);
-        stream.Write(posZ);
+        stream.Read(x);
+        stream.Read(y);
+        stream.Read(z);
+        stream.Read(side);
+        stream.Read(itemId);
+        stream.Read(itemDamage);
+        stream.Read(eid);
+        stream.Read(fx);
+        stream.Read(fy);
+        stream.Read(fz);
+        stream.Read(posX);
+        stream.Read(posY);
+        stream.Read(posZ);
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -502,6 +531,68 @@ public:
         stream.Write(x);
         stream.Write(y);
         stream.Write(z);
+    };
+};
+
+class MCPEContainerSetSlotPacket : public MCPEPacket {
+public:
+    MCPEContainerSetSlotPacket() {
+        id = MCPE_CONTAINER_SET_SLOT_PACKET;
+    };
+
+    byte window;
+    short slot;
+    ItemInstance item;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(window);
+        stream.Write(slot);
+        writeItemInstance(stream, item);
+    };
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(window);
+        stream.Read(slot);
+        item = readItemInstance(stream);
+    };
+};
+
+class MCPEContainerSetContentPacket : public MCPEPacket {
+public:
+    MCPEContainerSetContentPacket() {
+        id = MCPE_CONTAINER_SET_CONTENT_PACKET;
+    };
+
+    byte window;
+    std::vector<ItemInstance> items;
+    std::vector<int> hotbar;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(window);
+        stream.Write((short) items.size());
+        for (ItemInstance& i : items) {
+            writeItemInstance(stream, i);
+        }
+        stream.Write((short) hotbar.size());
+        for (int i : hotbar) {
+            stream.Write(i);
+        }
+    };
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(window);
+        unsigned short itemCount;
+        stream.Read(itemCount);
+        items.resize(itemCount);
+        for (ItemInstance& i : items) {
+            i = readItemInstance(stream);
+        }
+        unsigned short hotbarCount;
+        stream.Read(hotbarCount);
+        hotbar.resize(hotbarCount);
+        for (int& i : hotbar) {
+            stream.Read(i);
+        }
     };
 };
 

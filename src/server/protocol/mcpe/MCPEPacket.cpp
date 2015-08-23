@@ -12,6 +12,10 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPETextPacket>(MCPE_TEXT_PACKET);
     MCPEPacket::registerPacket<MCPEMovePlayerPacket>(MCPE_MOVE_PLAYER_PACKET);
     MCPEPacket::registerPacket<MCPEEntityEventPacket>(MCPE_ENTITY_EVENT_PACKET);
+    MCPEPacket::registerPacket<MCPEMobEquipmentPacket>(MCPE_MOB_EQUIPMENT_PACKET);
+    MCPEPacket::registerPacket<MCPEUseItemPacket>(MCPE_USE_ITEM_PACKET);
+    MCPEPacket::registerPacket<MCPEContainerSetSlotPacket>(MCPE_CONTAINER_SET_SLOT_PACKET);
+    MCPEPacket::registerPacket<MCPEContainerSetContentPacket>(MCPE_CONTAINER_SET_CONTENT_PACKET);
 }
 
 void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
@@ -48,7 +52,7 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     pk2->x = x;
     pk2->y = y;
     pk2->z = z;
-    pk2->gamemode = MCPEStartGamePacket::GameMode::CREATIVE;
+    pk2->gamemode = MCPEStartGamePacket::GameMode::SURVIVAL;
     player.writePacket(std::move(pk2));
 }
 
@@ -67,6 +71,28 @@ void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
         pk->mode = MCPEMovePlayerPacket::Mode::NORMAL;
         player.writePacket(std::move(pk));
     }
+}
+
+void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
+    if (hotbarSlot < 0 || hotbarSlot >= 9) {
+        return;
+    }
+    int slot = this->slot;
+    if (slot == 0x28 || slot == 0 || slot == 255) {
+        slot = -1;
+    } else {
+        slot -= 9;
+    }
+    if (slot < -1 || slot >= player.inventory.getNumSlots()) {
+        return;
+    }
+
+    if (slot >= 0 && player.inventory.getItem(slot) != item) {
+        player.sendInventory();
+        return;
+    }
+
+    player.linkHeldItem(hotbarSlot, slot);
 }
 
 void MCPEUseItemPacket::handle(MCPEPlayer &player) {

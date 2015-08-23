@@ -17,6 +17,9 @@ class MCPEPlayer : public Player {
 protected:
     friend class MCPEPacketBatchThread;
 
+    int hotbarSlots[9];
+    int hotbarSlot = 0;
+
     MCPEProtocol& protocol;
     RakNet::RakNetGUID guid;
     RakNet::SystemAddress address;
@@ -45,7 +48,16 @@ protected:
     virtual void updateEntityPos(Entity* entity);
 
 public:
-    MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {};
+    MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {
+        memset(&hotbarSlots[0], 0, sizeof(hotbarSlots));
+    };
+    virtual ~MCPEPlayer() {
+        for (QueuedPacket& pk : packetQueue) {
+            delete pk.pk;
+        }
+    };
+
+    virtual void close(std::string reason, bool sendToPlayer);
 
     inline RakNet::SystemAddress& getAddress() { return address; };
 
@@ -56,6 +68,12 @@ public:
     void receivedACK(int packetId);
 
     virtual void sendMessage(std::string text);
+
+    virtual void sendInventorySlot(int slotId);
+    virtual void sendInventory();
+    virtual void sendHeldItem();
+
+    void linkHeldItem(int hotbarSlot, int inventorySlot);
 
 };
 

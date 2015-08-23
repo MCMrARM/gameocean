@@ -7,6 +7,7 @@
 #include "../../world/World.h"
 #include "../../world/Chunk.h"
 
+
 void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback) {
     packetQueueMutex.lock();
     packetQueue.push_back({ packet.release(), std::move(sentCallback) });
@@ -72,6 +73,9 @@ void MCPEPlayer::setSpawned() {
     std::unique_ptr<MCPEPlayStatusPacket> pk2 (new MCPEPlayStatusPacket());
     pk2->status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
     writePacket(std::move(pk2));
+
+    sendInventory();
+    inventory.setItem(0, ItemInstance (1));
 }
 
 void MCPEPlayer::receivedACK(int packetId) {
@@ -79,6 +83,16 @@ void MCPEPlayer::receivedACK(int packetId) {
         for (ChunkPos pos : raknetChunkQueue.at(packetId))
             MCPEPlayer::receivedChunk(pos.x, pos.z);
     }
+}
+
+
+void MCPEPlayer::close(std::string reason, bool sendToPlayer) {
+    if (sendToPlayer) {
+        std::unique_ptr<MCPEDisconnectPacket> pk (new MCPEDisconnectPacket());
+        pk->message = reason.c_str();
+        writePacket(std::move(pk), false);
+    }
+    Player::close(reason, sendToPlayer);
 }
 
 void MCPEPlayer::sendMessage(std::string text) {
@@ -106,7 +120,7 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
     if (closed)
         return;
     if (entity->getTypeName() == Player::TYPE_NAME) {
-        Logger::main->debug("MCPE/Player", "Spawning player: %s", ((Player*) entity)->getName().c_str());
+        Logger::main->trace("MCPE/Player", "Spawning player: %s", ((Player*) entity)->getName().c_str());
         unsigned char skin[64 * 32 * 4];
 
         UUID uuid = {1, entity->getId()};
@@ -137,7 +151,7 @@ void MCPEPlayer::despawnEntity(Entity *entity) {
     if (closed)
         return;
     if (entity->getTypeName() == Player::TYPE_NAME) {
-        Logger::main->debug("MCPE/Player", "Despawning player: %s", ((Player*) entity)->getName().c_str());
+        Logger::main->trace("MCPE/Player", "Despawning player: %s", ((Player*) entity)->getName().c_str());
 
         UUID uuid = {1, entity->getId()};
 
@@ -159,4 +173,46 @@ void MCPEPlayer::updateEntityPos(Entity *entity) {
     Vector3D pos = entity->getPos();
     pk->entries.push_back({entity->getId(), pos.x, pos.y, pos.z, 0, 0, 0});
     writePacket(std::move(pk));
+}
+
+void MCPEPlayer::sendInventorySlot(int slotId) {
+    std::unique_ptr<MCPEContainerSetSlotPacket> pk (new MCPEContainerSetSlotPacket());
+    pk->window = 0;
+    pk->slot = slotId;
+    pk->item = inventory.getItem(slotId);
+    writePacket(std::move(pk));
+}
+
+void MCPEPlayer::sendInventory() {
+    std::unique_ptr<MCPEContainerSetContentPacket> pk (new MCPEContainerSetContentPacket());
+    pk->window = 0;
+    inventory.mutex.lock();
+    pk->items = inventory.items;
+    inventory.mutex.unlock();
+    generalMutex.lock();
+    pk->hotbar.resize(9);
+    for (int i = 0; i < 9; i++)
+        pk->hotbar[i] = hotbarSlots[i];
+    generalMutex.unlock();
+    writePacket(std::move(pk));
+    sendHeldItem();
+}
+
+void MCPEPlayer::sendHeldItem() {
+    std::unique_ptr<MCPEMobEquipmentPacket> pk (new MCPEMobEquipmentPacket());
+    pk->eid = 0;
+    pk->item = inventory.getItem(inventory.getHeldSlot());
+    generalMutex.lock();
+    pk->slot = inventory.getHeldSlot();
+    pk->hotbarSlot = hotbarSlot;
+    generalMutex.unlock();
+    writePacket(std::move(pk));
+}
+
+void MCPEPlayer::linkHeldItem(int hotbarSlot, int inventorySlot) {
+    generalMutex.lock();
+    this->hotbarSlot = hotbarSlot;
+    inventory.setHeldSlot(inventorySlot);
+    hotbarSlots[hotbarSlot] = inventorySlot;
+    generalMutex.unlock();
 }

@@ -9,6 +9,8 @@ protected:
     int id;
     std::string stringId;
 
+    int maxStackSize = 64;
+
     static Item* itemsByIds[256];
     static std::map<std::string, Item*> items;
 
@@ -19,10 +21,13 @@ public:
             return items.at(id);
         return null;
     };
-
+    static void registerItems();
 
     Item(int id, std::string stringId);
     inline int getId() { return id; };
     virtual std::string getNameId() { return std::string("item.") + stringId + ".name"; };
     std::string getName();
+
+    inline int getMaxStackSize() { return maxStackSize; };
+    inline void setMaxStackSize(int size) { maxStackSize = size; };
 };

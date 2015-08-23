@@ -9,6 +9,11 @@ EntityId Entity::currentId = 1;
 
 void Entity::close() {
     generalMutex.lock();
+    if (closed) {
+        generalMutex.unlock();
+        return;
+    }
+
     closed = true;
 
     despawnFromAll();

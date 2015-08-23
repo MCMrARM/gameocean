@@ -6,6 +6,7 @@
 #include "protocol/mcpe/MCPEProtocol.h"
 #include "world/World.h"
 #include "world/mcanvil/MCAnvilProvider.h"
+#include "game/Item.h"
 #include "command/Command.h"
 #include "PlayerChunkQueueThread.h"
 #include "utils/BinaryStream.h"
@@ -24,6 +25,7 @@ void Server::start() {
     Logger::main->info("Main", "Server name: %s", this->name.c_str());
 
     Command::registerDefaultCommands();
+    Item::registerItems();
 
     MCAnvilProvider* provider = new MCAnvilProvider(*mainWorld);
     mainWorld->setWorldProvider(provider);

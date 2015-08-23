@@ -3,6 +3,7 @@
 
 void ItemInstance::setId(int id) {
     item = Item::getItem(id);
+    nameOverride = "";
 }
 
 int ItemInstance::getId() {
@@ -11,8 +12,12 @@ int ItemInstance::getId() {
     return item->getId();
 }
 
-std::string& ItemInstance::getName() {
+std::string ItemInstance::getName() {
     if (nameOverride.length() > 0) {
         return nameOverride;
     }
+    if (item != null) {
+        return item->getName();
+    }
+    return "empty";
 }
