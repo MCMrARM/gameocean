@@ -60,7 +60,12 @@ public:
             return;
         }
 
-        player->inventory.addItem(ItemInstance (item, count, damage));
+        ItemInstance itemInstance (item, count, damage);
+        player->inventory.addItem(itemInstance);
+
+        std::stringstream msg;
+        msg << "Given " << count << " x " << itemInstance.getName() << " to " << player->getName();
+        sender.sendMessage(msg.str());
     };
 
 };

@@ -22,7 +22,7 @@ public:
 class ThreadedWorldProvider : public WorldProvider, public Thread {
 
 protected:
-    bool shouldStop;
+    bool shouldStop = false;
     std::mutex queueLock;
     std::mutex queueNotifyMutex;
     std::condition_variable queueNotify;

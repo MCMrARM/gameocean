@@ -107,13 +107,14 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
         return;
     }
 
-    if (item.getId() < 256) {
+    if (item.getId() > 0 && item.getId() < 256) {
         std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
         BlockPos pos = {x, y, z};
         pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
         if (player.getWorld().getBlock(pos).id != 0) {
             pos = pos.side((BlockPos::Side) side);
             player.getWorld().setBlock(pos, item.getId(), item.damage);
+            player.inventory.removeItem(ItemInstance (item.getItem(), 1, item.damage));
             pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
         }
         player.writePacket(std::move(pk));
