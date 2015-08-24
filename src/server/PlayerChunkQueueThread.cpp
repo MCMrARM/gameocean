@@ -9,6 +9,9 @@ void PlayerChunkQueueThread::run() {
     while(true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(server.sendChunksDelay));
 
+        if (shouldStop)
+            break;
+
         std::vector<Player*> players = server.getPlayers();
         for (Player* player : players) {
             player->updateChunkQueue();

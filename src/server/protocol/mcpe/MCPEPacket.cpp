@@ -113,8 +113,10 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
         pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
         if (player.getWorld().getBlock(pos).id != 0) {
             pos = pos.side((BlockPos::Side) side);
-            player.getWorld().setBlock(pos, item.getId(), item.damage);
-            player.inventory.removeItem(ItemInstance (item.getItem(), 1, item.damage));
+            if (player.getWorld().getBlock(pos).id == 0) {
+                player.getWorld().setBlock(pos, item.getId(), item.damage);
+                player.inventory.removeItem(ItemInstance(item.getItem(), 1, item.damage));
+            }
             pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
         }
         player.writePacket(std::move(pk));

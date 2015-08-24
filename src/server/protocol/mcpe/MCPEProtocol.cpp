@@ -12,7 +12,7 @@
 #include "MCPEPlayer.h"
 #include "MCPEPacketBatchThread.h"
 
-void MCPEProtocol::bind(int port) {
+void MCPEProtocol::start(int port) {
     peer = RakNet::RakPeerInterface::GetInstance();
     std::string s = "MCPE;A Test Server;34;0.12.1;0;20";
     peer->SetOfflinePingResponse(s.c_str(), s.length() + 1);
@@ -21,19 +21,26 @@ void MCPEProtocol::bind(int port) {
     peer->SetMaximumIncomingConnections(server.maxPlayers + 1);
 
     MCPEPacket::registerPackets();
+
+    batchThread.start();
+    Protocol::start(port);
+}
+
+void MCPEProtocol::stop() {
+    batchThread.stop();
+    Protocol::stop();
 }
 
 void MCPEProtocol::loop() {
-    batchThread.start();
-
     RakNet::Packet* packet;
-    while (1) {
+    while (true) {
+        if (shouldStop)
+            break;
+
         for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
             processPacket(packet);
         }
     }
-
-    batchThread.stop();
 }
 
 void MCPEProtocol::processPacket(RakNet::Packet *packet) {

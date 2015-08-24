@@ -25,12 +25,16 @@ protected:
 public:
     MCPEProtocol(Server& server) : Protocol(server), batchThread(*this) {};
 
+    virtual std::string getName() { return "MCPE"; };
+
     static const int CURRENT_VERSION = 34;
     int packetBatchDelay = 50; // in ms
 
     inline RakNet::RakPeerInterface* getPeer() { return peer; };
 
-    virtual void bind(int port);
+    virtual void start(int port);
+    virtual void stop();
+
     virtual void loop();
     virtual void processPacket(RakNet::Packet* packet);
 

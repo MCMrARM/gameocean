@@ -37,7 +37,7 @@ public:
 
     virtual Chunk* requestChunk(ChunkPos pos);
 
-    void stop() { shouldStop = true; queueNotify.notify_all(); };
+    virtual void stop() { shouldStop = true; queueNotify.notify_all(); };
 
 };
 

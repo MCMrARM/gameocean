@@ -4,6 +4,7 @@
 #include "default/HelpCommand.h"
 #include "default/GiveCommand.h"
 #include "default/VersionCommand.h"
+#include "default/StopCommand.h"
 #include "utils/StringUtils.h"
 
 std::unordered_map<std::string, Command*> Command::commands;
@@ -22,6 +23,7 @@ void Command::registerDefaultCommands(Server& server) {
     Command::registerCommand(new HelpCommand(server));
     Command::registerCommand(new GiveCommand(server));
     Command::registerCommand(new VersionCommand(server));
+    Command::registerCommand(new StopCommand(server));
 }
 
 Command* Command::getCommand(std::string name) {

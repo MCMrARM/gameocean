@@ -1,5 +1,6 @@
 #include "Server.h"
 
+#include <iostream>
 #include "utils/Logger.h"
 #include "game/Item.h"
 #include "game/Block.h"
@@ -40,8 +41,39 @@ void Server::start() {
     chunkQueueThread.start();
 
     MCPEProtocol protocol (*this);
-    protocol.bind(19132);
-    protocol.loop();
+    protocol.start(19132);
+
+    timeval tv = { 0, 50000 };
+    fd_set fds;
+
+    ServerCommandSender commandSender;
+    while (true) {
+        if (stopping)
+            break;
+
+        FD_ZERO(&fds);
+        FD_SET(STDIN_FILENO, &fds);
+        if (select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) <= 0)
+            continue;
+
+        std::string command;
+        std::cin >> command;
+
+        std::vector<std::string> v = StringUtils::split(command, " ");
+        if (v.size() <= 0)
+            continue;
+        Command* c = Command::getCommand(v[0]);
+        if (c == null) {
+            std::cout << "Unknown command: " << v[0] << std::endl;
+            continue;
+        }
+        c->process(commandSender, v);
+    }
+
+    Logger::main->trace("Main", "Stopping...");
+    for (Thread* t : Thread::threads) {
+        t->stop();
+    }
 }
 
 void Server::loadConfiguation() {
@@ -72,9 +104,15 @@ Player* Server::findPlayer(std::string like) {
 }
 
 void Server::broadcastMessage(std::string msg) {
+    Logger::main->info("Chat", "%s", msg.c_str());
+
     playersMutex.lock();
     for (Player* p : players) {
         p->sendMessage(msg);
     }
     playersMutex.unlock();
+}
+
+void Server::stop() {
+    stopping = true;
 }

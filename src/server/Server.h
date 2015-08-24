@@ -14,6 +14,8 @@ protected:
     std::vector<Player*> players;
     std::mutex playersMutex;
 
+    bool stopping = false;
+
 public:
     std::string name;
     int maxPlayers = 100;
@@ -44,6 +46,9 @@ public:
     }
     Player* findPlayer(std::string like);
     void broadcastMessage(std::string msg);
+
+    inline bool isStopping() { return stopping; };
+    void stop();
 
 protected:
     void loadConfiguation();

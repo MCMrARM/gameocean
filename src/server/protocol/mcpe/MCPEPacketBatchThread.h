@@ -14,7 +14,7 @@ public:
     MCPEPacketBatchThread(MCPEProtocol& protocol) : protocol(protocol) { };
 
     virtual void run();
-    void stop() { stopping = true; };
+    virtual void stop() { stopping = true; };
 
 };
 
