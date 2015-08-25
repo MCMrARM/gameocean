@@ -4,9 +4,11 @@
 #include <vector>
 #include <mutex>
 #include <algorithm>
+#include <set>
 
 class World;
 class Player;
+class Protocol;
 
 class Server {
 
@@ -22,6 +24,7 @@ public:
     int sendChunksCount = 4;
     int sendChunksDelay = 25; // in ms
     World* mainWorld;
+    std::set<Protocol*> enabledProtocols;
 
     Server();
 

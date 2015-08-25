@@ -12,7 +12,7 @@
 #include "MCPEPlayer.h"
 #include "MCPEPacketBatchThread.h"
 
-void MCPEProtocol::start(int port) {
+void MCPEProtocol::start() {
     peer = RakNet::RakPeerInterface::GetInstance();
     std::string s = "MCPE;A Test Server;34;0.12.1;0;20";
     peer->SetOfflinePingResponse(s.c_str(), s.length() + 1);
@@ -23,7 +23,7 @@ void MCPEProtocol::start(int port) {
     MCPEPacket::registerPackets();
 
     batchThread.start();
-    Protocol::start(port);
+    Protocol::start();
 }
 
 void MCPEProtocol::stop() {

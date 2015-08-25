@@ -50,4 +50,15 @@ public:
         return i;
     };
 
+    static int asInt(std::string s, int d) {
+        if (s.length() <= 0)
+            return d;
+
+        try {
+            return std::stoi(s);
+        } catch (std::exception e) {
+        }
+        return d;
+    };
+
 };

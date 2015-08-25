@@ -4,3 +4,8 @@ protocols:
     enabled: true
     bind: any
     port: 19132
+    batch-rate: 50
+max-players: 100
+chunk-sending:
+  tick-rate: 50
+  per-tick: 4

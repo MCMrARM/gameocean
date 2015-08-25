@@ -6,7 +6,7 @@
 #include "game/Block.h"
 #include "GameInfo.h"
 #include "utils/Config.h"
-#include "protocol/mcpe/MCPEProtocol.h"
+#include "protocol/Protocol.h"
 #include "world/World.h"
 #include "world/mcanvil/MCAnvilProvider.h"
 #include "command/Command.h"
@@ -21,13 +21,14 @@ void Server::start() {
     Logger::main->info("Main", "%s", (std::string("Game: ") + GameInfo::current->name + " v" + GameInfo::current->version.toString()).c_str());
 
     Logger::main->info("Main", "Loading server configuration");
-    this->loadConfiguation();
-
-    Logger::main->info("Main", "Server name: %s", this->name.c_str());
-
     Command::registerDefaultCommands(*this);
     Item::registerItems();
     Block::registerBlocks();
+    Protocol::registerDefaultProtocols(*this);
+
+    this->loadConfiguation();
+
+    Logger::main->info("Main", "Server name: %s", this->name.c_str());
 
     MCAnvilProvider* provider = new MCAnvilProvider(*mainWorld);
     mainWorld->setWorldProvider(provider);
@@ -40,8 +41,9 @@ void Server::start() {
     PlayerChunkQueueThread chunkQueueThread (*this);
     chunkQueueThread.start();
 
-    MCPEProtocol protocol (*this);
-    protocol.start(19132);
+    for (Protocol* protocol : enabledProtocols) {
+        protocol->start();
+    }
 
     timeval tv = { 0, 50000 };
     fd_set fds;
@@ -78,7 +80,33 @@ void Server::start() {
 
 void Server::loadConfiguation() {
     Config c ("config.yml");
-    this->name = c.getString("name", "Test Server");
+    name = c.getString("name", "Test Server");
+    maxPlayers = c.getInt("max-players", maxPlayers);
+    std::shared_ptr<ContainerConfigNode> chunkSending = c.getContainer("chunk-sending");
+    if (chunkSending != null) {
+        sendChunksDelay = chunkSending->getInt("tick-rate", sendChunksDelay);
+        sendChunksCount = chunkSending->getInt("per-tick", sendChunksCount);
+    }
+    std::shared_ptr<ContainerConfigNode> protocols = c.getContainer("protocols");
+    if (protocols != null) {
+        for (auto const& p : protocols->val) {
+            if (p.second->type != ConfigNode::Type::CONTAINER)
+                continue;
+
+            Protocol* protocol = Protocol::getProtocol(p.first);
+            if (protocol == null) {
+                Logger::main->warn("Config", "Unknown protocol: %s", p.first.c_str());
+                continue;
+            }
+            bool enabled = p.second->getBool("enabled", true);
+            if (enabled) {
+                enabledProtocols.insert(protocol);
+            }
+            for (auto const& opt : std::static_pointer_cast<ContainerConfigNode>(p.second)->val) {
+                protocol->setOption(opt.first, *opt.second);
+            }
+        }
+    }
 }
 
 Player* Server::findPlayer(std::string like) {

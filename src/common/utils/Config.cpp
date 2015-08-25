@@ -7,13 +7,13 @@
 Config::Config(std::string file) {
     std::ifstream fin (file);
 
-    mainNode = new ContainerConfigNode("");
+    mainNode = std::make_shared<ContainerConfigNode> ("");
 
     if (!fin) return;
 
     std::string line;
 
-    std::vector<ContainerConfigNode*> scope;
+    std::vector<std::shared_ptr<ContainerConfigNode>> scope;
     scope.push_back(mainNode);
     while (getline(fin, line)) {
         if (line.length() <= 0) continue;
@@ -36,29 +36,28 @@ Config::Config(std::string file) {
         std::string key = StringUtils::trim(line.substr(0, iof));
         std::string val = StringUtils::trim(line.substr(iof + 1));
 
-        ContainerConfigNode *cur = scope.back();
+        std::shared_ptr<ContainerConfigNode> cur = scope.back();
         if (val.length() <= 0) {
-            ContainerConfigNode *el = new ContainerConfigNode(key);
+            std::shared_ptr<ContainerConfigNode> el (new ContainerConfigNode(key));
             cur->val[key] = el;
             scope.push_back(el);
         } else {
-            cur->val[key] = new StringConfigNode(key, val);
+            cur->val[key] = std::make_shared<StringConfigNode> (key, val);
         }
     }
 }
 
-void Config::print(ConfigNode *node, int scope) {
+void Config::print(std::shared_ptr<ConfigNode> node, int scope) {
     for (int i = 0; i < scope; i++) {
         std::cout << "  ";
     }
     std::cout << node->name << ": ";
     if (node->type == ConfigNode::Type::STRING) {
-        std::cout << ((StringConfigNode*) node)->val;
+        std::cout << std::static_pointer_cast<StringConfigNode>(node)->val;
     }
     std::cout << "\n";
     if (node->type == ConfigNode::Type::CONTAINER) {
-        ContainerConfigNode* c = (ContainerConfigNode*) node;
-        for (auto& e : c->val) {
+        for (auto& e : (std::static_pointer_cast<ContainerConfigNode>(node))->val) {
             Config::print(e.second, scope + 1);
         }
     }
@@ -71,7 +70,7 @@ ConfigNode::operator std::string() const {
     return "";
 }
 
-ConfigNode* ConfigNode::operator[](const std::string& name) {
+std::shared_ptr<ConfigNode> ConfigNode::operator[](const std::string& name) {
     if (type == Type::CONTAINER) {
         ContainerConfigNode* t = (ContainerConfigNode*) this;
         if (t->val.count(name) <= 0) {
@@ -80,4 +79,16 @@ ConfigNode* ConfigNode::operator[](const std::string& name) {
         return t->val.at(name);
     }
     return null;
+}
+
+int ConfigNode::getInt(const std::string &name, int d) {
+    std::shared_ptr<ConfigNode> n = (*this)[name];
+    if (n == null) return d;
+    std::string nt = *n;
+    try {
+        int ret = std::stoi(nt);
+        return ret;
+    } catch (std::exception e) {
+    }
+    return d;
 }

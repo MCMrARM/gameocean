@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common.h"
 #include <memory>
 #include <thread>
 #include <set>
@@ -26,6 +27,8 @@ public:
     void start();
 
     virtual void stop();
+
+    inline bool isRunning() { return (thread != null); };
 
 };
 

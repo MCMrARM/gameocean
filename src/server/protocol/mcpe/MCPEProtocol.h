@@ -23,7 +23,9 @@ protected:
     MCPEPacketBatchThread batchThread;
 
 public:
-    MCPEProtocol(Server& server) : Protocol(server), batchThread(*this) {};
+    MCPEProtocol(Server& server) : Protocol(server), batchThread(*this) {
+        port = 19132;
+    };
 
     virtual std::string getName() { return "MCPE"; };
 
@@ -32,7 +34,7 @@ public:
 
     inline RakNet::RakPeerInterface* getPeer() { return peer; };
 
-    virtual void start(int port);
+    virtual void start();
     virtual void stop();
 
     virtual void loop();
@@ -43,6 +45,14 @@ public:
         std::map<RakNet::RakNetGUID, MCPEPlayer*> ret (players);
         playersMutex.unlock();
         return ret;
+    };
+
+    virtual void setOption(std::string key, std::string value) {
+        if (key == "batch-rate") {
+            packetBatchDelay = StringUtils::asInt(value, packetBatchDelay);
+        } else {
+            Protocol::setOption(key, value);
+        }
     };
 
 };
