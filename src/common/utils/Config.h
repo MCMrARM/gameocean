@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <iostream>
 
 class ContainerConfigNode;
 class ConfigNode {
@@ -70,7 +71,7 @@ protected:
 public:
     std::shared_ptr<ContainerConfigNode> mainNode;
 
-    Config(std::string file);
+    Config(std::istream& is);
 
     void print() {
         for (auto& e : mainNode->val) {

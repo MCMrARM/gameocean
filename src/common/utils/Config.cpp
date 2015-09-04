@@ -4,18 +4,17 @@
 #include <fstream>
 #include "StringUtils.h"
 
-Config::Config(std::string file) {
-    std::ifstream fin (file);
+Config::Config(std::istream& is) {
+    if (!is)
+        return;
 
     mainNode = std::make_shared<ContainerConfigNode> ("");
-
-    if (!fin) return;
 
     std::string line;
 
     std::vector<std::shared_ptr<ContainerConfigNode>> scope;
     scope.push_back(mainNode);
-    while (getline(fin, line)) {
+    while (getline(is, line)) {
         if (line.length() <= 0) continue;
         std::size_t iof = line.find("#");
         if (iof != std::string::npos) {

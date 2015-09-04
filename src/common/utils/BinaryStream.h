@@ -23,6 +23,8 @@ class BinaryStream {
 public:
     bool swapEndian = false;
 
+    virtual ~BinaryStream() { };
+
     virtual void read(byte *data, unsigned int size) = 0;
 
     virtual void write(const byte *data, unsigned int size) = 0;
@@ -179,10 +181,15 @@ public:
 class FileBinaryStream : public BinaryStream {
 
     int fd = -1;
+    bool closeFdOnDestroy = false;
 
 public:
     FileBinaryStream() {};
     FileBinaryStream(int fd);
+    FileBinaryStream(int fd, bool closeFdOnDestroy) : FileBinaryStream(fd) {
+        this->closeFdOnDestroy = closeFdOnDestroy;
+    };
+    virtual ~FileBinaryStream();
 
     void setFileDescriptor(int fd) { this->fd = fd; };
 

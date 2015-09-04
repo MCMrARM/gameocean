@@ -1,6 +1,7 @@
 #include "Server.h"
 
 #include <iostream>
+#include <utils/ResourceManager.h>
 #include "utils/Logger.h"
 #include "game/Item.h"
 #include "game/Block.h"
@@ -19,6 +20,9 @@ Server::Server() {
 
 void Server::start() {
     Logger::main->info("Main", "%s", (std::string("Game: ") + GameInfo::current->name + " v" + GameInfo::current->version.toString()).c_str());
+
+    FileResourceManager* resManager = new FileResourceManager("assets/", ".");
+    ResourceManager::instance = resManager;
 
     Logger::main->info("Main", "Loading server configuration");
     Command::registerDefaultCommands(*this);
@@ -76,10 +80,12 @@ void Server::start() {
     for (Thread* t : Thread::threads) {
         t->stop();
     }
+
+    delete resManager;
 }
 
 void Server::loadConfiguation() {
-    Config c ("config.yml");
+    Config c (*ResourceManager::instance->openDataFile("config.yml", std::ios_base::in));
     name = c.getString("name", "Test Server");
     maxPlayers = c.getInt("max-players", maxPlayers);
     std::shared_ptr<ContainerConfigNode> chunkSending = c.getContainer("chunk-sending");

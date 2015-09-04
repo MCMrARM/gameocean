@@ -62,3 +62,9 @@ void FileBinaryStream::read(byte *data, unsigned int size) {
         }
     }
 }
+
+FileBinaryStream::~FileBinaryStream() {
+    if (closeFdOnDestroy) {
+        ::close(fd);
+    }
+}
