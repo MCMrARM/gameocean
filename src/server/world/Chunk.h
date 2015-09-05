@@ -9,7 +9,7 @@
 #include "WorldBlock.h"
 #include "../Entity.h"
 #include "../Player.h"
-#include "game/Block.h"
+#include "game/item/BlockVariant.h"
 #include "utils/NibbleArray.h"
 
 class Chunk {

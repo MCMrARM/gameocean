@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <mutex>
-#include "ItemInstance.h"
+#include "game/item/ItemInstance.h"
 
 class Inventory {
 

@@ -1,0 +1,20 @@
+{
+  "type": "item",
+  "name_id": "pickaxe",
+  "is_base": true,
+  "tool_group": "pickaxe",
+  "multiplier_affects": ["ice", "metal", "rock"],
+  "item_damage_block_break": 1,
+  "item_damage_attack": 2,
+  "stack_size": 1,
+  "variants": {
+    "0": {
+      "name_id": "wooden_pickaxe",
+      "id": 270,
+      "destroy_multiplier": 2,
+      "texture": "wooden_pickaxe",
+      "max_uses": 60,
+      "attack_damage": 3
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "block",
+  "name_id": "water",
+  "id": 9,
+  "texture": "water",
+  "model": "fluid",
+  "hardness": 100,
+  "fluid": true,
+  "replaceable": true,
+  "resistance": 500,
+  "flammable": false,
+  "stack_size": 64,
+  "groups": ["fluid"],
+  "drops": [],
+  "variants": [
+    {
+      "name_id": "flowing_water",
+      "id": 8
+    }
+  ]
+}

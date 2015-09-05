@@ -1,0 +1,59 @@
+{
+  "type": "block",
+  "name_id": "stone",
+  "id": 1,
+  "texture": "stone",
+  "model": "default",
+  "hardness": 1.5,
+  "resistance": 30,
+  "flammable": false,
+  "stack_size": 64,
+  "groups": ["rock"],
+  "drops": [
+    {
+      "name_id": "cobblestone",
+      "count": 1,
+      "requires": {
+        "item_id": "pickaxe",
+        "level": "wood"
+      }
+    }
+  ],
+  "variants": [
+    {
+      "name_id": "stone",
+      "texture": "stone",
+      "data": 0
+    },
+    {
+      "name_id": "granite",
+      "texture": "stone_granite",
+      "data": 1
+    },
+    {
+      "name_id": "polished_granite",
+      "texture": "stone_polished_granite",
+      "data": 2
+    },
+    {
+      "name_id": "diorite",
+      "texture": "stone_dirote",
+      "data": 3
+    },
+    {
+      "name_id": "polished_diorite",
+      "texture": "stone_polished_dirote",
+      "data": 4
+    },
+    {
+      "name_id": "andesite",
+      "texture": "stone_andesite",
+      "data": 5
+    },
+    {
+      "name_id": "polished_andesite",
+      "texture": "stone_polished_andesite",
+      "data": 6
+    }
+  ]
+}

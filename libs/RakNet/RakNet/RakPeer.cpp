@@ -2888,7 +2888,7 @@ RakNetSocket2* RakPeer::GetSocket( const SystemAddress target )
 	bcs->data=0;
 	bufferedCommands.Push(bcs);
 
-	// Block up to one second to get the socket, although it should actually take virtually no time
+	// BlockVariant up to one second to get the socket, although it should actually take virtually no time
 	SocketQueryOutput *sqo;
 	RakNet::TimeMS stopWaiting = RakNet::GetTimeMS()+1000;
 	DataStructures::List<RakNetSocket2* > output;
@@ -2926,7 +2926,7 @@ void RakPeer::GetSockets( DataStructures::List<RakNetSocket2* > &sockets )
 	bcs->data=0;
 	bufferedCommands.Push(bcs);
 
-	// Block up to one second to get the socket, although it should actually take virtually no time
+	// BlockVariant up to one second to get the socket, although it should actually take virtually no time
 	SocketQueryOutput *sqo;
 //	RakNetSocket2* output;
 	while (1)

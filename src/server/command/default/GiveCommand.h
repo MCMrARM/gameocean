@@ -3,7 +3,8 @@
 #include <sstream>
 #include "common.h"
 #include "../Command.h"
-#include "game/Item.h"
+#include "game/item/ItemVariant.h"
+#include "game/item/ItemRegister.h"
 
 class GiveCommand : public Command {
 
@@ -25,26 +26,29 @@ public:
             return;
         }
 
-        byte damage = 0;
+        short damage = 0;
         std::string itemName = args[2];
         {
             size_t i = itemName.find(":");
             if (i != std::string::npos) {
                 std::string dmgStr = itemName.substr(i + 1);
-                itemName = itemName.substr(0, i);
                 try {
                     int dmgI = std::stoi(dmgStr);
-                    if (dmgI >= 0 && dmgI <= UINT8_MAX)
+                    if (dmgI >= 0 && dmgI <= UINT16_MAX)
                         damage = dmgI;
                 } catch (std::exception e) {
                 }
             }
         }
 
-        Item* item = Item::getItem(itemName);
+        ItemVariant* item = ItemRegister::findItem(itemName);
         if (item == null) {
             sender.sendMessage("Specified item doesn't exist!");
             return;
+        }
+
+        if (item->getVariantDataId() >= 0) {
+            damage = item->getVariantDataId();
         }
 
         int count = item->getMaxStackSize();

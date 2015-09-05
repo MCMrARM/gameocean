@@ -11,6 +11,11 @@ class ResourceManager {
 public:
     static ResourceManager* instance;
 
+    struct DirEntry {
+        std::string name;
+        bool isDir;
+    };
+
     struct PNGInfo {
         byte* data;
         unsigned long width, height, dataSize;
@@ -19,6 +24,7 @@ public:
         bool init(std::istream& dataStream);
     };
 
+    virtual std::vector<DirEntry> getAssetDirectoryFiles(std::string path) = 0;
     virtual std::unique_ptr<std::istream> openAssetFile(std::string name, std::ios_base::openmode mode) = 0;
     virtual std::unique_ptr<BinaryStream> openBinaryAssetFile(std::string name) = 0;
     virtual std::vector<byte> readAssetFile(std::string name)  {
@@ -38,6 +44,7 @@ public:
         return ret;
     };
 
+    virtual std::vector<DirEntry> getDataDirectoryFiles(std::string path) = 0;
     virtual std::unique_ptr<std::iostream> openDataFile(std::string name, std::ios_base::openmode mode) = 0;
     virtual std::unique_ptr<BinaryStream> openBinaryDataFile(std::string name) = 0;
     virtual std::vector<byte> readDataFile(std::string name)  {
@@ -75,6 +82,7 @@ protected:
 public:
     FileResourceManager(std::string assetPath, std::string dataPath) : assetPath(assetPath), dataPath(dataPath) { };
 
+    virtual std::vector<DirEntry> getAssetDirectoryFiles(std::string path);
     virtual std::unique_ptr<std::istream> openAssetFile(std::string name, std::ios_base::openmode mode) {
         return std::unique_ptr<std::istream>(new std::fstream(assetPath + "/" + name, mode));
     };
@@ -82,6 +90,7 @@ public:
         return std::unique_ptr<BinaryStream>(new FileBinaryStream(::open((assetPath + "/" + name).c_str(), O_RDONLY), true));
     };
 
+    virtual std::vector<DirEntry> getDataDirectoryFiles(std::string path);
     virtual std::unique_ptr<std::iostream> openDataFile(std::string name, std::ios_base::openmode mode) {
         return std::unique_ptr<std::iostream>(new std::fstream(dataPath + "/" + name, mode));
     };

@@ -566,7 +566,7 @@ public:
 	/// \internal
 	/// \details Calls Connection_RM3::SendSerialize() if Replica3::Serialize() returns a different result than what is contained in \a lastSerializationResult.<BR>
 	/// Used by autoserialization in Connection_RM3::OnAutoserializeInterval()
-	/// \param[in] lsr Item in the queryToSerializeReplicaList
+	/// \param[in] lsr ItemVariant in the queryToSerializeReplicaList
 	/// \param[in] sp Controlling parameters over the serialization
 	/// \param[in] rakPeer Instance of RakPeerInterface to send on
 	/// \param[in] worldId Which world, see ReplicaManager3::AddWorld()

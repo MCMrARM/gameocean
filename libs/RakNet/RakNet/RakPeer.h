@@ -210,7 +210,7 @@ public:
 	/// \brief Sends a block of data to the specified system that you are connected to.
 	/// \note This function only works while connected.
 	/// \note The first byte should be a message identifier starting at ID_USER_PACKET_ENUM.
-	/// \param[in] data Block of data to send.
+	/// \param[in] data BlockVariant of data to send.
 	/// \param[in] length Size in bytes of the data to send.
 	/// \param[in] priority Priority level to send on.  See PacketPriority.h
 	/// \param[in] reliability How reliably to send this data.  See PacketPriority.h
@@ -225,7 +225,7 @@ public:
 	/// \details The message will be processed through the plugins and returned to the game as usual.
 	/// This function works anytime
 	/// \note The first byte should be a message identifier starting at ID_USER_PACKET_ENUM
-	/// \param[in] data Block of data to send.
+	/// \param[in] data BlockVariant of data to send.
 	/// \param[in] length Size in bytes of the data to send.
 	void SendLoopback( const char *data, const int length );
 
@@ -393,7 +393,7 @@ public:
 	
 	// --------------------------------------------------------------------------------------------Static Data Functions - Functions dealing with API defined synchronized memory--------------------------------------------------------------------------------------------
 	/// \brief Sets the data to send along with a LAN server discovery or offline ping reply.
-	/// \param[in] data Block of data to send, or 0 for none
+	/// \param[in] data BlockVariant of data to send, or 0 for none
 	/// \param[in] length Length of the data in bytes, or 0 for none
 	/// \note \a length should be under 400 bytes, as a security measure against flood attacks
 	/// \sa Ping.cpp

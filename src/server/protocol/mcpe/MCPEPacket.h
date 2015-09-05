@@ -5,7 +5,7 @@
 #include <RakNet/BitStream.h>
 #include "common.h"
 #include "utils/UUID.h"
-#include "game/ItemInstance.h"
+#include "game/item/ItemInstance.h"
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -114,11 +114,11 @@ protected:
         return ItemInstance (id, count, damage);
     }
     void writeItemInstance(RakNet::BitStream& stream, ItemInstance& i) {
-        stream.Write((short) i.getId());
-        if (i.getId() == 0)
+        stream.Write((short) i.getItemId());
+        if (i.getItemId() == 0)
             return;
         stream.Write(i.count);
-        stream.Write(i.damage);
+        stream.Write(i.getItemData());
         stream.Write((short) 0); // no nbt data
     }
 

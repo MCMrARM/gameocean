@@ -63,3 +63,35 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
     png_destroy_read_struct(&png_ptr, &info_ptr, null);
     return true;
 }
+
+#include <dirent.h>
+
+std::vector<ResourceManager::DirEntry> FileResourceManager::getAssetDirectoryFiles(std::string path) {
+    std::vector<ResourceManager::DirEntry> ret;
+    DIR* dir = opendir((assetPath + path).c_str());
+    if (dir == null)
+        return ret;
+
+    dirent* ent;
+    while ((ent = readdir(dir)) != NULL) {
+        if (ent->d_name[0] != '.')
+            ret.push_back({ ent->d_name, (ent->d_type == DT_DIR) });
+    }
+    closedir(dir);
+    return ret;
+}
+
+std::vector<ResourceManager::DirEntry> FileResourceManager::getDataDirectoryFiles(std::string path) {
+    std::vector<ResourceManager::DirEntry> ret;
+    DIR* dir = opendir((dataPath + path).c_str());
+    if (dir == null)
+        return ret;
+
+    dirent* ent;
+    while ((ent = readdir(dir)) != NULL) {
+        if (ent->d_name[0] != '.')
+            ret.push_back({ ent->d_name, (ent->d_type == DT_DIR) });
+    }
+    closedir(dir);
+    return ret;
+}

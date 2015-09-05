@@ -7,7 +7,7 @@
 #include "BlockPos.h"
 #include "WorldBlock.h"
 #include "WorldProvider.h"
-#include "game/Block.h"
+#include "game/item/BlockVariant.h"
 
 class WorldProvider;
 

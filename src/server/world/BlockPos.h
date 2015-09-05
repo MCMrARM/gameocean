@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 struct BlockPos {
 
     enum class Side {
@@ -16,7 +18,7 @@ struct BlockPos {
         if (side == Side::DOWN)
             return { x, y - 1, z };
         if (side == Side::UP)
-            return { x, y + 1, z };
+            return {x, y + 1, z};
         if (side == Side::NORTH)
             return { x, y, z - 1 };
         if (side == Side::SOUTH)

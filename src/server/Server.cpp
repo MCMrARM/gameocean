@@ -1,10 +1,9 @@
 #include "Server.h"
 
 #include <iostream>
-#include <utils/ResourceManager.h>
 #include "utils/Logger.h"
-#include "game/Item.h"
-#include "game/Block.h"
+#include "utils/ResourceManager.h"
+#include "game/item/ItemRegister.h"
 #include "GameInfo.h"
 #include "utils/Config.h"
 #include "protocol/Protocol.h"
@@ -26,8 +25,7 @@ void Server::start() {
 
     Logger::main->info("Main", "Loading server configuration");
     Command::registerDefaultCommands(*this);
-    Item::registerItems();
-    Block::registerBlocks();
+    ItemRegister::registerAssetItems();
     Protocol::registerDefaultProtocols(*this);
 
     this->loadConfiguation();

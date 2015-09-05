@@ -27,7 +27,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <png.h>
 
 class MyConnectionHandler : public ClientConnectionHandler {
 
@@ -187,63 +186,3 @@ std::string App::readGameTextFile(std::string name) {
     return str;
 }
 
-void readGameImageFile_callback(png_structp png_ptr, png_bytep out, png_size_t size) {
-    png_voidp io_ptr = png_get_io_ptr(png_ptr);
-    if(!io_ptr) return;
-    std::istringstream* dataStream = (std::istringstream*) io_ptr;
-    dataStream->read((char*) out, size);
-}
-
-byte* App::readGameImageFile(std::string name, unsigned int& width, unsigned int& height, unsigned int& byteSize) {
-    unsigned int size = 0;
-    byte* data = this->readGameFile(name, size);
-
-    std::istringstream dataStream (std::string((char*) data, size));
-    delete data;
-
-    char sig [8];
-    dataStream.read(&sig[0], 8);
-    int i = png_sig_cmp((png_bytep) sig, 0, 8);
-    if(i != 0) {
-        Logger::main->warn("Image", "File %s is not a png image [%i]", name.c_str(), i);
-        return null;
-    }
-
-    png_struct* png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, null, null, null);
-    if(!png_ptr) return null;
-
-    png_info* info_ptr = png_create_info_struct(png_ptr);
-
-    png_set_read_fn(png_ptr, (void*) &dataStream, readGameImageFile_callback);
-    png_set_sig_bytes(png_ptr, 8);
-    png_read_info(png_ptr, info_ptr);
-
-    png_uint_32 iwidth, iheight;
-    int depth, colorType;
-    png_get_IHDR(png_ptr, info_ptr, &iwidth, &iheight, &depth, &colorType, null, null, null);
-
-    width = (unsigned int) iwidth;
-    height = (unsigned int) iheight;
-
-    if(colorType != PNG_COLOR_TYPE_RGBA) {
-        Logger::main->warn("Image", "%s: color type (%i) is not RGBA", name.c_str(), colorType);
-    }
-
-    png_size_t rowBytes = png_get_rowbytes(png_ptr, info_ptr);
-
-    byteSize = (unsigned int) rowBytes * height;
-
-    //png_byte* rows [height];
-    png_byte* rows [height];
-    byte* img = new byte[rowBytes * height];
-
-    for(int i = 0; i < height; i++) {
-        rows[i] = (png_byte*) &img[(height - 1 - i) * rowBytes];
-    }
-
-    png_read_image(png_ptr, rows);
-
-    png_destroy_read_struct(&png_ptr, &info_ptr, null);
-
-    return img;
-}

@@ -1,6 +1,6 @@
 #include "Inventory.h"
 
-#include "Item.h"
+#include "game/item/ItemVariant.h"
 
 bool Inventory::addItem(ItemInstance item) {
     for (int i = 0; i < items.size(); i++) {
@@ -21,8 +21,7 @@ bool Inventory::addItem(ItemInstance item) {
     for (int i = 0; i < items.size(); i++) {
         ItemInstance s = items[i];
         if (s.isEmpty()) {
-            s.setItem(item.getItem());
-            s.damage = item.damage;
+            s.setItem(item.getItem(), item.getItemData());
             if (item.count > s.getItem()->getMaxStackSize()) {
                 s.count = s.getItem()->getMaxStackSize();
                 item.count -= s.count;
