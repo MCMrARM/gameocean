@@ -191,7 +191,7 @@ void MCPEPlayer::sendInventory() {
     generalMutex.lock();
     pk->hotbar.resize(9);
     for (int i = 0; i < 9; i++)
-        pk->hotbar[i] = hotbarSlots[i];
+        pk->hotbar[i] = hotbarSlots[i] + 9;
     generalMutex.unlock();
     writePacket(std::move(pk));
     sendHeldItem();
@@ -214,4 +214,10 @@ void MCPEPlayer::linkHeldItem(int hotbarSlot, int inventorySlot) {
     inventory.setHeldSlot(inventorySlot);
     hotbarSlots[hotbarSlot] = inventorySlot;
     generalMutex.unlock();
+}
+
+void MCPEPlayer::sendBlockUpdate(BlockPos bpos) {
+    std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
+    pk->add(world, bpos.x, bpos.y, bpos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+    writePacket(std::move(pk));
 }

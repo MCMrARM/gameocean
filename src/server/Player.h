@@ -6,6 +6,7 @@
 #include <mutex>
 #include <set>
 #include <atomic>
+#include <game/item/BlockVariant.h>
 #include "common.h"
 #include "Entity.h"
 #include "Server.h"
@@ -13,13 +14,19 @@
 #include "command/CommandSender.h"
 #include "protocol/mcpe/MCPEPacket.h"
 #include "PlayerInventory.h"
+#include "world/BlockPos.h"
 
 class Server;
 class Protocol;
 class Chunk;
+class PlayerChunkQueueThread;
+class PlayerBlockDestroyThread;
 
 class Player : public Entity, public CommandSender {
     friend class Entity;
+    friend class World;
+    friend class PlayerChunkQueueThread;
+    friend class PlayerBlockDestroyThread;
 
 protected:
     Server& server;
@@ -30,6 +37,11 @@ protected:
     bool teleporting = false;
     int viewChunks = 94;
 
+    BlockPos miningBlockPos;
+    BlockVariant* miningBlock;
+    long long miningStarted = -1;
+    int miningTime;
+
     std::atomic<bool> shouldUpdateChunkQueue;
     std::recursive_mutex chunkArrayMutex;
     std::unordered_map<ChunkPos, Chunk*> sentChunks;
@@ -37,6 +49,10 @@ protected:
     std::vector<ChunkPos> sendChunksQueue;
 
     std::set<Entity*> spawnedEntities;
+
+    void updateChunkQueue();
+    void sendQueuedChunks();
+    void updateTeleportState();
 
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
@@ -57,8 +73,12 @@ protected:
     };
     virtual void updateEntityPos(Entity* entity) {};
 
+    virtual void sendBlockUpdate(BlockPos bpos) = 0;
+
+    int calculateMiningTime();
+
 public:
-    Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), inventory(*this, 36) {};
+    Player(Server& server);
 
     PlayerInventory inventory;
 
@@ -79,10 +99,6 @@ public:
 
     bool tryMove(float x, float y, float z);
 
-    void updateChunkQueue();
-    void sendQueuedChunks();
-    void updateTeleportState();
-
     virtual void sendMessage(std::string text) {};
 
     void processMessage(std::string text);
@@ -90,6 +106,12 @@ public:
     virtual void sendInventorySlot(int slotId) = 0;
     virtual void sendInventory() = 0;
     virtual void sendHeldItem() = 0;
+
+    virtual void startMining(BlockPos pos);
+    virtual void cancelMining();
+    virtual void finishedMining();
+    inline int getMiningTime() { return miningTime; };
+    int getRemainingMiningTime();
 
 };
 

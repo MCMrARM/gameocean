@@ -5,6 +5,7 @@
 #include <mutex>
 #include <algorithm>
 #include <set>
+#include "PlayerBlockDestroyThread.h"
 
 class World;
 class Player;
@@ -25,6 +26,7 @@ public:
     int sendChunksDelay = 25; // in ms
     World* mainWorld;
     std::set<Protocol*> enabledProtocols;
+    PlayerBlockDestroyThread playerBlockDestroyThread;
 
     Server();
 

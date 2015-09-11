@@ -17,6 +17,7 @@ private:
     std::string name;
     std::recursive_mutex chunkMutex;
     std::unordered_map<ChunkPos, Chunk*> chunks;
+    std::set<Player*> players;
     WorldProvider* provider;
 
 public:
@@ -34,9 +35,9 @@ public:
         Chunk* c = getChunkAt(x >> 4, z >> 4, false);
         if (c == null)
             return;
-        c->mutex.lock();
-        c->setBlock(x % 16, y, z % 16, id, data);
-        c->mutex.unlock();
+        std::lock_guard<std::recursive_mutex> guard (c->mutex);
+        c->setBlock(x & 0xf, y, z & 0xf, id, data);
+        broadcastBlockUpdate({x, y, z});
     };
     inline void setBlock(BlockPos pos, BlockId id, byte data) {
         setBlock(pos.x, pos.y, pos.z, id, data);
@@ -46,10 +47,8 @@ public:
         Chunk* c = getChunkAt(x >> 4, z >> 4, false);
         if (c == null)
             return { 0, 0 };
-        c->mutex.lock();
-        WorldBlock r = c->getBlock(x % 16, y, z % 16);
-        c->mutex.unlock();
-        return r;
+        std::lock_guard<std::recursive_mutex> guard (c->mutex);
+        return c->getBlock(x & 0xf, y, z & 0xf);
     };
     inline WorldBlock getBlock(BlockPos pos) {
         return getBlock(pos.x, pos.y, pos.z);
@@ -67,10 +66,8 @@ public:
     };
 
     inline bool isChunkLoaded(ChunkPos pos) {
-        chunkMutex.lock();
-        bool ret = (chunks.count(pos) > 0);
-        chunkMutex.unlock();
-        return ret;
+        std::lock_guard<std::recursive_mutex> guard (chunkMutex);
+        return (chunks.count(pos) > 0);
     };
     inline bool isChunkLoaded(int x, int z) {
         return isChunkLoaded(ChunkPos(x, z));
@@ -95,6 +92,29 @@ public:
         }
         chunks[chunk->pos] = chunk;
         chunkMutex.unlock();
+    };
+
+    void addPlayer(Player* player) {
+        chunkMutex.lock();
+        players.insert(player);
+        chunkMutex.unlock();
+    };
+
+    void removePlayer(Player* player) {
+        chunkMutex.lock();
+        players.erase(player);
+        chunkMutex.unlock();
+    };
+
+    std::set<Player*> getPlayers() {
+        std::lock_guard<std::recursive_mutex> guard (chunkMutex);
+        return players;
+    };
+
+    void broadcastBlockUpdate(BlockPos pos) {
+        for (Player* p : getPlayers()) {
+            p->sendBlockUpdate(pos);
+        }
     };
 
 };

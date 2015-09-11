@@ -4,12 +4,19 @@
 #include "world/World.h"
 #include "command/Command.h"
 #include "utils/StringUtils.h"
+#include "utils/Time.h"
 
 const std::string Player::TYPE_NAME = "Player";
+
+Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), inventory(*this, 36) {
+    world.addPlayer(this);
+};
 
 void Player::close(std::string reason, bool sendToPlayer) {
     if (closed)
         return;
+
+    world.removePlayer(this);
 
     Entity::close();
     for (auto entry : sentChunks) {
@@ -52,11 +59,10 @@ void Player::setSpawned() {
     chunkArrayMutex.lock();
     for (auto entry : sentChunks) {
         Chunk* c = entry.second;
-        c->mutex.lock();
+        std::lock_guard<std::recursive_mutex> guard (c->mutex);
         for (auto e : c->entities) {
             e.second->spawnTo(this);
         }
-        c->mutex.unlock();
     }
     chunkArrayMutex.unlock();
 }
@@ -189,6 +195,57 @@ void Player::updateTeleportState() {
     generalMutex.lock();
     sendPosition(x, y, z);
     generalMutex.unlock();
+}
+
+void Player::startMining(BlockPos pos) {
+    miningBlockPos = pos;
+    miningBlock = world.getBlock(pos).getBlockVariant();
+    miningStarted = Time::now();
+    miningTime = calculateMiningTime();
+    server.playerBlockDestroyThread.notifyChange();
+}
+
+void Player::cancelMining() {
+    miningBlockPos = {};
+    miningBlock = null;
+    miningStarted = 0;
+}
+
+void Player::finishedMining() {
+    if (miningBlock != world.getBlock(miningBlockPos).getBlockVariant()) {
+        cancelMining();
+        return;
+    }
+    world.setBlock(miningBlockPos, 0, 0);
+    cancelMining();
+}
+
+int Player::getRemainingMiningTime() {
+    if (miningBlock == null)
+        return -1;
+    return miningTime - (Time::now() - miningStarted);
+}
+
+int Player::calculateMiningTime() {
+    if (miningBlock == null)
+        return -1;
+
+    float r = miningBlock->hardness * 1500.0f;
+    bool hasTool = false;
+    ItemVariant* held = inventory.getHeldItem().getItem();
+    if (held != null && miningBlock->blockGroup != null) {
+        if (held->toolAffects.count(miningBlock->blockGroup) > 0) {
+            hasTool = true;
+            r /= held->toolBreakMultiplier;
+        }
+    }
+
+    std::cout << miningBlock->getName() << " " << (int)miningBlock->needsTool << "\n";
+    if (miningBlock->needsTool && !hasTool) {
+        r *= 3.3f;
+    }
+    // TODO: On ground
+    return (int) r;
 }
 
 void Player::processMessage(std::string text) {

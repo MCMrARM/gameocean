@@ -2,7 +2,9 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include "common.h"
+class BlockGroup;
 
 class ItemVariant {
 protected:
@@ -13,6 +15,9 @@ protected:
     int maxStackSize = 64;
 
 public:
+    std::set<BlockGroup*> toolAffects;
+    float toolBreakMultiplier = 1.0f;
+
     ItemVariant(int id, short variantDataId, std::string stringId);
     inline int getId() { return id; };
     virtual std::string getStringId() { return stringId; };
@@ -22,6 +27,8 @@ public:
 
     void copyItemProperties(ItemVariant const& item) {
         this->maxStackSize = item.maxStackSize;
+        this->toolAffects = item.toolAffects;
+        this->toolBreakMultiplier = item.toolBreakMultiplier;
     };
 
     inline int getMaxStackSize() { return maxStackSize; };

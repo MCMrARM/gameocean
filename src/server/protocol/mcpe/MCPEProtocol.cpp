@@ -3,6 +3,7 @@
 #include "common.h"
 #include <zlib.h>
 #include <sstream>
+#include <chrono>
 #include <iostream>
 #include <RakNet/RakPeerInterface.h>
 #include <RakNet/MessageIdentifiers.h>
@@ -40,6 +41,8 @@ void MCPEProtocol::loop() {
         for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
             processPacket(packet);
         }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 

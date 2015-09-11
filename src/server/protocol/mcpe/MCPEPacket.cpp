@@ -12,9 +12,12 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPELoginPacket>(MCPE_LOGIN_PACKET);
     MCPEPacket::registerPacket<MCPETextPacket>(MCPE_TEXT_PACKET);
     MCPEPacket::registerPacket<MCPEMovePlayerPacket>(MCPE_MOVE_PLAYER_PACKET);
+    MCPEPacket::registerPacket<MCPERemoveBlockPacket>(MCPE_REMOVE_BLOCK_PACKET);
     MCPEPacket::registerPacket<MCPEEntityEventPacket>(MCPE_ENTITY_EVENT_PACKET);
     MCPEPacket::registerPacket<MCPEMobEquipmentPacket>(MCPE_MOB_EQUIPMENT_PACKET);
+    MCPEPacket::registerPacket<MCPEInteractPacket>(MCPE_INTERACT_PACKET);
     MCPEPacket::registerPacket<MCPEUseItemPacket>(MCPE_USE_ITEM_PACKET);
+    MCPEPacket::registerPacket<MCPEPlayerActionPacket>(MCPE_PLAYER_ACTION_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetSlotPacket>(MCPE_CONTAINER_SET_SLOT_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetContentPacket>(MCPE_CONTAINER_SET_CONTENT_PACKET);
 }
@@ -76,7 +79,7 @@ void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
 
 void MCPEUpdateBlockPacket::add(World& world, int x, int y, int z, byte flags) {
     WorldBlock b = world.getBlock(x, y, z);
-    entries.push_back({ x, y, (byte) y, b.id, b.data, flags });
+    entries.push_back({ x, z, (byte) y, b.id, b.data, flags });
 }
 
 void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
@@ -108,10 +111,14 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
         std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
         BlockPos pos = {x, y, z};
         pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+        pos = pos.side((BlockPos::Side) side);
         pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
         player.writePacket(std::move(pk));
         return;
     }
+
+    if (y < 0 || y > 127)
+        return;
 
     if (item.getItemId() > 0 && item.getItemId() < 256) {
         std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
@@ -132,4 +139,22 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
         }
         player.writePacket(std::move(pk));
     }
+}
+
+void MCPEPlayerActionPacket::handle(MCPEPlayer& player) {
+    if (action == Action::START_BREAK) {
+        if (y < 0 || y > 127)
+            return;
+        player.startMining({ x, y, z });
+    } else if (action == Action::ABORT_BREAK) {
+        player.cancelMining();
+    }
+}
+
+void MCPERemoveBlockPacket::handle(MCPEPlayer& player) {
+    std::cout << "mined " << x << " " << y << " " << z << "!\n";
+
+    std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
+    pk->add(player.getWorld(), x, y, z, MCPEUpdateBlockPacket::FLAG_ALL);
+    player.writePacket(std::move(pk));
 }

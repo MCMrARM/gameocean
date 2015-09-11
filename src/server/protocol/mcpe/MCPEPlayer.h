@@ -47,9 +47,12 @@ protected:
     virtual void despawnEntity(Entity* entity);
     virtual void updateEntityPos(Entity* entity);
 
+    virtual void sendBlockUpdate(BlockPos bpos);
+
 public:
     MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {
-        memset(&hotbarSlots[0], 0, sizeof(hotbarSlots));
+        for (int i = 0; i < 9; i++)
+            hotbarSlots[i] = i;
     };
     virtual ~MCPEPlayer() {
         for (QueuedPacket& pk : packetQueue) {

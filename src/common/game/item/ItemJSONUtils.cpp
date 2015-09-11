@@ -4,6 +4,7 @@
 #include "ItemVariant.h"
 #include "BlockVariant.h"
 #include "ItemRegister.h"
+#include "BlockGroup.h"
 #include "../../utils/ResourceManager.h"
 
 void ItemJSONUtils::parseDataDirectory(std::string path) {
@@ -101,6 +102,11 @@ void ItemJSONUtils::parseItemVariant(ItemVariant* item, Json::Value& val) {
     */
 
     item->setMaxStackSize(val.get("stack_size", item->getMaxStackSize()).asInt());
+    const Json::Value& multiplierAffects = val["multiplier_affects"];
+    for (Json::ValueIterator it = multiplierAffects.begin(); it != multiplierAffects.end(); it++) {
+        item->toolAffects.insert(BlockGroup::get(it->asString()));
+    }
+    item->toolBreakMultiplier = val.get("destroy_multiplier", item->toolBreakMultiplier).asFloat();
 }
 
 void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
@@ -118,4 +124,12 @@ void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
     }
     */
     item->replaceable = val.get("replaceable", item->replaceable).asBool();
+    item->hardness = val.get("hardness", item->hardness).asFloat();
+    {
+        std::string blockGroup = val.get("group", "").asString();
+        if (blockGroup.length() > 0) {
+            item->blockGroup = BlockGroup::get(blockGroup);
+        }
+    }
+    item->needsTool = val.get("needs_tool", item->needsTool).asBool();
 }

@@ -8,7 +8,8 @@
   "resistance": 30,
   "flammable": false,
   "stack_size": 64,
-  "groups": ["rock"],
+  "group": "rock",
+  "needs_tool": true,
   "drops": [
     {
       "name_id": "cobblestone",

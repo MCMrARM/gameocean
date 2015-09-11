@@ -423,6 +423,26 @@ public:
     virtual void handle(MCPEPlayer& player);
 };
 
+class MCPERemoveBlockPacket : public MCPEPacket {
+public:
+    MCPERemoveBlockPacket() {
+        id = MCPE_REMOVE_BLOCK_PACKET;
+    };
+
+    long long eid;
+    int x, z;
+    byte y;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(eid);
+        stream.Read(x);
+        stream.Read(z);
+        stream.Read(y);
+    };
+
+    virtual void handle(MCPEPlayer& player);
+};
+
 class World;
 class MCPEUpdateBlockPacket : public MCPEPacket {
 public:
@@ -433,8 +453,8 @@ public:
     static const int FLAG_NEIGHBORS = 1;
     static const int FLAG_NETWORK = 2;
     static const int FLAG_NOGRAPHIC = 4;
-    static const int FLAG_PRIORITY = 4;
-    static const int FLAG_ALL = (FLAG_NEIGHBORS || FLAG_NETWORK);
+    static const int FLAG_PRIORITY = 8;
+    static const int FLAG_ALL = (FLAG_NEIGHBORS | FLAG_NETWORK);
 
     struct Entry {
         int x, z;
@@ -451,7 +471,7 @@ public:
             stream.Write(entry.z);
             stream.Write(entry.y);
             stream.Write(entry.blockId);
-            stream.Write((entry.flags << 4) || entry.blockMeta);
+            stream.Write((byte) ((entry.flags << 4) | (int) entry.blockMeta));
         }
     };
 
@@ -522,6 +542,26 @@ public:
     virtual void handle(MCPEPlayer& player);
 };
 
+class MCPEInteractPacket : public MCPEPacket {
+public:
+    MCPEInteractPacket() {
+        id = MCPE_INTERACT_PACKET;
+    };
+
+    byte actionId;
+    long long target;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(actionId);
+        stream.Read(target);
+    };
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(actionId);
+        stream.Write(target);
+    };
+};
+
 class MCPEUseItemPacket : public MCPEPacket {
 public:
     MCPEUseItemPacket() {
@@ -546,6 +586,53 @@ public:
         stream.Read(posY);
         stream.Read(posZ);
         item = readItemInstance(stream);
+    };
+
+    virtual void handle(MCPEPlayer& player);
+};
+
+class MCPEPlayerActionPacket : public MCPEPacket {
+public:
+    MCPEPlayerActionPacket() {
+        id = MCPE_PLAYER_ACTION_PACKET;
+    };
+
+    enum class Action {
+        START_BREAK,
+        ABORT_BREAK,
+        STOP_BREAK,
+        RELEASE_ITEM = 5,
+        STOP_SLEEPING,
+        RESPAWN,
+        JUMP,
+        START_SPRINT,
+        STOP_SPRINT,
+        START_SNEAK,
+        STOP_SNEAK,
+        DIMENSION_CHANGE
+    };
+
+    long long eid;
+    Action action;
+    int x, y, z;
+    int side;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(eid);
+        stream.Read((int&) action);
+        stream.Read(x);
+        stream.Read(y);
+        stream.Read(z);
+        stream.Read(side);
+    };
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        stream.Write((int) action);
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+        stream.Write(side);
     };
 
     virtual void handle(MCPEPlayer& player);

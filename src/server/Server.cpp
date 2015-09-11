@@ -13,7 +13,7 @@
 #include "PlayerChunkQueueThread.h"
 #include "utils/StringUtils.h"
 
-Server::Server() {
+Server::Server() : playerBlockDestroyThread(*this) {
     mainWorld = new World("test");
 }
 
@@ -43,17 +43,22 @@ void Server::start() {
     PlayerChunkQueueThread chunkQueueThread (*this);
     chunkQueueThread.start();
 
+    playerBlockDestroyThread.start();
+
     for (Protocol* protocol : enabledProtocols) {
         protocol->start();
     }
 
-    timeval tv = { 0, 50000 };
+    timeval tv;
     fd_set fds;
 
     ServerCommandSender commandSender;
     while (true) {
         if (stopping)
             break;
+
+        tv.tv_sec = 0;
+        tv.tv_usec = 50000;
 
         FD_ZERO(&fds);
         FD_SET(STDIN_FILENO, &fds);
