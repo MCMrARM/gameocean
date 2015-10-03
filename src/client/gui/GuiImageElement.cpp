@@ -28,12 +28,12 @@ void GuiImageElement::updateTextureId() {
     this->requireUpdate();
 }
 
-void GuiImageElement::rebuild(RenderObjectBuilder *builder) {
+void GuiImageElement::rebuild(RenderObjectBuilder& builder) {
     this->shouldRebuild = false;
-    builder->rect2d(x, y, x + width, y + height, texX, texY, texX + texW, texY + texH, this->texture, color);
+    builder.rect2d(x, y, x + width, y + height, texX, texY, texX + texW, texY + texH, this->texture, color);
 }
 
-GuiUpdateFlags GuiImageElement::update(RenderObjectBuilder *builder) {
+GuiUpdateFlags GuiImageElement::update(RenderObjectBuilder& builder) {
     GuiUpdateFlags flags;
     
     if(!this->shouldUpdate) return flags;

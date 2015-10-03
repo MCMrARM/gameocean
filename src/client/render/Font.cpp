@@ -2,6 +2,7 @@
 
 #include "../App.h"
 #include "utils/Logger.h"
+#include "utils/ResourceManager.h"
 #include "TextureManager.h"
 #include "RenderObjectBuilder.h"
 
@@ -14,10 +15,8 @@ Font::Font(std::string fontName, int charW, int charH) {
     this->charsPerLine = texture->getWidth() / charW;
     int charsH = texture->getHeight() / charH;
     this->charSizes = new unsigned char[charsPerLine * charsH];
-    unsigned int w, h;
-    unsigned int byteSize = 0;
-    byte* data = App::instance->readGameImageFile(fontName, w, h, byteSize);
-    if(byteSize == 0) return;
+    ResourceManager::PNGInfo data = ResourceManager::instance->readAssetImageFile(fontName);
+    if (data.dataSize == 0) return;
     for(int i = 0; i < charsPerLine; i++) {
         for(int j = 0; j < charsH; j++) {
             int charX = charW * i;
@@ -26,8 +25,8 @@ Font::Font(std::string fontName, int charW, int charH) {
             while(charSize < charW) {
                 bool pixel = false;
                 for(int l = 0; l < charH; l++) {
-                    int dPos = (h - 1 - (charY + l)) * w * 4 + (charX + charSize) * 4;//(w * (h - charY + l) + charX + charSize) * 4;//(w * (charY + l) + charX + charSize) * 4;
-                    if(data[dPos + 3] > 0) { // alpha
+                    int dPos = (data.height - 1 - (charY + l)) * data.width * 4 + (charX + charSize) * 4;//(w * (h - charY + l) + charX + charSize) * 4;//(w * (charY + l) + charX + charSize) * 4;
+                    if((*data.data)[dPos + 3] > 0) { // alpha
                         pixel = true;
                         break;
                     }
@@ -54,7 +53,7 @@ int Font::getWidth(std::string text) {
     return w;
 }
 
-void Font::buildWordWrap(RenderObjectBuilder *builder, int x, int y, int w, std::string text, Color color) {
+void Font::buildWordWrap(RenderObjectBuilder& builder, int x, int y, int w, std::string text, Color color) {
     bool bold = false;
     bool italic = false;
     bool underline = false;
@@ -65,7 +64,7 @@ void Font::buildWordWrap(RenderObjectBuilder *builder, int x, int y, int w, std:
         int cX = (cId % charsPerLine) * 8;
         int cY = (cId / charsPerLine) * 8;
 
-        builder->rect2d(x, y, x + cW, y + charH, cX, cY, cX + cW, cY + charH, texture, color);
+        builder.rect2d(x, y, x + cW, y + charH, cX, cY, cX + cW, cY + charH, texture, color);
 
         x += cW + 1;
     }

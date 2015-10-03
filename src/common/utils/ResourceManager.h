@@ -17,7 +17,7 @@ public:
     };
 
     struct PNGInfo {
-        byte* data;
+        std::unique_ptr<std::vector<byte>> data;
         unsigned long width, height, dataSize;
 
         bool init(std::vector<byte>& pngData);
@@ -39,7 +39,7 @@ public:
     };
     virtual PNGInfo readAssetImageFile(std::string name) {
         PNGInfo ret;
-        std::unique_ptr<std::istream> s = openAssetFile(name, std::ios_base::out | std::ios_base::binary);
+        std::unique_ptr<std::istream> s = openAssetFile(name, std::ios_base::in | std::ios_base::binary);
         ret.init(*s);
         return ret;
     };

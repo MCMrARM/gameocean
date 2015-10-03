@@ -13,7 +13,6 @@ public:
 
     virtual void initOpenGL();
     virtual void destroyOpenGL();
-    virtual byte* readGameFile(std::string name, unsigned int& size);
 
     static std::string currentInputText;
     virtual void showKeyboard(std::string text) {

@@ -5,51 +5,34 @@
 void DynamicGuiElement::rebuildDynamic() {
     shouldRebuild = false;
 
-    if(this->renderObject != null) {
-        delete this->renderObject;
-    }
-    if(this->renderObjectBuilder != null) {
-        delete this->renderObjectBuilder;
-    }
-
     int vertexCount = this->getVertexCount();
     if(vertexCount == -1) {
-        DynamicRenderObjectBuilder builder;
-        rebuild(&builder);
-        this->renderObject = builder.getRenderObject();
-        this->renderObjectBuilder = new StaticRenderObjectBuilder(*renderObject);
-    } else {
-        StaticRenderObjectBuilder* builder = new StaticRenderObjectBuilder(vertexCount);
+        RenderObjectBuilder builder;
         rebuild(builder);
-        this->renderObject = builder->getRenderObject();
-        this->renderObjectBuilder = builder;
+        renderObject = std::move(builder.getRenderObject());
+    } else {
+        RenderObjectBuilder builder (vertexCount);
+        rebuild(builder);
+        renderObject = std::move(builder.getRenderObject());
     }
-}
-
-DynamicGuiElement::~DynamicGuiElement() {
-    if(this->renderObject != null) {
-        delete this->renderObject;
-    }
-    if(this->renderObjectBuilder != null) {
-        delete this->renderObjectBuilder;
-    }
+    renderObjectBuilder = std::unique_ptr<RenderObjectBuilder>(new RenderObjectBuilder(*renderObject));
 }
 
 void DynamicGuiElement::updateDynamic() {
     renderObjectBuilder->pos = 0;
-    GuiUpdateFlags flags = update(renderObjectBuilder);
+    GuiUpdateFlags flags = update(*renderObjectBuilder);
     this->renderObject->updateFragment(0, getVertexCount(), flags.updateVertex, flags.updateTextureUV,
                                        flags.updateTextureId, flags.updateColor);
 }
 
 void DynamicGuiElement::render() {
-    if(this->renderObject == null || this->hasVertexCountUpdate()) {
+    if(!this->renderObject || this->hasVertexCountUpdate()) {
         this->rebuildDynamic();
     } else if(this->needsUpdate()) {
         this->updateDynamic();
     }
 
-    if(this->renderObject != null) {
+    if(this->renderObject) {
         this->renderObject->render();
     }
 }

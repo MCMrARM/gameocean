@@ -17,7 +17,7 @@ protected:
     bool carretVisible;
     long long carretTime = 0;
 
-    inline void buildCarret(RenderObjectBuilder* builder);
+    inline void buildCarret(RenderObjectBuilder& builder);
 
 public:
     GuiTextBoxElement(int x, int y, int w, int h, std::string text);
@@ -36,8 +36,8 @@ public:
 
     virtual bool needsUpdate() { return (shouldUpdate | active); };
 
-    virtual void rebuild(RenderObjectBuilder* builder);
-    virtual GuiUpdateFlags update(RenderObjectBuilder* builder);
+    virtual void rebuild(RenderObjectBuilder& builder);
+    virtual GuiUpdateFlags update(RenderObjectBuilder& builder);
 
     virtual void setText(std::string newText);
 

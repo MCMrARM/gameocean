@@ -4,13 +4,14 @@
 
 #include "common.h"
 #include "../App.h"
+#include "utils/ResourceManager.h"
 #include "TextureManager.h"
 
 Shader* Shader::current = null;
 
 Shader::Shader(std::string vertexShaderFile, std::string fragmentShaderFile) {
-    std::string vcode = App::instance->readGameTextFile(vertexShaderFile);
-    std::string fcode = App::instance->readGameTextFile(fragmentShaderFile);
+    std::string vcode = ResourceManager::instance->readAssetTextFile(vertexShaderFile);
+    std::string fcode = ResourceManager::instance->readAssetTextFile(fragmentShaderFile);
 
     std::stringstream stream;
     stream << "#define MAX_TEXTURES " << TextureManager::MAX_TEXTURES << "\n" << fcode;

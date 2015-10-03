@@ -11,8 +11,8 @@ find_package(Threads REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(PkgConfig REQUIRED)
 
-SET(CMAKE_CXX_COMPILER "g++-4.8")
-SET(CMAKE_C_COMPILER "gcc-4.8")
+#SET(CMAKE_CXX_COMPILER "g++-4.8")
+#SET(CMAKE_C_COMPILER "gcc-4.8")
 
 pkg_search_module(GLFW REQUIRED glfw3)
 

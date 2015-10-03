@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "common.h"
 #include "Texture.h"
 #include "RenderObject.h"
@@ -8,26 +9,23 @@
 class RenderObjectBuilder {
 
 protected:
-    bool buildTexUV = true;
-    bool buildTexId = true;
-    bool buildColor = true;
-
     int size;
-    float* vertexArr = null;
-    float* textureUVArr = null;
-    float* textureIdArr = null;
-    float* colorArr = null;
+    std::shared_ptr<std::vector<float>> vertexArr = null;
+    std::shared_ptr<std::vector<float>> textureUVArr = null;
+    std::shared_ptr<std::vector<float>> textureIdArr = null;
+    std::shared_ptr<std::vector<float>> colorArr = null;
+    bool renderObjectBuilt = false;
 
-    virtual void addVertex(float x, float y, float z, float texU, float texV, int texId, float r, float g, float b, float a);
-
-    virtual void reallocateArray(float*& arr, int entrySize, int newSize, bool deleteOld);
+    void addVertex(float x, float y, float z, float texU, float texV, int texId, float r, float g, float b, float a);
 
 public:
     int pos = 0;
 
     RenderObjectBuilder(int size, bool texUV, bool texId, bool color);
     RenderObjectBuilder(int size) : RenderObjectBuilder(size, true, true, true) {};
-    RenderObjectBuilder(int size, float* vertex, float* texUV, float* texId, float* color);
+    RenderObjectBuilder() : RenderObjectBuilder(128, true, true, true) {};
+    RenderObjectBuilder(std::shared_ptr<std::vector<float>> vertex, std::shared_ptr<std::vector<float>> texUV,
+                        std::shared_ptr<std::vector<float>> texId, std::shared_ptr<std::vector<float>> color);
     RenderObjectBuilder(RenderObject& object);
 
     inline void vertex(float x, float y, float z, float texU, float texV, int texId, Color color) {
@@ -68,47 +66,6 @@ public:
         rect2d(x, y, x2, y2, 0.f, 0.f, 0.f, 0.f, 0, {1.f, 1.f, 1.f, 1.f});
     };
 
-    virtual RenderObject* getRenderObject();
-
-    virtual void freeArrays();
-    /**
-     * Use this function to either reuse this object after calling freeArrays() or if you want to create a second
-     * RenderObject from it
-     */
-    virtual void reallocate(int newSize, bool deleteOld);
-    void reallocate() { reallocate(size, false); };
-
-};
-
-class StaticRenderObjectBuilder : public RenderObjectBuilder {
-
-protected:
-    virtual void addVertex(float x, float y, float z, float texU, float texV, int texId, float r, float g, float b, float a);
-
-public:
-    StaticRenderObjectBuilder(int size, bool texUV, bool texId, bool color) : RenderObjectBuilder(size, texUV, texId, color) {};
-    StaticRenderObjectBuilder(int size) : StaticRenderObjectBuilder(size, true, true, true) {};
-    //StaticRenderObjectBuilder(int size, float* vertex, float* texUV, float* texId, float* color) : StaticRenderObjectBuilder(size, vertex, texUV, texId, color) {};
-    StaticRenderObjectBuilder(RenderObject& object) : RenderObjectBuilder(object) {};
-
-};
-
-class DynamicRenderObjectBuilder : public RenderObjectBuilder {
-
-protected:
-    static const int DEFAULT_SIZE = 512;
-
-    virtual void addVertex(float x, float y, float z, float texU, float texV, int texId, float r, float g, float b, float a);
-
-public:
-
-    DynamicRenderObjectBuilder(int size, bool texUV, bool texId, bool color) : RenderObjectBuilder(size, texUV, texId, color) {};
-    DynamicRenderObjectBuilder(int size) : DynamicRenderObjectBuilder(size, true, true, true) {};
-    DynamicRenderObjectBuilder(bool texUV, bool texId, bool color) : DynamicRenderObjectBuilder(DEFAULT_SIZE, texUV, texId, color) {};
-    DynamicRenderObjectBuilder() : DynamicRenderObjectBuilder(DEFAULT_SIZE) {};
-    DynamicRenderObjectBuilder(RenderObject& object) : RenderObjectBuilder(object) {};
-
-    virtual RenderObject* getRenderObject(bool realloc);
-    virtual RenderObject* getRenderObject() { return getRenderObject(true); };
+    std::unique_ptr<RenderObject> getRenderObject();
 
 };

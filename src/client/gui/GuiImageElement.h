@@ -22,8 +22,8 @@ public:
 
     void updateTextureId();
 
-    virtual void rebuild(RenderObjectBuilder* builder);
-    virtual GuiUpdateFlags update(RenderObjectBuilder* builder);
+    virtual void rebuild(RenderObjectBuilder& builder);
+    virtual GuiUpdateFlags update(RenderObjectBuilder& builder);
 
 };
 

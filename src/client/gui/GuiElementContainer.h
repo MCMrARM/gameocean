@@ -26,8 +26,8 @@ public:
     virtual bool needsUpdate();
     virtual bool hasVertexCountUpdate();
     virtual int getVertexCount();
-    virtual void rebuild(RenderObjectBuilder* builder);
-    virtual GuiUpdateFlags update(RenderObjectBuilder* builder) {
+    virtual void rebuild(RenderObjectBuilder& builder);
+    virtual GuiUpdateFlags update(RenderObjectBuilder& builder) {
         GuiUpdateFlags flags;
         return flags;
     };

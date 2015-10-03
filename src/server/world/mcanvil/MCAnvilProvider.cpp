@@ -133,23 +133,23 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
 
     MemoryBinaryStream ms (data, byteSize);
     ms.swapEndian = true;
-    NBTCompound* tag = (NBTCompound*) NBTTag::getTag(ms);
-    tag = (NBTCompound*) tag->val["Level"];
+    std::unique_ptr<NBTTag> ptag = NBTTag::getTag(ms);
+    NBTCompound& tag = (NBTCompound&) *((NBTCompound&) *ptag).val["Level"];
 
     c->clear();
 
-    NBTList* list = (NBTList*) tag->val["Sections"];
-    for (NBTTag* sectionTag : list->val) {
-        NBTCompound* section = (NBTCompound*) sectionTag;
+    NBTList& list = (NBTList&) *tag.val["Sections"];
+    for (std::unique_ptr<NBTTag>& sectionTag : list.val) {
+        NBTCompound& section = (NBTCompound&) *sectionTag;
 
-        char sectionY = ((NBTByte*) section->val["Y"])->val;
+        char sectionY = ((NBTByte&) *section.val["Y"]).val;
         if (sectionY >= 8) continue;
         int offsetY = sectionY * 16 * 16 * 16;
 
-        byte* ids = ((NBTByteArray*) section->val["Blocks"])->val;
-        NibbleArray<2048>* meta = (NibbleArray<2048>*) ((NBTByteArray*) section->val["Data"])->val;
-        NibbleArray<2048>* light = (NibbleArray<2048>*) ((NBTByteArray*) section->val["BlockLight"])->val;
-        NibbleArray<2048>* skylight = (NibbleArray<2048>*) ((NBTByteArray*) section->val["SkyLight"])->val;
+        byte* ids = &((NBTByteArray&) *section.val["Blocks"]).val[0];
+        NibbleArray<2048>* meta = (NibbleArray<2048>*) &((NBTByteArray&) *section.val["Data"]).val[0];
+        NibbleArray<2048>* light = (NibbleArray<2048>*) &((NBTByteArray&) *section.val["BlockLight"]).val[0];
+        NibbleArray<2048>* skylight = (NibbleArray<2048>*) &((NBTByteArray&) *section.val["SkyLight"]).val[0];
         /*
         int i = 0;
         for (int y = 0; y < 16; y++) {
@@ -170,11 +170,12 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
         memcpy(&c->blockSkylight.array[offsetY / 2], &skylight[0], 16 * 16 * 16 / 2);
     }
 
-    NBTIntArray* heightmap = (NBTIntArray*) tag->val["HeightMap"];
-    for (int i = 0; i < heightmap->val.size(); i++) {
-        c->heightmap[i] = (byte) heightmap->val[i];
+    NBTIntArray& heightmap = (NBTIntArray&) *tag.val["HeightMap"];
+    memcpy(&c->heightmap[0], &heightmap.val[0], heightmap.val.size() * 4);
+    /*
+    for (int i = 0; i < heightmap.val.size(); i++) {
+        c->heightmap[i] = (byte) heightmap.val[i];
     }
-
+*/
     c->ready = true;
-    delete tag;
 }

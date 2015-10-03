@@ -40,8 +40,8 @@ public:
     virtual bool needsUpdate() { return shouldUpdate; };
     virtual bool hasVertexCountUpdate() { return shouldRebuild; };
     virtual int getVertexCount() { return vertexCount; };
-    virtual void rebuild(RenderObjectBuilder* builder) = 0;
-    virtual GuiUpdateFlags update(RenderObjectBuilder* builder) = 0;
+    virtual void rebuild(RenderObjectBuilder& builder) = 0;
+    virtual GuiUpdateFlags update(RenderObjectBuilder& builder) = 0;
     inline void requireUpdate() { this->shouldUpdate = true; };
     inline void requireRebuild() { this->shouldRebuild = true; };
 

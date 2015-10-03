@@ -152,8 +152,6 @@ void MCPEPlayerActionPacket::handle(MCPEPlayer& player) {
 }
 
 void MCPERemoveBlockPacket::handle(MCPEPlayer& player) {
-    std::cout << "mined " << x << " " << y << " " << z << "!\n";
-
     std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
     pk->add(player.getWorld(), x, y, z, MCPEUpdateBlockPacket::FLAG_ALL);
     player.writePacket(std::move(pk));

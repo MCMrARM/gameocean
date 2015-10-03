@@ -28,7 +28,7 @@ public:
     virtual bool onMousePress(MousePressEvent& event);
     virtual void onMouseRelease(MouseReleaseEvent& event);
 
-    virtual void rebuild(RenderObjectBuilder* builder);
+    virtual void rebuild(RenderObjectBuilder& builder);
 
     virtual void setText(std::string newText);
 

@@ -18,8 +18,8 @@ public:
 
     inline Texture* getTexture() { return texture; };
 
-    void buildWordWrap(RenderObjectBuilder* builder, int x, int y, int w, std::string text, Color color);
-    inline void build(RenderObjectBuilder* builder, int x, int y, std::string text, Color color) {
+    void buildWordWrap(RenderObjectBuilder& builder, int x, int y, int w, std::string text, Color color);
+    inline void build(RenderObjectBuilder& builder, int x, int y, std::string text, Color color) {
         Font::buildWordWrap(builder, x, y, -1, text, color);
     };
 

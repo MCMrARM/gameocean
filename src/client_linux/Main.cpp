@@ -1,9 +1,11 @@
 #include <GLFW/glfw3.h>
 #include "LinuxApp.h"
+#include "utils/ResourceManager.h"
 
 LinuxApp* app;
 
 int main(int argc, char **argv) {
+    ResourceManager::instance = new FileResourceManager("assets/", ".");
     app = new LinuxApp();
     app->init();
 
@@ -11,7 +13,7 @@ int main(int argc, char **argv) {
         Logger::main->error("GLFW", "Call to glfwInit failed");
         return -1;
     }
-    GLFWwindow* window = glfwCreateWindow(640, 480, "lbclient", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(640, 480, "client", NULL, NULL);
     app->resize(640, 480);
     if (!window)
     {

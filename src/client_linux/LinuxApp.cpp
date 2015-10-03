@@ -27,7 +27,7 @@ void LinuxApp::initOpenGL() {
 void LinuxApp::destroyOpenGL() {
     //
 }
-
+/*
 byte* LinuxApp::readGameFile(std::string name, unsigned int &size) {
     Logger::main->trace("LinuxApp/Assets", "Loading: %s", name.c_str());
     std::ifstream ifs ("assets/" + name, std::ios::binary | std::ios::ate);
@@ -43,7 +43,7 @@ byte* LinuxApp::readGameFile(std::string name, unsigned int &size) {
     ifs.read((char*) &ret[0], size);
     return ret;
 }
-
+*/
 void LinuxApp::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS) {
         if (LinuxApp::currentInputText.length() > 0) {

@@ -177,6 +177,7 @@ void App::render() {
     Font::main->getTexture()->unbind();
 }
 
+/*
 std::string App::readGameTextFile(std::string name) {
     unsigned int size = 0;
     byte* data = this->readGameFile(name, size);
@@ -185,4 +186,4 @@ std::string App::readGameTextFile(std::string name) {
     delete data;
     return str;
 }
-
+*/

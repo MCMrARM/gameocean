@@ -14,7 +14,7 @@ void readGameImageFile_callback(png_structp png_ptr, png_bytep out, png_size_t s
 }
 
 bool ResourceManager::PNGInfo::init(std::vector<byte>& pngData) {
-    membuf sbuf((char*) &pngData[0], (char*) &data[pngData.size()]);
+    membuf sbuf((char*) &pngData[0], (char*) &pngData[pngData.size()]);
     std::istream dataStream (&sbuf);
     return init(dataStream);
 }
@@ -52,10 +52,10 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
 
     dataSize = rowBytes * height;
     png_byte* rows [height];
-    byte* img = new byte[dataSize];
+    data = std::unique_ptr<std::vector<byte>>(new std::vector<byte>(dataSize));
 
     for (int i = 0; i < height; i++) {
-        rows[i] = &img[(height - 1 - i) * rowBytes];
+        rows[i] = &(*data)[(height - 1 - i) * rowBytes];
     }
 
     png_read_image(png_ptr, rows);

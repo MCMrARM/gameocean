@@ -39,15 +39,15 @@ void GuiTextBoxElement::blur() {
     App::instance->hideKeyboard();
 }
 
-void GuiTextBoxElement::buildCarret(RenderObjectBuilder *builder) {
+void GuiTextBoxElement::buildCarret(RenderObjectBuilder& builder) {
     Color c = textColor;
     if (!carretVisible) {
         c.a = 0.f;
     }
-    builder->rect2d(x + 3 + textW, y + height / 2 - 5, x + 3 + textW + 1, y + height / 2 + 5, 0, 0, 1, 1, Texture::EMPTY, c);
+    builder.rect2d(x + 3 + textW, y + height / 2 - 5, x + 3 + textW + 1, y + height / 2 + 5, 0, 0, 1, 1, Texture::EMPTY, c);
 }
 
-void GuiTextBoxElement::rebuild(RenderObjectBuilder *builder) {
+void GuiTextBoxElement::rebuild(RenderObjectBuilder& builder) {
     GuiNinePathImageElement::rebuild(builder);
     Font::main->build(builder, x + 3, y + height / 2 - 6, text, {0.4f, 0.4f, 0.4f, 1.f});
     Font::main->build(builder, x + 2, y + height / 2 - 5, text, textColor);
@@ -55,7 +55,7 @@ void GuiTextBoxElement::rebuild(RenderObjectBuilder *builder) {
     buildCarret(builder);
 }
 
-GuiUpdateFlags GuiTextBoxElement::update(RenderObjectBuilder *builder) {
+GuiUpdateFlags GuiTextBoxElement::update(RenderObjectBuilder& builder) {
     if (this->shouldUpdate) {
         return GuiImageElement::update(builder);
     }
@@ -64,7 +64,7 @@ GuiUpdateFlags GuiTextBoxElement::update(RenderObjectBuilder *builder) {
 
     if (!active || vertexCount < 6) { return flags; }
 
-    builder->pos = builderOffset + vertexCount - 6;
+    builder.pos = builderOffset + vertexCount - 6;
 
     // update the carret
     long long now = Time::now();

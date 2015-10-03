@@ -65,54 +65,54 @@ void RenderObject::update() {
         vertexBufferId = buffer[0];
     }
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-    glBufferData(GL_ARRAY_BUFFER, size * 3 * 4, vertexArray, bufferType);
+    glBufferData(GL_ARRAY_BUFFER, size * 3 * 4, &(*vertexArray)[0], bufferType);
 
-    if(textureUVArray != null) {
+    if(!textureUVArray->empty()) {
         if (texUVBufferId == 0) {
             GLuint buffer[1];
             glGenBuffers(1, &buffer[0]);
             texUVBufferId = buffer[0];
         }
         glBindBuffer(GL_ARRAY_BUFFER, texUVBufferId);
-        glBufferData(GL_ARRAY_BUFFER, size * 2 * 4, textureUVArray, bufferType);
+        glBufferData(GL_ARRAY_BUFFER, size * 2 * 4, &(*textureUVArray)[0], bufferType);
     }
 
-    if(textureIdArray != null) {
+    if(!textureIdArray->empty()) {
         if (texIdBufferId == 0) {
             GLuint buffer[1];
             glGenBuffers(1, &buffer[0]);
             texIdBufferId = buffer[0];
         }
         glBindBuffer(GL_ARRAY_BUFFER, texIdBufferId);
-        glBufferData(GL_ARRAY_BUFFER, size * 4, textureIdArray, bufferType);
+        glBufferData(GL_ARRAY_BUFFER, size * 4, &(*textureIdArray)[0], bufferType);
     }
 
-    if(colorArray != null) {
+    if(!colorArray->empty()) {
         if(colorBufferId == 0) {
             GLuint buffer[1];
             glGenBuffers(1, &buffer[0]);
             colorBufferId = buffer[0];
         }
         glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-        glBufferData(GL_ARRAY_BUFFER, size * 4 * 4, colorArray, bufferType);
+        glBufferData(GL_ARRAY_BUFFER, size * 4 * 4, &(*colorArray)[0], bufferType);
     }
 }
 
 void RenderObject::updateFragment(int offset, int size, bool vertex, bool texUV, bool texId, bool color) {
-    if(vertex && vertexArray != null) {
+    if(vertex && !vertexArray->empty()) {
         glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
-        glBufferSubData(GL_ARRAY_BUFFER, offset * 3 * sizeof(float), size * 3 * sizeof(float), &vertexArray[offset * 3]);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * 3 * sizeof(float), size * 3 * sizeof(float), &(*vertexArray)[offset * 3]);
     }
-    if(texUV && textureUVArray != null) {
+    if(texUV && !textureUVArray->empty()) {
         glBindBuffer(GL_ARRAY_BUFFER, texUVBufferId);
-        glBufferSubData(GL_ARRAY_BUFFER, offset * 2 * sizeof(float), size * 2 * sizeof(float), &textureUVArray[offset * 2]);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * 2 * sizeof(float), size * 2 * sizeof(float), &(*textureUVArray)[offset * 2]);
     }
-    if(texId && textureIdArray != null) {
+    if(texId && !textureIdArray->empty()) {
         glBindBuffer(GL_ARRAY_BUFFER, texIdBufferId);
-        glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(float), size * sizeof(float), &textureIdArray[offset]);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(float), size * sizeof(float), &(*textureIdArray)[offset]);
     }
-    if(color && colorArray != null) {
+    if(color && !colorArray->empty()) {
         glBindBuffer(GL_ARRAY_BUFFER, colorBufferId);
-        glBufferSubData(GL_ARRAY_BUFFER, offset * 4 * sizeof(float), size * 4 * sizeof(float), &colorArray[offset * 4]);
+        glBufferSubData(GL_ARRAY_BUFFER, offset * 4 * sizeof(float), size * 4 * sizeof(float), &(*colorArray)[offset * 4]);
     }
 }

@@ -1,19 +1,20 @@
 #pragma once
 
+#include <memory>
 #include "common.h"
 #include "GuiElement.h"
-class RenderObject;
-class RenderObjectBuilder;
+#include "../render/RenderObject.h"
+#include "../render/RenderObjectBuilder.h"
+#include "GuiElement.h"
 
 class DynamicGuiElement : public GuiElement {
 
 protected:
-    RenderObject* renderObject = null;
-    RenderObjectBuilder* renderObjectBuilder = null;
+    std::unique_ptr<RenderObject> renderObject = null;
+    std::unique_ptr<RenderObjectBuilder> renderObjectBuilder = null;
 
 public:
     DynamicGuiElement() : GuiElement() {};
-    ~DynamicGuiElement();
 
     virtual bool isDynamic() { return true; };
 

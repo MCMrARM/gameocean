@@ -34,7 +34,7 @@ void GuiButtonElement::onMouseRelease(MouseReleaseEvent &event) {
     this->requireUpdate();
 }
 
-void GuiButtonElement::rebuild(RenderObjectBuilder *builder) {
+void GuiButtonElement::rebuild(RenderObjectBuilder& builder) {
     GuiNinePathImageElement::rebuild(builder);
     Font::main->build(builder, x + width / 2 - textW / 2 + 1, y + height / 2 - 6, text, {0.4f, 0.4f, 0.4f, 1.f});
     Font::main->build(builder, x + width / 2 - textW / 2, y + height / 2 - 5, text, textColor);

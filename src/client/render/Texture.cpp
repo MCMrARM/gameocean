@@ -2,6 +2,7 @@
 
 #include "opengl.h"
 #include "TextureManager.h"
+#include "utils/ResourceManager.h"
 #include "../App.h"
 
 Texture* Texture::EMPTY = null;
@@ -48,12 +49,10 @@ void Texture::load(byte *data, int w, int h) {
 }
 
 void Texture::load(std::string name) {
-    unsigned int w, h, size;
-    byte* data = App::instance->readGameImageFile(name, w, h, size);
-    Logger::main->debug("Texture", "Loaded! [w: %i, h: %i, byte size: %i] %i", w, h, size, data);
+    ResourceManager::PNGInfo data = ResourceManager::instance->readAssetImageFile(name);
+    Logger::main->debug("Texture", "Loaded! [w: %i, h: %i, byte size: %i]", data.width, data.height, data.dataSize);
 
-    Texture::load(data, w, h);
-    delete[] data;
+    Texture::load(&(*data.data)[0], data.width, data.height);
 }
 
 int Texture::bind() {

@@ -12,6 +12,6 @@ public:
 
     void setTextureOffset(int x1, int y1, int x2, int y2);
 
-    virtual void rebuild(RenderObjectBuilder* builder);
+    virtual void rebuild(RenderObjectBuilder& builder);
 
 };

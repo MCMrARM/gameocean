@@ -2,6 +2,9 @@
 
 #include "opengl.h"
 
+#include <memory>
+#include <vector>
+
 class RenderObject {
 
     unsigned int vertexBufferId = 0;
@@ -13,15 +16,17 @@ public:
     int drawType = GL_TRIANGLES;
 
     int size = -1;
-    float *vertexArray;
-    float *textureUVArray;
-    float *textureIdArray;
-    float *colorArray;
+    std::shared_ptr<std::vector<float>> vertexArray;
+    std::shared_ptr<std::vector<float>> textureUVArray;
+    std::shared_ptr<std::vector<float>> textureIdArray;
+    std::shared_ptr<std::vector<float>> colorArray;
 
-    RenderObject(int size, float *vertex, float *texUV, float *texId, float *color) : size(size), vertexArray(vertex),
-                                                                                      textureUVArray(texUV),
-                                                                                      textureIdArray(texId),
-                                                                                      colorArray(color) { };
+    RenderObject(std::shared_ptr<std::vector<float>> vertex, std::shared_ptr<std::vector<float>> texUV,
+                 std::shared_ptr<std::vector<float>> texId, std::shared_ptr<std::vector<float>> color) : size(vertex->size() / 3),
+                                                                                                         vertexArray(vertex),
+                                                                                                         textureUVArray(texUV),
+                                                                                                         textureIdArray(texId),
+                                                                                                         colorArray(color) { };
     ~RenderObject();
 
     void update();

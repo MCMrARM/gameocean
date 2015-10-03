@@ -40,17 +40,17 @@ int GuiElementContainer::getVertexCount() {
     return count;
 }
 
-void GuiElementContainer::rebuild(RenderObjectBuilder *builder) {
+void GuiElementContainer::rebuild(RenderObjectBuilder& builder) {
     for (GuiElement *el : children) {
-        el->builderOffset = builder->pos;
+        el->builderOffset = builder.pos;
         el->rebuild(builder);
     }
 }
 
 void GuiElementContainer::updateDynamic() {
-    RenderObjectBuilder *builder = this->renderObjectBuilder;
+    RenderObjectBuilder& builder = *renderObjectBuilder;
     for (GuiElement *el : children) {
-        builder->pos = el->builderOffset;
+        builder.pos = el->builderOffset;
         GuiUpdateFlags flags = el->update(builder);
         this->renderObject->updateFragment(el->builderOffset, el->getVertexCount(), flags.updateVertex,
                                            flags.updateTextureUV, flags.updateTextureId, flags.updateColor);

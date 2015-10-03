@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 #include <iostream>
 #include "common.h"
 #include "utils/BinaryStream.h"
@@ -9,7 +10,7 @@
 class NBTTag {
 private:
     static std::string getString(BinaryStream& stream);
-    static NBTTag* getTag(BinaryStream& stream, bool hasName, char dataType);
+    static std::unique_ptr<NBTTag> getTag(BinaryStream& stream, bool hasName, char dataType);
 
 protected:
     friend class NBTList;
@@ -31,7 +32,7 @@ public:
     inline void print() { print(""); };
     virtual std::string getTypeString() { return "unknown"; };
 
-    static inline NBTTag* getTag(BinaryStream& stream) { return getTag(stream, true, -1); };
+    static inline std::unique_ptr<NBTTag> getTag(BinaryStream& stream) { return getTag(stream, true, -1); };
 };
 
 class NBTEnd : public NBTTag {
@@ -139,17 +140,15 @@ class NBTByteArray : public NBTTag {
 protected:
     virtual void print(std::string prefix) {
         NBTTag::print(prefix);
-        std::cout << "byte[" << size << "]" << std::endl;
+        std::cout << "byte[" << val.size() << "]" << std::endl;
     };
 
 public:
     static const int ID = 7;
 
-    byte* val;
-    unsigned int size;
+    std::vector<byte> val;
 
-    NBTByteArray(std::string name, byte* val, unsigned int size) : NBTTag(name, ID), val(val), size(size) {};
-    virtual ~NBTByteArray() { if(val != null) delete val; };
+    NBTByteArray(std::string name) : NBTTag(name, ID) {};
     virtual std::string getTypeString() { return "byte[]"; };
 };
 
@@ -178,7 +177,7 @@ protected:
             return;
         }
         std::cout << val[0]->getTypeString() << "[]" << std::endl;
-        for (NBTTag* tag : val) {
+        for (std::unique_ptr<NBTTag>& tag : val) {
             tag->print(prefix + "  ");
         }
     };
@@ -186,14 +185,9 @@ protected:
 public:
     static const int ID = 9;
 
-    std::vector<NBTTag*> val;
+    std::vector<std::unique_ptr<NBTTag>> val;
 
-    NBTList(std::string name, std::vector<NBTTag*> val) : NBTTag(name, ID), val(val) {};
-    virtual ~NBTList() {
-        for (NBTTag* tag : val) {
-            delete tag;
-        }
-    };
+    NBTList(std::string name) : NBTTag(name, ID) {};
     virtual std::string getTypeString() { return "list"; };
 };
 
@@ -202,7 +196,7 @@ protected:
     virtual void print(std::string prefix) {
         NBTTag::print(prefix);
         std::cout << "compound" << std::endl;
-        for (auto e : val) {
+        for (auto const& e : val) {
             e.second->print(prefix + "  ");
         }
     };
@@ -210,14 +204,9 @@ protected:
 public:
     static const int ID = 10;
 
-    std::map<std::string, NBTTag*> val;
+    std::map<std::string, std::unique_ptr<NBTTag>> val;
 
-    NBTCompound(std::string name, std::map<std::string, NBTTag*> val) : NBTTag(name, ID), val(val) {};
-    virtual ~NBTCompound() {
-        for (auto tag : val) {
-            delete tag.second;
-        }
-    };
+    NBTCompound(std::string name) : NBTTag(name, ID) {};
     virtual std::string getTypeString() { return "compound"; };
 };
 
