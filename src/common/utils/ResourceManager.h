@@ -18,7 +18,7 @@ public:
 
     struct PNGInfo {
         std::unique_ptr<std::vector<byte>> data;
-        unsigned long width, height, dataSize;
+        unsigned int width, height, dataSize;
 
         bool init(std::vector<byte>& pngData);
         bool init(std::istream& dataStream);

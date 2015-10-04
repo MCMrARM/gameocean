@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(lbclient)
+project(client)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
@@ -39,10 +39,11 @@ add_executable(server ${COMMON_SOURCES} ${SERVER_SOURCES} ${RAKNET_SOURCES} ${LI
 target_link_libraries(server ${ZLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${PNG_LIBRARIES})
 target_include_directories(server PUBLIC ../libs/RakNet)
 
-add_executable(lbclient ${COMMON_SOURCES} ${CLIENT_SOURCES} ${LIBJSON_SOURCES} client_linux/LinuxApp.cpp client_linux/Main.cpp)
-target_link_libraries(lbclient ${ZLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${OPENGL_LIBRARIES} ${GLFW_STATIC_LIBRARIES} ${GLEW_LIBRARIES} ${PNG_LIBRARIES})
-target_include_directories(lbclient PUBLIC client/)
-target_include_directories(lbclient PUBLIC client_linux/)
-target_include_directories(lbclient PUBLIC ../libs/glm)
-target_include_directories(lbclient PUBLIC ${OPENGL_INCLUDE_DIRS})
-target_include_directories(lbclient PUBLIC ${GLEW_INCLUDE_DIRS})
+add_executable(client ${COMMON_SOURCES} ${CLIENT_SOURCES} ${LIBJSON_SOURCES} client_linux/LinuxApp.cpp client_linux/Main.cpp)
+target_link_libraries(client ${ZLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${OPENGL_LIBRARIES} ${GLFW_STATIC_LIBRARIES} ${GLEW_LIBRARIES} ${PNG_LIBRARIES})
+target_include_directories(client PUBLIC client/)
+target_include_directories(client PUBLIC client_linux/)
+target_include_directories(client PUBLIC ../libs/glm)
+target_include_directories(client PUBLIC ${OPENGL_INCLUDE_DIRS})
+target_include_directories(client PUBLIC ${GLEW_INCLUDE_DIRS})
+target_compile_definitions(client PRIVATE CLIENT)

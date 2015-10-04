@@ -4,6 +4,9 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#ifdef __ANDROID__
+#include <cstdlib>
+#endif
 
 class StringUtils {
 
@@ -54,11 +57,15 @@ public:
         if (s.length() <= 0)
             return d;
 
+        #ifdef __ANDROID__
+        return atoi(s.c_str());
+        #else
         try {
             return std::stoi(s);
         } catch (std::exception e) {
         }
         return d;
+        #endif
     };
 
 };

@@ -22,8 +22,8 @@ void KeyboardHandler::release(int id) {
 }
 
 void KeyboardHandler::inputSetText(std::string str) {
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->setText(str);
     }
 }

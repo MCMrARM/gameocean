@@ -3,7 +3,7 @@
 #include "utils/Logger.h"
 #include "../render/RenderObjectBuilder.h"
 
-GuiImageElement::GuiImageElement(int x, int y, Texture *texture, int texX, int texY, int w, int h) : GuiElement(x, y, w, h) {
+GuiImageElement::GuiImageElement(float x, float y, Texture *texture, int texX, int texY, int w, int h) : GuiElement(x, y, w, h) {
     vertexCount = 6;
     this->setTexture(texture, texX, texY, w, h);
 }

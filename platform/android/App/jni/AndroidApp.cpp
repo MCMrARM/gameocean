@@ -4,7 +4,7 @@
 #include <jni.h>
 
 #include "opengl.h"
-#include "JNI.h"
+#include "JNIHelper.h"
 
 #include "utils/Logger.h"
 #include "AndroidLogger.h"

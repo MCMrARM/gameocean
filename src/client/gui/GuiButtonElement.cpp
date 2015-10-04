@@ -4,7 +4,7 @@
 #include "../render/Font.h"
 #include "../render/RenderObjectBuilder.h"
 
-GuiButtonElement::GuiButtonElement(int x, int y, int w, int h, std::string text) : GuiNinePathImageElement(x, y, w, h, null, 0, 0, 8, 8, 3) {
+GuiButtonElement::GuiButtonElement(float x, float y, int w, int h, std::string text) : GuiNinePathImageElement(x, y, w, h, null, 0, 0, 8, 8, 3) {
     this->setInactiveTexturePosition(0, 0);
     this->setActiveTexturePosition(8, 0);
     inactiveColor = {1.f, 1.f, 1.f, 1.f};

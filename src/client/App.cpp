@@ -14,6 +14,9 @@
 #include "gui/GuiButtonElement.h"
 #include "gui/GuiTextBoxElement.h"
 #include "gui/Screen.h"
+#include "anim/Animation.h"
+#include "anim/GuiAnimationProperty.h"
+#include "anim/ScreenSwitchAnimation.h"
 #include "input/MouseHandler.h"
 #include "input/TouchHandler.h"
 #include "net/Socket.h"
@@ -88,6 +91,17 @@ MultiLogger* App::initLogger() {
     return logger;
 }
 
+void App::setScreen(std::shared_ptr<Screen> screen, std::unique_ptr<ScreenSwitchAnimation> anim) {
+    this->animateScreen = screen;
+    this->screenAnim = std::move(anim);
+}
+
+template<class T>
+void App::setScreen(std::shared_ptr<Screen> screen, float duration) {
+    animateScreen = screen;
+    screenAnim = std::unique_ptr<ScreenSwitchAnimation>(new T(currentScreen, animateScreen, duration));
+}
+
 void App::initOpenGL() {
     TextureManager::init();
 
@@ -99,10 +113,9 @@ void App::initOpenGL() {
         testShader->texUVAttrib("aTextureCoord");
         testShader->projectionMatrixUniform("uProjectionMatrix");
         testShader->viewMatrixUniform("uViewMatrix");
+        testShader->colorUniform("uFragmentColor");
         testShader->uniform("uSamplers");
     }
-    //testShader->uniform("uFragmentColor");
-    //glUniform4f(testShader->uniform("uFragmentColor"), 1.0f, 1.0f, 1.0f, 1.0f);
 
     Font::main = new Font("images/font.png", 8, 8);
     GuiElement::initTexture();
@@ -115,19 +128,39 @@ void App::initOpenGL() {
     GuiElement::texture->bind(1);
     Font::main->getTexture()->bind(2);
 
-    currentScreen = new Screen(this);
+    std::shared_ptr<Screen> mainScreen = std::shared_ptr<Screen>(new Screen(this));
 
-    GuiImageElement* el = new GuiImageElement(10, 10, GuiElement::texture, 0, 0, 8, 8);
+    /*GuiImageElement* el = new GuiImageElement(10, 10, GuiElement::texture, 0, 0, 8, 8);
     currentScreen->addElement(el);
 
     GuiNinePathImageElement* el2 = new GuiNinePathImageElement(50, 10, 60, 20, testTexture, 0, 0, 8, 8, 2);
-    currentScreen->addElement(el2);
+    currentScreen->addElement(el2);*/
 
-    GuiButtonElement* btn = new GuiButtonElement(100, 100, 100, 20, "Testing");
-    currentScreen->addElement(btn);
+    std::shared_ptr<GuiButtonElement> btn (new GuiButtonElement(100, 100, 100, 20, "Testing"));
+    btn->setClickCallback([this, btn, mainScreen](GuiButtonElement* el) {
+        Logger::main->debug("Test", "Clicked %i", testShader->uniform("uFragmentColor"));
 
-    GuiTextBoxElement* textBox = new GuiTextBoxElement(10, 100, 70, 20, "Test");
-    currentScreen->addElement(textBox);
+        std::shared_ptr<Screen> test (new Screen(this));
+
+        std::shared_ptr<GuiButtonElement> btn2 (new GuiButtonElement(10, 10, 50, 50, "Close"));
+        btn2->setClickCallback([this, btn, btn2, mainScreen](GuiButtonElement* el) {
+            setScreen(mainScreen, std::unique_ptr<ScreenSwitchAnimation>(new MoveElementScreenSwitchAnimation(currentScreen, mainScreen, btn2, btn, 1.f)));
+        });
+        test->addElement(btn2);
+
+        //setScreen<FadeScreenSwitchAnimation>(test, 1.f);
+        setScreen(test, std::unique_ptr<ScreenSwitchAnimation>(new MoveElementScreenSwitchAnimation(currentScreen, test, btn, btn2, 1.f)));
+
+        //currentScreen->animations.push_back(std::unique_ptr<Animation>(new PropertyAnimation(std::unique_ptr<GuiAnimationProperty>(new GuiPosAnimationProperty(*el, 200, (el->getY() == 150 ? 100 : 150))), 0.5f, Animation::Easing::SWING)));
+    });
+    mainScreen->addElement(btn);
+
+    //currentScreen->animations.push_back(std::unique_ptr<Animation>(new PropertyAnimation(std::unique_ptr<GuiAnimationProperty>(new GuiPosAnimationProperty(*btn, 200, 100)), 1.f)));
+
+    std::shared_ptr<GuiTextBoxElement> textBox (new GuiTextBoxElement(10, 100, 70, 20, "Test"));
+    mainScreen->addElement(textBox);
+
+    setScreen(mainScreen);
 
     Texture::EMPTY->unbind();
     GuiElement::texture->unbind();
@@ -153,6 +186,8 @@ void App::render() {
     }
     testShader->use();
 
+    glUniform4f(testShader->uniform("uFragmentColor"), 1.0f, 1.0f, 1.0f, 1.0f);
+
     Texture::EMPTY->bind(0);
     GuiElement::texture->bind(1);
     Font::main->getTexture()->bind(2);
@@ -170,7 +205,18 @@ void App::render() {
     glUniformMatrix4fv(testShader->viewMatrixUniform(), 1, false, glm::value_ptr(view));
 
     //testObject->render();
+    if (this->screenAnim) {
+        if (this->screenAnim->tick()) {
+            this->currentScreen = this->animateScreen;
+            this->screenAnim.reset();
+        } else {
+            this->animateScreen->render();
+        }
+    }
     this->currentScreen->render();
+    if (this->screenAnim) {
+        this->screenAnim->render();
+    }
 
     Texture::EMPTY->unbind();
     GuiElement::texture->unbind();

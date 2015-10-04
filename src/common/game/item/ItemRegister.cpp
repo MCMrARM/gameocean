@@ -65,20 +65,13 @@ ItemVariant* ItemRegister::findItem(std::string id) {
         if (i != std::string::npos) {
             std::string dataStr = id.substr(i + 1);
             id = id.substr(0, i);
-            try {
-                int dataI = std::stoi(dataStr);
-                if (dataI >= 0 && dataI <= UINT16_MAX)
-                    data = dataI;
-            } catch (std::exception e) {
-            }
+            int dataI = StringUtils::asInt(dataStr, -1);
+            if (dataI >= 0 && dataI <= UINT16_MAX)
+                data = dataI;
         }
     }
 
-    int iid = -1;
-    try {
-        iid = std::stoi(id);
-    } catch (std::exception e) {
-    }
+    int iid = StringUtils::asInt(id, -1);
     if (iid > 0 && iid < 512) {
         ItemVariant* ret = ItemRegister::getItemVariant(iid, data);
         if (ret != null)

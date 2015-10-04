@@ -9,7 +9,7 @@ void GuiElement::initTexture() {
     GuiElement::texture = TextureManager::require("images/gui.png");
 }
 
-void GuiElement::setPosition(int x, int y) {
+void GuiElement::setPosition(float x, float y) {
     this->x = x;
     this->y = y;
     this->requireUpdate();

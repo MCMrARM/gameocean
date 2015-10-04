@@ -1,5 +1,5 @@
-#include <GLFW/glfw3.h>
 #include "LinuxApp.h"
+#include <GLFW/glfw3.h>
 #include "utils/ResourceManager.h"
 
 LinuxApp* app;

@@ -2,7 +2,7 @@
 
 #include "../render/RenderObjectBuilder.h"
 
-GuiNinePathImageElement::GuiNinePathImageElement(int x, int y, int w, int h, Texture *texture, int texX, int texY,
+GuiNinePathImageElement::GuiNinePathImageElement(float x, float y, int w, int h, Texture *texture, int texX, int texY,
                                                  int texW, int texH, int texOff) : GuiImageElement(x, y, texture, texX, texY, texW, texH) {
     this->width = w;
     this->height = h;
@@ -24,6 +24,7 @@ void GuiNinePathImageElement::setTextureOffset(int x1, int y1, int x2, int y2) {
 
 void GuiNinePathImageElement::rebuild(RenderObjectBuilder& builder) {
     this->shouldRebuild = false;
+
     //builder->rect2d(x, y, x + width, y + height, texX, texY, texX + texW, texY + texH, this->texture, r, g, b, a);
     builder.rect2d(x, y + height - texOffY2, x + texOffX1, y + height, texX, texY, texX + texOffX1, texY + texOffY2, this->texture, color);
     builder.rect2d(x, y + texOffY1, x + texOffX1, y + height - texOffY2, texX, texY + texOffY2, texX + texOffX1, texY + texH - texOffY1, this->texture, color);

@@ -20,7 +20,7 @@ protected:
     inline void buildCarret(RenderObjectBuilder& builder);
 
 public:
-    GuiTextBoxElement(int x, int y, int w, int h, std::string text);
+    GuiTextBoxElement(float x, float y, int w, int h, std::string text);
 
     virtual void focus();
     virtual void blur();

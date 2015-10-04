@@ -84,10 +84,5 @@ int ConfigNode::getInt(const std::string &name, int d) {
     std::shared_ptr<ConfigNode> n = (*this)[name];
     if (n == null) return d;
     std::string nt = *n;
-    try {
-        int ret = std::stoi(nt);
-        return ret;
-    } catch (std::exception e) {
-    }
-    return d;
+    return StringUtils::asInt(nt, d);
 }

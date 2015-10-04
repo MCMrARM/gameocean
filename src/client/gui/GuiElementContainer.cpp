@@ -1,5 +1,6 @@
 #include "GuiElementContainer.h"
 #include "opengl.h"
+#include "../render/Shader.h"
 #include "../render/RenderObjectBuilder.h"
 #include "../input/TouchHandler.h"
 #include "../input/TouchEvent.h"
@@ -17,14 +18,16 @@ GuiElementContainer::~GuiElementContainer() {
 }
 
 bool GuiElementContainer::needsUpdate() {
-    for (GuiElement *el : children) {
+    for (std::shared_ptr<GuiElement> const& el : children) {
         if (el->needsUpdate()) return true;
     }
     return false;
 }
 
 bool GuiElementContainer::hasVertexCountUpdate() {
-    for (GuiElement *el : children) {
+    if (shouldRebuild)
+        return true;
+    for (std::shared_ptr<GuiElement> const& el : children) {
         if (el->hasVertexCountUpdate()) return true;
     }
     return false;
@@ -32,7 +35,7 @@ bool GuiElementContainer::hasVertexCountUpdate() {
 
 int GuiElementContainer::getVertexCount() {
     int count = 0;
-    for (GuiElement *el : children) {
+    for (std::shared_ptr<GuiElement> const& el : children) {
         int c = el->getVertexCount();
         if (c == -1) { return -1; }
         count += c;
@@ -41,7 +44,10 @@ int GuiElementContainer::getVertexCount() {
 }
 
 void GuiElementContainer::rebuild(RenderObjectBuilder& builder) {
-    for (GuiElement *el : children) {
+    if (shouldRebuild) {
+        shouldRebuild = false;
+    }
+    for (std::shared_ptr<GuiElement> const& el : children) {
         el->builderOffset = builder.pos;
         el->rebuild(builder);
     }
@@ -49,7 +55,7 @@ void GuiElementContainer::rebuild(RenderObjectBuilder& builder) {
 
 void GuiElementContainer::updateDynamic() {
     RenderObjectBuilder& builder = *renderObjectBuilder;
-    for (GuiElement *el : children) {
+    for (std::shared_ptr<GuiElement> const& el : children) {
         builder.pos = el->builderOffset;
         GuiUpdateFlags flags = el->update(builder);
         this->renderObject->updateFragment(el->builderOffset, el->getVertexCount(), flags.updateVertex,
@@ -65,25 +71,25 @@ bool GuiElementContainer::onMousePress(MousePressEvent& event) {
     }
 
     for (auto it = children.rbegin(); it != children.rend(); it++) {
-        GuiElement* el = *it;
+        std::shared_ptr<GuiElement> el = *it;
 
         if (el->isPointInside(event.x, event.y)) {
             if (touch && !el->supportsMultitouch()) {
                 for (int i = 0; i < TouchHandler::MAX_TOUCHES; i++) {
-                    if (el == touchedElements[i]) {
+                    if (&*el == touchedElements[i]) {
                         return true;
                     }
                 }
             }
             if (!el->onMousePress(event)) continue;
             if (focusedElement != null) { focusedElement->blur(); }
-            focusedElement = el;
+            focusedElement = &*el;
             el->focus();
             if (touch) {
                 int fId = ((TouchPressEvent&) event).fingerId;
-                touchedElements[fId] = el;
+                touchedElements[fId] = &*el;
             } else {
-                clickedElement = el;
+                clickedElement = &*el;
             }
             return true;
         }
@@ -134,12 +140,18 @@ void GuiElementContainer::setText(std::string text) {
 }
 
 void GuiElementContainer::render() {
+    if(Shader::current == null) { Logger::main->warn("Shader", "Tried to render a GuiElementContainer without a shader set!"); return; }
     if(clip) {
         int pxSize = App::instance->pixelSize;
         glViewport(this->x * pxSize, this->y * pxSize, (this->x + this->width) * pxSize,
                    (this->y + this->height) * pxSize);
     }
+    int cu = Shader::current->colorUniform();
+    if (cu != -1)
+        glUniform4f(cu, color.r, color.g, color.b, color.a);
     DynamicGuiElement::render();
+    if (cu != -1)
+        glUniform4f(cu, 1.f, 1.f, 1.f, 1.f);
     if(clip) {
         glViewport(0, 0, App::instance->screenWidth, App::instance->screenHeight);
     }

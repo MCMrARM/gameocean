@@ -53,7 +53,7 @@ int Font::getWidth(std::string text) {
     return w;
 }
 
-void Font::buildWordWrap(RenderObjectBuilder& builder, int x, int y, int w, std::string text, Color color) {
+void Font::buildWordWrap(RenderObjectBuilder& builder, float x, float y, int w, std::string text, Color color) {
     bool bold = false;
     bool italic = false;
     bool underline = false;

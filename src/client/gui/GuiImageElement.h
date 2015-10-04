@@ -16,7 +16,7 @@ protected:
 
 public:
 
-    GuiImageElement(int x, int y, Texture* texture, int texX, int texY, int w, int h);
+    GuiImageElement(float x, float y, Texture* texture, int texX, int texY, int w, int h);
 
     void setTexture(Texture* texture, int x, int y, int w, int h);
 

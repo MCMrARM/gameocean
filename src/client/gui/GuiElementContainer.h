@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "DynamicGuiElement.h"
 #include "../input/TouchHandler.h"
 
@@ -13,13 +14,21 @@ protected:
     GuiElement** touchedElements;
 
 public:
-    std::vector<GuiElement*> children;
+    std::vector<std::shared_ptr<GuiElement>> children;
     bool clip = true;
 
     GuiElementContainer();
     ~GuiElementContainer();
 
-    inline void addElement(GuiElement* element) { children.push_back(element); };
+    inline void addElement(std::shared_ptr<GuiElement> element) {
+        element->requireRebuild();
+        children.push_back(element);
+        //requireRebuild();
+    };
+    void removeElement(std::shared_ptr<GuiElement> element) {
+        children.erase(std::remove(children.begin(), children.end(), element), children.end());
+        requireRebuild();
+    };
 
     virtual void render();
 

@@ -23,8 +23,8 @@ void TouchHandler::press(int id, int x, int y) {
     TouchHandler::x[id] = x;
     TouchHandler::y[id] = y;
     TouchPressEvent ev (x, y, id);
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->onMousePress(ev);
     }
 }
@@ -35,8 +35,8 @@ void TouchHandler::release(int id, int x, int y) {
     y = (App::instance->screenHeight - y) / App::instance->pixelSize;
     TouchHandler::pressed[id] = false;
     TouchReleaseEvent ev (x, y, id);
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->onMouseRelease(ev);
     }
 }
@@ -52,8 +52,8 @@ void TouchHandler::move(int id, int x, int y) {
     TouchMoveEvent ev (x, y, dX, dY, id);
     TouchHandler::x[id] = x;
     TouchHandler::y[id] = y;
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->onMouseMove(ev);
     }
 }

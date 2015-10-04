@@ -9,7 +9,9 @@
 #include "App.h"
 #include "AndroidApp.h"
 #include "AndroidLogger.h"
+#include "AndroidResourceManager.h"
 #include "input/TouchHandler.h"
+#include "utils/ResourceManager.h"
 
 AndroidApp* app;
 
@@ -84,6 +86,7 @@ void android_main(android_app* state) {
 
     if(app == null) {
         app = new AndroidApp(state);
+	ResourceManager::instance = new AndroidResourceManager(state);
         app->init();
 
         startupLogger.info("Main", "Initialized!");

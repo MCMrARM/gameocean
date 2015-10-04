@@ -42,7 +42,10 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
     png_read_info(png_ptr, info_ptr);
 
     int depth, colorType;
-    png_get_IHDR(png_ptr, info_ptr, &width, &height, &depth, &colorType, null, null, null);
+    png_uint_32 _width, _height;
+    png_get_IHDR(png_ptr, info_ptr, &_width, &_height, &depth, &colorType, null, null, null);
+    width = (unsigned int) _width;
+    height = (unsigned int) _height;
 
     if (colorType != PNG_COLOR_TYPE_RGBA) {
         Logger::main->warn("Image", "Color type (%i) is not RGBA", colorType);

@@ -5,7 +5,7 @@
 #include "../render/RenderObjectBuilder.h"
 #include "utils/Time.h"
 
-GuiTextBoxElement::GuiTextBoxElement(int x, int y, int w, int h, std::string text) : GuiNinePathImageElement(x, y, w, h, null, 0, 16, 8, 8, 3) {
+GuiTextBoxElement::GuiTextBoxElement(float x, float y, int w, int h, std::string text) : GuiNinePathImageElement(x, y, w, h, null, 0, 16, 8, 8, 3) {
     this->setInactiveTexturePosition(0, 16);
     this->setActiveTexturePosition(8, 16);
     textColor = {1.f, 1.f, 1.f, 1.f};

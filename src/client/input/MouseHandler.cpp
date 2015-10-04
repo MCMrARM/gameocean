@@ -20,8 +20,8 @@ void MouseHandler::press(int button) {
     if(button >= MouseHandler::MAX_BUTTONS) return;
     MouseHandler::buttonsPressed[button] = true;
     MousePressEvent ev (MouseHandler::x, MouseHandler::y, button);
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->onMousePress(ev);
     }
 }
@@ -30,8 +30,8 @@ void MouseHandler::release(int button) {
     if(button >= MouseHandler::MAX_BUTTONS) return;
     MouseHandler::buttonsPressed[button] = false;
     MouseReleaseEvent ev (MouseHandler::x, MouseHandler::y, button);
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->onMouseRelease(ev);
     }
 }
@@ -47,8 +47,8 @@ void MouseHandler::move(int x, int y) {
     MouseMoveEvent ev (x, y, dX, dY);
     MouseHandler::x = x;
     MouseHandler::y = y;
-    Screen* screen = App::instance->getScreen();
-    if(screen != null) {
+    std::shared_ptr<Screen> screen = App::instance->getScreen();
+    if(screen) {
         screen->onMouseMove(ev);
     }
 }

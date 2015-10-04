@@ -2,6 +2,8 @@
 
 #include "common.h"
 #include <string>
+#include <memory>
+#include "anim/ScreenSwitchAnimation.h"
 
 class MultiLogger;
 class Texture;
@@ -12,7 +14,9 @@ class App {
 
     Texture* testTexture = null;
     Shader* testShader = null;
-    Screen* currentScreen = null;
+    std::shared_ptr<Screen> currentScreen = null;
+    std::shared_ptr<Screen> animateScreen = null;
+    std::unique_ptr<ScreenSwitchAnimation> screenAnim;
 
 public:
     static App* instance;
@@ -33,7 +37,13 @@ public:
 
     virtual void render();
 
-    inline Screen* getScreen() { return currentScreen; };
+    inline std::shared_ptr<Screen> getScreen() { return currentScreen; };
+    void setScreen(std::shared_ptr<Screen> screen) {
+        currentScreen = screen;
+    }
+    void setScreen(std::shared_ptr<Screen> screen, std::unique_ptr<ScreenSwitchAnimation> anim);
+    template<class T>
+    void setScreen(std::shared_ptr<Screen> screen, float duration);
 
     virtual void showKeyboard(std::string text) = 0;
     virtual void hideKeyboard() = 0;

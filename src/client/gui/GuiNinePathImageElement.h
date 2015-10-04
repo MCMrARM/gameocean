@@ -8,7 +8,7 @@ class GuiNinePathImageElement : public GuiImageElement {
 
 public:
 
-    GuiNinePathImageElement(int x, int y, int w, int h, Texture* texture, int texX, int texY, int texW, int texH, int texOff);
+    GuiNinePathImageElement(float x, float y, int w, int h, Texture* texture, int texX, int texY, int texW, int texH, int texOff);
 
     void setTextureOffset(int x1, int y1, int x2, int y2);
 

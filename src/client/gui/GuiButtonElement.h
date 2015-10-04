@@ -1,10 +1,11 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include "GuiNinePathImageElement.h"
 
 class GuiButtonElement : public GuiNinePathImageElement {
-
+    typedef std::function<void(GuiButtonElement*)> ClickCallback;
 protected:
     int inactiveTexX, inactiveTexY;
     int activeTexX, activeTexY;
@@ -12,9 +13,14 @@ protected:
     bool updatedText;
     int textW;
     Color textColor, inactiveColor, activeColor;
+    ClickCallback clickCallback;
 
 public:
-    GuiButtonElement(int x, int y, int w, int h, std::string text);
+    GuiButtonElement(float x, float y, int w, int h, std::string text);
+
+    void setClickCallback(ClickCallback callback) {
+        this->clickCallback = callback;
+    }
 
     inline void setInactiveTexturePosition(int x, int y) {
         inactiveTexX = x;
@@ -27,6 +33,10 @@ public:
 
     virtual bool onMousePress(MousePressEvent& event);
     virtual void onMouseRelease(MouseReleaseEvent& event);
+    virtual void click() {
+        if (clickCallback)
+            clickCallback(this);
+    };
 
     virtual void rebuild(RenderObjectBuilder& builder);
 

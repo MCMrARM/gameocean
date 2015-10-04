@@ -22,6 +22,7 @@ class Shader {
     int sColorAttrib = -1;
     int sProjectionMatrixUniform = -1;
     int sViewMatrixUniform = -1;
+    int sColorUniform = -1;
 
 public:
     static Shader* current;
@@ -51,6 +52,9 @@ public:
     void viewMatrixUniform(std::string name) { sViewMatrixUniform = uniform(name); }
     inline int projectionMatrixUniform() { return sProjectionMatrixUniform; };
     inline int viewMatrixUniform() { return sViewMatrixUniform; };
+
+    void colorUniform(std::string name) { sColorUniform = uniform(name); };
+    inline int colorUniform() { return sColorUniform; };
 
     static unsigned int compileShader(ShaderType type, std::string code);
     static unsigned int linkProgram(std::string vertexCode, std::string fragmentCode);
