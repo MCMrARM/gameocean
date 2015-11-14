@@ -5,7 +5,7 @@
 #include "utils/Config.h"
 
 int main() {
-    GameInfo::current = new GameInfo("lbsg", Version(0, 0, 0, 1));
+    GameInfo::current = new GameInfo("gameocean", Version(0, 0, 0, 1));
     GameInfo::current->version.setNetVersion(1, 1);
     Logger::main = new Logger();
 
