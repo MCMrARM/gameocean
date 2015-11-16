@@ -1,4 +1,4 @@
-name: Lifeboat Test Server
+name: GameOcean Test Server
 protocols:
   mcpe:
     enabled: true

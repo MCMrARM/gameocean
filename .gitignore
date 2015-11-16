@@ -12,3 +12,4 @@
 *.cproject
 *.settings
 worlds/
+build/
