@@ -160,7 +160,7 @@ public:
     UUID clientUUID;
     RakNet::RakString serverAddress;
     RakNet::RakString clientSecret;
-    bool skinSlim;
+    bool skinSlim, unk;
     RakNet::RakString skin;
 
     virtual void read(RakNet::BitStream& stream) {
@@ -172,6 +172,7 @@ public:
         stream.Read(serverAddress);
         stream.Read(clientSecret);
         skinSlim = readBool(stream);
+        unk = readBool(stream);
         stream.Read(skin);
     };
 
@@ -660,18 +661,20 @@ public:
     };
 
     byte window;
-    short slot;
+    short slot, hotbar;
     ItemInstance item;
 
     virtual void write(RakNet::BitStream& stream) {
         stream.Write(window);
         stream.Write(slot);
+        stream.Write(hotbar);
         writeItemInstance(stream, item);
     };
 
     virtual void read(RakNet::BitStream& stream) {
         stream.Read(window);
         stream.Read(slot);
+        stream.Read(hotbar);
         item = readItemInstance(stream);
     };
 };

@@ -177,7 +177,7 @@ void MCPEPlayer::updateEntityPos(Entity *entity) {
 void MCPEPlayer::sendInventorySlot(int slotId) {
     std::unique_ptr<MCPEContainerSetSlotPacket> pk (new MCPEContainerSetSlotPacket());
     pk->window = 0;
-    pk->slot = slotId;
+    pk->slot = (short) slotId;
     pk->item = inventory.getItem(slotId);
     writePacket(std::move(pk));
 }
