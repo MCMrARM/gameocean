@@ -9,7 +9,7 @@
 class PlayerQuitEvent : public PlayerEvent, public Cancellable {
 
 public:
-    static CallbackList<ChatEvent> callbacks;
+    static CallbackList<PlayerQuitEvent> callbacks;
 
 protected:
     std::string reason;

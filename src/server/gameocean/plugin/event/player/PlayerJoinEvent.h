@@ -9,7 +9,7 @@
 class PlayerJoinEvent : public PlayerEvent, public Cancellable {
 
 public:
-    static CallbackList<ChatEvent> callbacks;
+    static CallbackList<PlayerJoinEvent> callbacks;
 
     PlayerJoinEvent(Player& player) : PlayerEvent(player) {
         //
