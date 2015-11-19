@@ -6,6 +6,8 @@
 #include <gameocean/utils/StringUtils.h>
 #include <gameocean/utils/Time.h>
 #include "plugin/event/player/ChatEvent.h"
+#include "plugin/event/player/PlayerQuitEvent.h"
+#include "plugin/event/player/PlayerJoinEvent.h"
 
 const std::string Player::TYPE_NAME = "Player";
 
@@ -14,6 +16,11 @@ Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shou
 };
 
 void Player::close(std::string reason, bool sendToPlayer) {
+    {
+        PlayerQuitEvent event(*this, reason);
+        Event::broadcast(event);
+    }
+
     if (closed)
         return;
 
@@ -66,6 +73,11 @@ void Player::setSpawned() {
         }
     }
     chunkArrayMutex.unlock();
+
+    {
+        PlayerJoinEvent event(*this);
+        Event::broadcast(event);
+    }
 }
 
 void Player::setPos(float x, float y, float z) {
