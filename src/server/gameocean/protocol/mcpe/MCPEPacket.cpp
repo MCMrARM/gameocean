@@ -58,6 +58,8 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     pk2->z = z;
     pk2->gamemode = MCPEStartGamePacket::GameMode::SURVIVAL;
     player.writePacket(std::move(pk2));
+
+    player.sendWorldTime(player.getWorld().getTime(), player.getWorld().isTimeStopped());
 }
 
 void MCPETextPacket::handle(MCPEPlayer &player) {

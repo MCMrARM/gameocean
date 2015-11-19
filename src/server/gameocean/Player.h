@@ -76,6 +76,8 @@ protected:
 
     int calculateMiningTime();
 
+    virtual void sendWorldTime(int time, bool stopped) = 0;
+
 public:
     Player(Server& server);
 

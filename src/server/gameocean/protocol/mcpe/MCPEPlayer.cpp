@@ -70,6 +70,8 @@ void MCPEPlayer::setSpawned() {
     pk->z = z;
     writePacket(std::move(pk));
 
+    sendWorldTime(getWorld().getTime(), getWorld().isTimeStopped());
+
     std::unique_ptr<MCPEPlayStatusPacket> pk2 (new MCPEPlayStatusPacket());
     pk2->status = MCPEPlayStatusPacket::Status::PLAYER_SPAWN;
     writePacket(std::move(pk2));
@@ -220,4 +222,16 @@ void MCPEPlayer::sendBlockUpdate(BlockPos bpos) {
     std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
     pk->add(world, bpos.x, bpos.y, bpos.z, MCPEUpdateBlockPacket::FLAG_ALL);
     writePacket(std::move(pk));
+}
+
+void MCPEPlayer::sendWorldTime(int time, bool stopped) {
+    std::unique_ptr<MCPESetTimePacket> pk (new MCPESetTimePacket());
+    pk->time = time;
+    pk->started = true;
+    writePacket(std::move(pk));
+
+    std::unique_ptr<MCPESetTimePacket> pk2 (new MCPESetTimePacket());
+    pk2->time = time;
+    pk2->started = !stopped;
+    writePacket(std::move(pk2));
 }

@@ -1,5 +1,10 @@
+#include <gameocean/utils/Time.h>
 #include "World.h"
 #include "WorldProvider.h"
+
+World::World(std::string name) : name(name) {
+    setTime(5000, true);
+}
 
 Chunk* World::getChunkAt(ChunkPos pos, bool create) {
     chunkMutex.lock();
@@ -19,4 +24,19 @@ Chunk* World::getChunkAt(ChunkPos pos, bool create) {
         chunks[pos] = ret;
     chunkMutex.unlock();
     return ret;
+}
+
+void World::setTime(int time, bool stopped) {
+    this->startTime = time;
+    this->timeStopped = stopped;
+    if (!stopped)
+        this->startTimeMS = Time::now();
+    broadcastTimeUpdate(time, stopped);
+}
+
+int World::getTime() {
+    if (timeStopped)
+        return startTime;
+    long long now = Time::now();
+    return startTime + (int) ((now - startTimeMS) / 50);
 }

@@ -263,6 +263,21 @@ public:
     virtual void handle(MCPEPlayer& player);
 };
 
+class MCPESetTimePacket : public MCPEPacket {
+public:
+    MCPESetTimePacket() {
+        id = MCPE_SET_TIME_PACKET;
+    };
+
+    int time;
+    bool started;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(time);
+        writeBool(stream, started);
+    };
+};
+
 class MCPEStartGamePacket : public MCPEPacket {
 public:
     MCPEStartGamePacket() {

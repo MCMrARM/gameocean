@@ -19,9 +19,12 @@ private:
     std::unordered_map<ChunkPos, Chunk*> chunks;
     std::set<Player*> players;
     WorldProvider* provider;
+    int startTime;
+    long long startTimeMS;
+    bool timeStopped = false;
 
 public:
-    World(std::string name) : name(name) { };
+    World(std::string name);
 
     BlockPos spawn;
 
@@ -116,6 +119,22 @@ public:
             p->sendBlockUpdate(pos);
         }
     };
+
+    void setTime(int time, bool stopped);
+
+    void broadcastTimeUpdate(int time, bool stopped) {
+        for (Player* p : getPlayers()) {
+            p->sendWorldTime(time, stopped);
+        }
+    };
+
+    int getTime();
+
+    inline bool isTimeStopped() { return timeStopped; };
+
+    void setTimeStopped(bool stopped) {
+        setTime(getTime(), stopped);
+    }
 
 };
 
