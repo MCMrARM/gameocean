@@ -1,6 +1,7 @@
 #include "MCPEPacket.h"
 
 #include <algorithm>
+#include <gameocean/utils/Time.h>
 #include "MCPEPlayer.h"
 #include "../../world/BlockPos.h"
 #include "../../world/Chunk.h"
@@ -104,6 +105,22 @@ void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
     }
 
     player.linkHeldItem(hotbarSlot, slot);
+}
+
+void MCPEInteractPacket::handle(MCPEPlayer& player) {
+    if (actionId == 2) {
+        long long n = Time::now();
+        if (n - player.lastAttack < 500)
+            return;
+        player.lastAttack = n;
+
+        for (Entity* ent : player.getNearbyEntities(6.f)) {
+            if (ent->getId() == target) {
+                player.attack(*ent);
+                return;
+            }
+        }
+    }
 }
 
 void MCPEUseItemPacket::handle(MCPEPlayer &player) {

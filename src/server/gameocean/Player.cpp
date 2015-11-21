@@ -8,10 +8,14 @@
 #include "plugin/event/player/ChatEvent.h"
 #include "plugin/event/player/PlayerQuitEvent.h"
 #include "plugin/event/player/PlayerJoinEvent.h"
+#include "plugin/event/entity/EntityDamageEvent.h"
+#include "plugin/event/player/PlayerAttackEvent.h"
+#include "plugin/event/player/PlayerDamageEvent.h"
 
-const std::string Player::TYPE_NAME = "Player";
+const char* Player::TYPE_NAME = "Player";
 
 Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), inventory(*this, 36) {
+    maxHp = hp = 20.f;
     world.addPlayer(this);
 };
 
@@ -281,4 +285,31 @@ void Player::processMessage(std::string text) {
         Event::broadcast(event);
         server.broadcastMessage(StringUtils::sprintf(event.getFormat(), getName().c_str(), event.getMessage().c_str()));
     }
+}
+
+void Player::attack(Entity& entity) {
+    EntityDamageEvent event (entity, 1.f, EntityDamageEvent::DamageSource::ENTITY, this, 0.3f);
+
+    PlayerAttackEvent attackEvent (*this, event);
+    Event::broadcast(attackEvent);
+
+    if (attackEvent.isCancelled())
+        return;
+
+    entity.damage(event);
+}
+
+void Player::damage(EntityDamageEvent& event) {
+    PlayerDamageEvent damageEvent (*this, event);
+    Event::broadcast(damageEvent);
+    if (damageEvent.isCancelled())
+        return;
+    Entity::damage(event);
+}
+
+void Player::setHealth(float hp) {
+    if (hp > 0) {
+        sendHealth(hp);
+    }
+    Entity::setHealth(hp);
 }

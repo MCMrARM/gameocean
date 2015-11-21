@@ -10,6 +10,7 @@ typedef long long EntityId;
 class World;
 class Chunk;
 class Player;
+class EntityDamageEvent;
 
 class Entity {
 
@@ -25,6 +26,11 @@ protected:
 
     std::recursive_mutex generalMutex;
     float x, y, z;
+    Vector3D motion;
+
+    float hp, maxHp;
+
+    void knockBack(float x, float z, float force);
 
 public:
     static EntityId currentId;
@@ -37,7 +43,7 @@ public:
 
     virtual void close();
 
-    virtual std::string getTypeName() { return "Entity"; };
+    virtual const char* getTypeName() { return "Entity"; };
 
     inline EntityId getId() { return id; };
     inline World& getWorld() {
@@ -68,6 +74,31 @@ public:
     void despawnFrom(Player* player);
     void spawnToAll();
     void despawnFromAll();
+
+    inline float getHealth() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return hp;
+    };
+    inline float getMaxHealth() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return maxHp;
+    };
+    virtual void setHealth(float hp) {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        if (hp <= 0) {
+            kill();
+            return;
+        }
+        this->hp = hp;
+    };
+
+    virtual void damage(EntityDamageEvent& event);
+
+    virtual void kill() {
+        close();
+    };
+
+    std::vector<Entity*> getNearbyEntities(float range);
 
 };
 

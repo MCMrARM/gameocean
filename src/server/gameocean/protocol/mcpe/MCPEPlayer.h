@@ -18,6 +18,7 @@ class MCPEPlayer : public Player {
 protected:
     friend class MCPEPacketBatchThread;
     friend class MCPELoginPacket;
+    friend class MCPEInteractPacket;
 
     int hotbarSlots[9];
     int hotbarSlot = 0;
@@ -51,6 +52,8 @@ protected:
 
     virtual void sendBlockUpdate(BlockPos bpos);
     virtual void sendWorldTime(int time, bool stopped);
+
+    virtual void sendHealth(float hp);
 
 public:
     MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {

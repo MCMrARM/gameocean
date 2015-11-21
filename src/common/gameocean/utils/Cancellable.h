@@ -3,7 +3,7 @@
 class Cancellable {
 
 protected:
-    bool cancelled;
+    bool cancelled = false;
 
 public:
     inline void cancel() {

@@ -41,6 +41,8 @@ protected:
     long long miningStarted = -1;
     int miningTime;
 
+    long long lastAttack = 0;
+
     std::atomic<bool> shouldUpdateChunkQueue;
     std::recursive_mutex chunkArrayMutex;
     std::unordered_map<ChunkPos, Chunk*> sentChunks;
@@ -78,12 +80,17 @@ protected:
 
     virtual void sendWorldTime(int time, bool stopped) = 0;
 
+    virtual void sendHealth(float hp) = 0;
+
 public:
     Player(Server& server);
 
     PlayerInventory inventory;
 
     virtual void close(std::string reason, bool sendToPlayer);
+    virtual void close() {
+        close("unknown", true);
+    };
 
     virtual std::string getName() { return name; };
     void setName(std::string name) {
@@ -92,8 +99,8 @@ public:
 
     inline bool hasSpawned() { return spawned; };
 
-    static const std::string TYPE_NAME;
-    virtual std::string getTypeName() { return TYPE_NAME; };
+    static const char* TYPE_NAME;
+    virtual const char* getTypeName() { return TYPE_NAME; };
 
     virtual void setPos(float x, float y, float z);
     void teleport(float x, float y, float z);
@@ -113,6 +120,11 @@ public:
     virtual void finishedMining();
     inline int getMiningTime() { return miningTime; };
     int getRemainingMiningTime();
+
+    void attack(Entity& entity);
+    virtual void damage(EntityDamageEvent& event);
+
+    virtual void setHealth(float hp);
 
 };
 

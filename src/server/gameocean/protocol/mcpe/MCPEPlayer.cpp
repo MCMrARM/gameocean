@@ -235,3 +235,9 @@ void MCPEPlayer::sendWorldTime(int time, bool stopped) {
     pk2->started = !stopped;
     writePacket(std::move(pk2));
 }
+
+void MCPEPlayer::sendHealth(float hp) {
+    std::unique_ptr<MCPESetHealthPacket> pk (new MCPESetHealthPacket());
+    pk->health = (int) hp;
+    writePacket(std::move(pk));
+}

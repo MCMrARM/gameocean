@@ -576,6 +576,8 @@ public:
         stream.Write(actionId);
         stream.Write(target);
     };
+
+    virtual void handle(MCPEPlayer& player);
 };
 
 class MCPEUseItemPacket : public MCPEPacket {
@@ -652,6 +654,19 @@ public:
     };
 
     virtual void handle(MCPEPlayer& player);
+};
+
+class MCPESetHealthPacket : public MCPEPacket {
+public:
+    MCPESetHealthPacket() {
+        id = MCPE_SET_HEALTH_PACKET;
+    };
+
+    int health;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(health);
+    };
 };
 
 class MCPERespawnPacket : public MCPEPacket {
