@@ -25,9 +25,14 @@ public:
 
     virtual ~BinaryStream() { };
 
-    virtual void read(byte *data, unsigned int size) = 0;
+    virtual unsigned int read(byte *data, unsigned int size) = 0;
 
     virtual void write(const byte *data, unsigned int size) = 0;
+
+    inline void readFully(byte *data, unsigned int size) {
+        if (read(data, size) != size)
+            throw EOFException ();
+    }
 
     static const int LONG_SIZE = 8;
     static const int INT_SIZE = 4;
@@ -165,16 +170,16 @@ public:
 
 class MemoryBinaryStream : public BinaryStream {
 
-    int size;
+    unsigned int size;
     byte *data;
-    int pos = 0;
+    unsigned int pos = 0;
 
 public:
     MemoryBinaryStream(byte *data, int size);
 
     virtual void write(const byte *data, unsigned int size);
 
-    virtual void read(byte *data, unsigned int size);
+    virtual unsigned int read(byte *data, unsigned int size);
 
 };
 
@@ -195,6 +200,79 @@ public:
 
     virtual void write(const byte *data, unsigned int size);
 
-    virtual void read(byte *data, unsigned int size);
+    virtual unsigned int read(byte *data, unsigned int size);
 
 };
+
+class WrapperBinaryStream : public BinaryStream {
+
+protected:
+    std::unique_ptr<BinaryStream> stream;
+
+public:
+    WrapperBinaryStream(std::unique_ptr<BinaryStream> stream) : stream(std::move(stream)) {
+        //
+    };
+
+    virtual void write(const byte *data, unsigned int size) {
+        stream->write(data, size);
+    };
+
+    virtual unsigned int read(byte *data, unsigned int size) {
+        stream->read(data, size);
+    };
+
+};
+
+/*
+class BufferedBinaryStream : public WrapperBinaryStream {
+
+protected:
+    static const unsigned int CHUNK_SIZE = 1024 * 16;
+    byte readData [CHUNK_SIZE];
+    unsigned int readPos = 0;
+    byte writeData [CHUNK_SIZE];
+    unsigned int writePos = 0;
+
+public:
+    BufferedBinaryStream(std::unique_ptr<BinaryStream> stream) : WrapperBinaryStream(std::move(stream)) {
+        //
+    };
+
+    virtual void write(const byte *data, unsigned int size) {
+        if (size >= CHUNK_SIZE) {
+            stream->write(data, size);
+            return;
+        }
+        else if (size >= CHUNK_SIZE - writePos)
+            flush();
+        memcpy(&writeData[writePos], &data[0], size);
+    };
+
+    virtual unsigned int read(byte *data, unsigned int size) {
+        int destOff = 0;
+        if (readPos <= 0) {
+            stream->read(&readData[0], size);
+        }
+
+        if (size < CHUNK_SIZE - readPos) {
+            memcpy(&data[0], &readData[0], size);
+            readPos += size;
+            return;
+        }
+        memcpy(&data[0], &readData[0], CHUNK_SIZE - readPos);
+        destOff += CHUNK_SIZE - readPos;
+        readPos = 0;
+
+        stream->read(&data[destOff], size - destOff);
+    };
+
+    virtual void flush() {
+        if (writePos <= 0)
+            return;
+        stream->write(&writeData[0], writePos);
+        writePos = 0;
+    };
+
+};
+ */

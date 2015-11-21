@@ -17,7 +17,7 @@
 #include "plugin/PluginManager.h"
 
 Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
-    mainWorld = new World("test");
+    mainWorld = new World("world");
 }
 
 void Server::start() {
@@ -37,10 +37,6 @@ void Server::start() {
 
     MCAnvilProvider* provider = new MCAnvilProvider(*mainWorld);
     mainWorld->setWorldProvider(provider);
-
-    mainWorld->spawn.x = 10;
-    mainWorld->spawn.y = 100;
-    mainWorld->spawn.z = 10;
     mainWorld->loadSpawnTerrain();
 
     PlayerChunkQueueThread chunkQueueThread (*this);

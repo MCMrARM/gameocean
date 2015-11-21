@@ -7,18 +7,37 @@
 #include <zlib.h>
 #include <gameocean/common.h>
 #include <gameocean/utils/BinaryStream.h>
+#include <gameocean/utils/CompressedBinaryStream.h>
 #include "../Chunk.h"
 #include "../World.h"
 #include "../../utils/NBT.h"
 
+MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {
+    start();
+
+    int fd = open(("worlds/" + world.getName() + "/level.dat").c_str(), O_RDONLY);
+    if (fd < 0) {
+        return;
+    }
+    std::unique_ptr<BinaryStream> s (new GzipInflateBinaryStream(std::unique_ptr<FileBinaryStream>(new FileBinaryStream(fd))));
+    s->swapEndian = true;
+
+    std::unique_ptr<NBTTag> ptag = NBTTag::getTag(*s);
+    NBTCompound& tag = (NBTCompound&) *((NBTCompound&) *ptag).val["Data"];
+    NBTCompound& rules = (NBTCompound&) *tag.val["GameRules"];
+    world.setTime(((NBTInt&) *tag.val["Time"]).val, ((NBTString&) *rules.val["doDaylightCycle"]).val == "true");
+
+    world.spawn = { ((NBTInt&) *tag.val["SpawnX"]).val, ((NBTInt&) *tag.val["SpawnY"]).val + 2, ((NBTInt&) *tag.val["SpawnZ"]).val };
+}
+
 void MCAnvilProvider::loadRegion(RegionPos pos) {
     std::stringstream ss;
-    ss << "worlds/world/region/r." << pos.x << "." << pos.z << ".mca";
+    ss << "worlds/" << world.getName() << "/region/r." << pos.x << "." << pos.z << ".mca";
     int fd = open(ss.str().c_str(), O_RDONLY);
     if (fd < 0)
         return;
     Logger::main->trace("WorldProvider/MCAnvil", "Loading region: %s", ss.str().c_str());
-    FileBinaryStream s (fd);
+    FileBinaryStream s (fd, true);
     
     std::shared_ptr<MCAnvilHeader> header (new MCAnvilHeader());
     header->filePath = ss.str();
@@ -65,7 +84,7 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
         return;
     }
     lseek(fd, loc << 12, SEEK_SET);
-    FileBinaryStream s (fd);
+    FileBinaryStream s (fd, true);
     s.swapEndian = true;
     unsigned int byteSize;
     byte compressionType;

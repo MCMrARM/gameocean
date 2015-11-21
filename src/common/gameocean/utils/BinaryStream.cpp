@@ -12,23 +12,21 @@ void MemoryBinaryStream::write(const byte *data, unsigned int size) {
         Logger::main->error("MemoryBinaryStream",
                             "Attempting to write %i bytes to a buffer with only %i bytes remaining!", size,
                             this->size - pos);
-        throw new EOFException();
+        throw EOFException();
     }
 
     memcpy(&this->data[pos], data, size);
     pos += size;
 }
 
-void MemoryBinaryStream::read(byte *data, unsigned int size) {
+unsigned int MemoryBinaryStream::read(byte *data, unsigned int size) {
     if (pos + size > this->size) {
-        Logger::main->error("MemoryBinaryStream",
-                            "Attempting to read %i bytes from a buffer with only %i bytes remaining!", size,
-                            this->size - pos);
-        throw new EOFException();
+        size = (this->size - pos);
     }
 
     memcpy(data, &this->data[pos], size);
     pos += size;
+    return pos;
 }
 
 FileBinaryStream::FileBinaryStream(int fd) {
@@ -40,7 +38,7 @@ void FileBinaryStream::write(const byte *data, unsigned int size) {
     while(true) {
         ssize_t s = ::write(fd, &data[pos], size - pos);
         if (s < 0) {
-            throw new EOFException();
+            throw EOFException();
         }
         pos += s;
         if (pos >= size) {
@@ -49,16 +47,16 @@ void FileBinaryStream::write(const byte *data, unsigned int size) {
     }
 }
 
-void FileBinaryStream::read(byte *data, unsigned int size) {
-    int pos = 0;
+unsigned int FileBinaryStream::read(byte *data, unsigned int size) {
+    unsigned int pos = 0;
     while(true) {
         ssize_t s = ::read(fd, &data[pos], size - pos);
-        if (s < 0) {
-            throw new EOFException();
+        if (s <= 0) {
+            return pos;
         }
         pos += s;
         if (pos >= size) {
-            return;
+            return pos;
         }
     }
 }
