@@ -20,6 +20,7 @@ class Protocol;
 class Chunk;
 class PlayerChunkQueueThread;
 class PlayerBlockDestroyThread;
+class Plugin;
 
 class Player : public Entity, public CommandSender {
     friend class Entity;
@@ -50,6 +51,8 @@ protected:
     std::vector<ChunkPos> sendChunksQueue;
 
     std::set<Entity*> spawnedEntities;
+
+    std::map<Plugin*, void*> pluginData;
 
     void updateChunkQueue();
     void sendQueuedChunks();
@@ -125,6 +128,9 @@ public:
     virtual void damage(EntityDamageEvent& event);
 
     virtual void setHealth(float hp);
+
+    void* getPluginData(Plugin* plugin);
+    void setPluginData(Plugin* plugin, void* data);
 
 };
 

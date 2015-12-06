@@ -21,6 +21,7 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 include_directories(${PNG_INCLUDE_DIRS})
 include_directories(../libs/json)
 include_directories(common/)
+include_directories(server/)
 
 file(GLOB_RECURSE COMMON_SOURCES "common/*.cpp")
 file(GLOB_RECURSE SERVER_SOURCES "server/*.cpp")

@@ -313,3 +313,15 @@ void Player::setHealth(float hp) {
     }
     Entity::setHealth(hp);
 }
+
+void* Player::getPluginData(Plugin* plugin) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    if (pluginData.count(plugin) > 0)
+        return pluginData.at(plugin);
+    return null;
+}
+
+void Player::setPluginData(Plugin* plugin, void* data) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    pluginData[plugin] = data;
+}

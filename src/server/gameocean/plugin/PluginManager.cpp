@@ -98,3 +98,9 @@ void PluginManager::doReload() {
     loadPlugins();
     enablePlugins();
 }
+
+Plugin* PluginManager::getPluginByName(std::string name) {
+    if (plugins.count(name) > 0)
+        return plugins.at(name);
+    return null;
+}

@@ -26,6 +26,8 @@ public:
     Plugin* loadPlugin(std::string plugin);
     void unloadPlugin(Plugin* plugin);
 
+    Plugin* getPluginByName(std::string name);
+
     void doReload();
 
 };
