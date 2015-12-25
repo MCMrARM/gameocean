@@ -122,13 +122,11 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
         return;
     if (entity->getTypeName() == Player::TYPE_NAME) {
         Logger::main->trace("MCPE/Player", "Spawning player: %s", ((Player*) entity)->getName().c_str());
-        unsigned char skin[64 * 32 * 4];
-
         UUID uuid = {1, entity->getId()};
 
         std::unique_ptr<MCPEPlayerListPacket> lpk (new MCPEPlayerListPacket());
         lpk->type = MCPEPlayerListPacket::Type::ADD;
-        lpk->addEntries.push_back({uuid, entity->getId(), ((Player*) entity)->getName().c_str(), false, &skin[0]});
+        lpk->addEntries.push_back({uuid, entity->getId(), ((Player*) entity)->getName().c_str(), ((Player*) entity)->skinModel.c_str(), ((Player*) entity)->skin});
         writePacket(std::move(lpk));
 
         std::unique_ptr<MCPEAddPlayerPacket> pk (new MCPEAddPlayerPacket());

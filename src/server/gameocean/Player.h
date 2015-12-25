@@ -90,6 +90,8 @@ public:
 
     PlayerInventory inventory;
 
+    std::string skin, skinModel;
+
     virtual void close(std::string reason, bool sendToPlayer);
     virtual void close() {
         close("unknown", true);

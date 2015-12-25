@@ -160,8 +160,8 @@ public:
     UUID clientUUID;
     RakNet::RakString serverAddress;
     RakNet::RakString clientSecret;
-    bool skinSlim, unk;
-    RakNet::RakString skin;
+    RakNet::RakString skinModel;
+    std::string skin;
 
     virtual void read(RakNet::BitStream& stream) {
         stream.Read(username);
@@ -171,9 +171,11 @@ public:
         clientUUID = readUUID(stream);
         stream.Read(serverAddress);
         stream.Read(clientSecret);
-        skinSlim = readBool(stream);
-        unk = readBool(stream);
-        stream.Read(skin);
+        stream.Read(skinModel);
+        short skinLen;
+        stream.Read(skinLen);
+        skin.resize(skinLen);
+        stream.Read(&skin[0], skinLen);
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -774,8 +776,8 @@ public:
         UUID uuid;
         long long eid;
         RakNet::RakString name;
-        bool isSlim;
-        byte* skin;
+        RakNet::RakString skinModel;
+        std::string skin;
     };
     struct RemoveEntry {
         UUID uuid;
@@ -792,8 +794,9 @@ public:
                 writeUUID(stream, e.uuid);
                 stream.Write(e.eid);
                 stream.Write(e.name);
-                stream.Write(e.isSlim);
-                stream.Write((char*) e.skin, 64 * 32 * 4);
+                stream.Write(e.skinModel);
+                stream.Write((short) e.skin.size());
+                stream.Write(e.skin.c_str(), (int) e.skin.size());
             }
         } else {
             stream.Write((int) removeEntries.size());

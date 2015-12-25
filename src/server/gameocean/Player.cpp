@@ -257,7 +257,6 @@ int Player::calculateMiningTime() {
         }
     }
 
-    std::cout << miningBlock->getName() << " " << (int)miningBlock->needsTool << "\n";
     if (miningBlock->needsTool && !hasTool) {
         r *= 3.3f;
     }

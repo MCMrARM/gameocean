@@ -40,6 +40,9 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
 void MCPELoginPacket::handle(MCPEPlayer &player) {
     player.setName(std::string(username));
 
+    player.skinModel = skinModel;
+    player.skin = skin;
+
     std::unique_ptr<MCPEPlayStatusPacket> pk (new MCPEPlayStatusPacket());
     pk->status = MCPEPlayStatusPacket::Status::SUCCESS;
     player.writePacket(std::move(pk));
