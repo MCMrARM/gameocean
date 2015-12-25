@@ -24,8 +24,9 @@ void Entity::close() {
     generalMutex.unlock();
 }
 
-void Entity::setPos(float x, float y, float z) {
+void Entity::setWorld(World& world, float x, float y, float z) {
     generalMutex.lock();
+    this->world = &world;
     this->x = x;
     this->y = y;
     this->z = z;
@@ -36,9 +37,33 @@ void Entity::setPos(float x, float y, float z) {
         chunk = world.getChunkAt(newChunkX, newChunkZ);
         chunk->addEntity(this);
         updateViewers();
-    } else if (newChunkX != chunk->pos.x || newChunkZ != chunk->pos.z) {
+    } else {
         chunk->removeEntity(this);
         chunk = world.getChunkAt(newChunkX, newChunkZ, true);
+        chunk->addEntity(this);
+        updateViewers();
+    }
+    for (Player* p : spawnedTo) {
+        p->updateEntityPos(this);
+    }
+    generalMutex.unlock();
+}
+
+void Entity::setPos(float x, float y, float z) {
+    generalMutex.lock();
+    this->x = x;
+    this->y = y;
+    this->z = z;
+
+    int newChunkX = ((int) x) >> 4;
+    int newChunkZ = ((int) z) >> 4;
+    if (chunk == null) {
+        chunk = world->getChunkAt(newChunkX, newChunkZ);
+        chunk->addEntity(this);
+        updateViewers();
+    } else if (newChunkX != chunk->pos.x || newChunkZ != chunk->pos.z) {
+        chunk->removeEntity(this);
+        chunk = world->getChunkAt(newChunkX, newChunkZ, true);
         chunk->addEntity(this);
         updateViewers();
     }

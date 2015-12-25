@@ -16,7 +16,7 @@ class Entity {
 
 protected:
     unsigned int typeId = 0;
-    World& world;
+    World* world;
     EntityId id;
     Chunk* chunk = null;
 
@@ -35,7 +35,7 @@ protected:
 public:
     static EntityId currentId;
 
-    Entity(World& world) : world(world) {
+    Entity(World& world) : world(&world) {
         id = Entity::currentId++;
     };
     Entity(World& world, float x, float y, float z) : Entity(world) { setPos(x, y, z); };
@@ -48,7 +48,7 @@ public:
     inline EntityId getId() { return id; };
     inline World& getWorld() {
         generalMutex.lock();
-        World& w = world;
+        World& w = *world;
         generalMutex.unlock();
         return w;
     };
@@ -59,6 +59,7 @@ public:
         return c;
     };
 
+    virtual void setWorld(World& world, float x, float y, float z);
     virtual void setPos(float x, float y, float z);
 
     inline Vector3D getPos() {

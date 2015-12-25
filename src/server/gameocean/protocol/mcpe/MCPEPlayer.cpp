@@ -35,7 +35,7 @@ int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
 
 bool MCPEPlayer::sendChunk(int x, int z) {
     if (!Player::sendChunk(x, z)) return false;
-    Chunk* chunk = this->world.getChunkAt(x, z, true);
+    Chunk* chunk = this->world->getChunkAt(x, z, true);
     if (chunk == null) return false;
 
     std::unique_ptr<MCPEFullChunkDataPacket> pk (new MCPEFullChunkDataPacket());
@@ -218,7 +218,7 @@ void MCPEPlayer::linkHeldItem(int hotbarSlot, int inventorySlot) {
 
 void MCPEPlayer::sendBlockUpdate(BlockPos bpos) {
     std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
-    pk->add(world, bpos.x, bpos.y, bpos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+    pk->add(*world, bpos.x, bpos.y, bpos.z, MCPEUpdateBlockPacket::FLAG_ALL);
     writePacket(std::move(pk));
 }
 

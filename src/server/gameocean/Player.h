@@ -107,8 +107,10 @@ public:
     static const char* TYPE_NAME;
     virtual const char* getTypeName() { return TYPE_NAME; };
 
+    virtual void setWorld(World& world, float x, float y, float z);
     virtual void setPos(float x, float y, float z);
     void teleport(float x, float y, float z);
+    void teleport(World& world, float x, float y, float z);
 
     bool tryMove(float x, float y, float z);
 

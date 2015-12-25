@@ -16,7 +16,7 @@ const char* Player::TYPE_NAME = "Player";
 
 Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), inventory(*this, 36) {
     maxHp = hp = 20.f;
-    world.addPlayer(this);
+    world->addPlayer(this);
 };
 
 void Player::close(std::string reason, bool sendToPlayer) {
@@ -28,7 +28,7 @@ void Player::close(std::string reason, bool sendToPlayer) {
     if (closed)
         return;
 
-    world.removePlayer(this);
+    world->removePlayer(this);
 
     Entity::close();
     for (auto entry : sentChunks) {
@@ -41,7 +41,7 @@ void Player::close(std::string reason, bool sendToPlayer) {
 
 bool Player::sendChunk(int x, int z) {
     ChunkPos pos (x, z);
-    Chunk* chunk = world.getChunkAt(pos, true);
+    Chunk* chunk = world->getChunkAt(pos, true);
     if (chunk == null || !chunk->ready)
         return false;
     chunkArrayMutex.lock();
@@ -54,11 +54,11 @@ void Player::receivedChunk(int x, int z) {
     chunkArrayMutex.lock();
     ChunkPos pos (x, z);
     if (sentChunks.count(pos) > 0) {
-        receivedChunks[pos] = world.getChunkAt(pos);
+        receivedChunks[pos] = world->getChunkAt(pos);
     }
     chunkArrayMutex.unlock();
 
-    Chunk* chunk = world.getChunkAt(pos, false);
+    Chunk* chunk = world->getChunkAt(pos, false);
     if (chunk != null)
         chunk->setUsedBy(this, true);
 }
@@ -84,6 +84,11 @@ void Player::setSpawned() {
     }
 }
 
+void Player::setWorld(World& world, float x, float y, float z) {
+    Entity::setWorld(world, x, y, z);
+    shouldUpdateChunkQueue = true;
+}
+
 void Player::setPos(float x, float y, float z) {
     Chunk* oldChunk = chunk;
     Entity::setPos(x, y, z);
@@ -96,6 +101,11 @@ void Player::setPos(float x, float y, float z) {
 void Player::teleport(float x, float y, float z) {
     teleporting = true;
     setPos(x, y, z);
+}
+
+void Player::teleport(World& world, float x, float y, float z) {
+    teleporting = true;
+    setWorld(world, x, y, z);
 }
 
 bool Player::tryMove(float x, float y, float z) {
@@ -216,7 +226,7 @@ void Player::updateTeleportState() {
 
 void Player::startMining(BlockPos pos) {
     miningBlockPos = pos;
-    miningBlock = world.getBlock(pos).getBlockVariant();
+    miningBlock = world->getBlock(pos).getBlockVariant();
     miningStarted = Time::now();
     miningTime = calculateMiningTime();
     server.playerBlockDestroyThread.notifyChange();
@@ -229,11 +239,11 @@ void Player::cancelMining() {
 }
 
 void Player::finishedMining() {
-    if (miningBlock != world.getBlock(miningBlockPos).getBlockVariant()) {
+    if (miningBlock != world->getBlock(miningBlockPos).getBlockVariant()) {
         cancelMining();
         return;
     }
-    world.setBlock(miningBlockPos, 0, 0);
+    world->setBlock(miningBlockPos, 0, 0);
     cancelMining();
 }
 
