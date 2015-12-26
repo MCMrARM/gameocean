@@ -7,12 +7,21 @@
 #include "../Player.h"
 
 class Server;
+class Plugin;
 
 class Command {
 
 public:
     static std::unordered_map<std::string, Command*> commands;
+
+    /**
+     * This function registers a command.
+     *
+     * Please don't use it to register plugin commands as this function doesn't allow automatical unregister of the
+     * command after unloading the plugin and therefore can break reloading.
+     */
     static void registerCommand(Command* command);
+    static void registerPluginCommand(Plugin* plugin, Command* command);
     static void registerDefaultCommands(Server& server);
     static void unregisterCommand(Command* command);
     static Command* getCommand(std::string name);

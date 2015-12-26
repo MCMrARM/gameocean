@@ -34,6 +34,11 @@ void Command::registerDefaultCommands(Server& server) {
     Command::registerCommand(new ReloadCommand(server));
 }
 
+void Command::registerPluginCommand(Plugin* plugin, Command* command) {
+    registerCommand(command);
+    plugin->commands.push_back(command);
+}
+
 Command* Command::getCommand(std::string name) {
     if (commands.count(name) > 0) {
         return commands.at(name);
