@@ -13,3 +13,4 @@
 *.settings
 worlds/
 build/
+plugins/

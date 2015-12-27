@@ -30,17 +30,18 @@ protected:
     }
 
 public:
-    virtual ~Plugin();
+    virtual ~Plugin() { };
 
     inline PluginInfo& getPluginInfo() {
         return info;
     }
 
     virtual void enable() { };
-    virtual void disable() { };
+    virtual void disable();
 
     void unregisterEvents() {
         callbacks.clear();
     }
+    void unregisterCommands();
 
 };

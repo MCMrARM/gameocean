@@ -28,6 +28,7 @@ public:
 
     Server& server;
     Command(Server& server) : server(server) { };
+    virtual ~Command() { };
 
     virtual std::string getName() = 0;
     virtual std::string getDescription() { return ""; };

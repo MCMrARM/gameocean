@@ -2,9 +2,15 @@
 
 #include "../command/Command.h"
 
-Plugin::~Plugin() {
+void Plugin::disable() {
+    unregisterCommands();
+    unregisterEvents();
+}
+
+void Plugin::unregisterCommands() {
     for (Command* c : commands) {
-        Command::registerCommand(c);
+        Command::unregisterCommand(c);
         delete c;
     }
+    commands.clear();
 }
