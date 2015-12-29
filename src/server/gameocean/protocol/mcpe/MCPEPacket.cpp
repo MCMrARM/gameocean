@@ -80,7 +80,7 @@ void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
         pk->x = v.x;
         pk->y = v.y;
         pk->z = v.z;
-        pk->yaw = r.x;
+        pk->yaw = pk->headYaw = r.x;
         pk->pitch = r.y;
         pk->mode = MCPEMovePlayerPacket::Mode::NORMAL;
         player.writePacket(std::move(pk));
