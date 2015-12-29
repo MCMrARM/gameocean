@@ -174,6 +174,8 @@ public:
         stream.Read(skinModel);
         short skinLen;
         stream.Read(skinLen);
+        if (skinLen <= 0)
+            return;
         skin.resize(skinLen);
         stream.Read(&skin[0], skinLen);
     };

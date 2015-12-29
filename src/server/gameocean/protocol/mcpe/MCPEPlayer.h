@@ -20,6 +20,7 @@ protected:
     friend class MCPELoginPacket;
     friend class MCPEMovePacket;
     friend class MCPEInteractPacket;
+    friend class MCPEPlayerActionPacket;
 
     int hotbarSlots[9];
     int hotbarSlot = 0;
@@ -55,6 +56,7 @@ protected:
     virtual void sendWorldTime(int time, bool stopped);
 
     virtual void sendHealth(float hp);
+    virtual void sendDeathStatus();
 
 public:
     MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {

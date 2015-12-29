@@ -33,8 +33,8 @@ protected:
 
     std::string name;
 
-    bool spawned = false;
-    bool teleporting = false;
+    std::atomic<bool> spawned;
+    std::atomic<bool> teleporting;
     int viewChunks = 94;
 
     BlockPos miningBlockPos;
@@ -62,6 +62,7 @@ protected:
     virtual void receivedChunk(int x, int z);
 
     virtual void setSpawned();
+    virtual void respawn();
 
     virtual void sendPosition(float x, float y, float z) = 0;
 
@@ -84,6 +85,8 @@ protected:
     virtual void sendWorldTime(int time, bool stopped) = 0;
 
     virtual void sendHealth(float hp) = 0;
+
+    virtual void sendDeathStatus() = 0;
 
 public:
     Player(Server& server);
@@ -132,6 +135,8 @@ public:
     virtual void damage(EntityDamageEvent& event);
 
     virtual void setHealth(float hp);
+
+    virtual void kill();
 
     void* getPluginData(Plugin* plugin);
     void setPluginData(Plugin* plugin, void* data);

@@ -174,6 +174,8 @@ void MCPEPlayerActionPacket::handle(MCPEPlayer& player) {
         player.startMining({ x, y, z });
     } else if (action == Action::ABORT_BREAK) {
         player.cancelMining();
+    } else if (action == Action::RESPAWN) {
+        player.respawn();
     }
 }
 

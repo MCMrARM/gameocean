@@ -128,7 +128,7 @@ void Entity::despawnFromAll() {
     for (Player* p : spawnedTo) {
         p->despawnEntity(this);
     }
-    spawnedTo.empty();
+    spawnedTo.clear();
     generalMutex.unlock();
 }
 

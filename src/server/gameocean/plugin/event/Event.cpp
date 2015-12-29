@@ -5,6 +5,7 @@
 #include "player/PlayerMoveEvent.h"
 #include "player/PlayerDamageEvent.h"
 #include "player/PlayerAttackEvent.h"
+#include "player/PlayerDeathEvent.h"
 
 CallbackList<EntityDamageEvent> EntityDamageEvent::callbacks;
 CallbackList<ChatEvent> ChatEvent::callbacks;
@@ -13,3 +14,4 @@ CallbackList<PlayerQuitEvent> PlayerQuitEvent::callbacks;
 CallbackList<PlayerMoveEvent> PlayerMoveEvent::callbacks;
 CallbackList<PlayerDamageEvent> PlayerDamageEvent::callbacks;
 CallbackList<PlayerAttackEvent> PlayerAttackEvent::callbacks;
+CallbackList<PlayerDeathEvent> PlayerDeathEvent::callbacks;

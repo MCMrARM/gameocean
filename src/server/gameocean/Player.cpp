@@ -12,10 +12,11 @@
 #include "plugin/event/entity/EntityDamageEvent.h"
 #include "plugin/event/player/PlayerAttackEvent.h"
 #include "plugin/event/player/PlayerDamageEvent.h"
+#include "plugin/event/player/PlayerDeathEvent.h"
 
 const char* Player::TYPE_NAME = "Player";
 
-Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), inventory(*this, 36) {
+Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), spawned(false), teleporting(false), inventory(*this, 36) {
     maxHp = hp = 20.f;
     world->addPlayer(this);
 };
@@ -83,6 +84,20 @@ void Player::setSpawned() {
         PlayerJoinEvent event(*this);
         Event::broadcast(event);
     }
+}
+
+void Player::respawn() {
+    if (spawned)
+        return;
+
+    setHealth(20.f);
+    spawned = true;
+    teleport(*world, x, y, z);
+    chunkArrayMutex.lock();
+    for (auto entry : sentChunks) {
+        entry.second->setUsedBy(this, true);
+    }
+    chunkArrayMutex.unlock();
 }
 
 void Player::setWorld(World& world, float x, float y, float z) {
@@ -327,6 +342,31 @@ void Player::setHealth(float hp) {
         sendHealth(hp);
     }
     Entity::setHealth(hp);
+}
+
+void Player::kill() {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    PlayerDeathEvent event (*this, world, getPos());
+    Event::broadcast(event);
+    if (event.isCancelled())
+        return;
+
+    spawned = false;
+    x = event.getRespawnPos().x;
+    y = event.getRespawnPos().y;
+    z = event.getRespawnPos().z;
+    world = event.getWorld();
+    chunk->removeEntity(this);
+    chunk = null;
+
+    sendDeathStatus();
+    chunkArrayMutex.lock();
+    sendChunksQueue.clear();
+    for (auto entry : sentChunks) {
+        entry.second->setUsedBy(this, false);
+    }
+    chunkArrayMutex.unlock();
+    despawnFromAll();
 }
 
 void* Player::getPluginData(Plugin* plugin) {

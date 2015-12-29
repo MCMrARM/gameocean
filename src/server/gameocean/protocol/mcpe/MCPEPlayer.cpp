@@ -242,3 +242,12 @@ void MCPEPlayer::sendHealth(float hp) {
     pk->health = (int) hp;
     writePacket(std::move(pk));
 }
+
+void MCPEPlayer::sendDeathStatus() {
+    sendHealth(0);
+    std::unique_ptr<MCPERespawnPacket> pk (new MCPERespawnPacket());
+    pk->x = x;
+    pk->y = y;
+    pk->z = z;
+    writePacket(std::move(pk));
+}
