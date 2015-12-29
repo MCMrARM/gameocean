@@ -73,6 +73,12 @@ void Entity::setPos(float x, float y, float z) {
     generalMutex.unlock();
 }
 
+void Entity::setRot(float yaw, float pitch) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    this->yaw = yaw;
+    this->pitch = pitch;
+}
+
 void Entity::updateViewers() {
     std::set<Player*> despawnFromPlayers (spawnedTo);
     for (Player* p : chunk->usedBy) {

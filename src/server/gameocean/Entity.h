@@ -3,6 +3,7 @@
 #include <gameocean/common.h>
 #include <mutex>
 #include <set>
+#include <gameocean/utils/Vector2D.h>
 #include <gameocean/utils/Vector3D.h>
 
 typedef long long EntityId;
@@ -26,6 +27,7 @@ protected:
 
     std::recursive_mutex generalMutex;
     float x, y, z;
+    float yaw, pitch;
     Vector3D motion;
 
     float hp, maxHp;
@@ -47,26 +49,27 @@ public:
 
     inline EntityId getId() { return id; };
     inline World& getWorld() {
-        generalMutex.lock();
-        World& w = *world;
-        generalMutex.unlock();
-        return w;
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return *world;
     };
     inline Chunk* getChunk() {
-        generalMutex.lock();
-        Chunk* c = chunk;
-        generalMutex.unlock();
-        return c;
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return chunk;
     };
 
     virtual void setWorld(World& world, float x, float y, float z);
     virtual void setPos(float x, float y, float z);
 
     inline Vector3D getPos() {
-        generalMutex.lock();
-        Vector3D ret = Vector3D(x, y, z);
-        generalMutex.unlock();
-        return ret;
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return Vector3D(x, y, z);
+    };
+
+    virtual void setRot(float yaw, float pitch);
+
+    inline Vector2D getRot() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return Vector2D(yaw, pitch);
     };
 
     void updateViewers();

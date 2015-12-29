@@ -18,6 +18,7 @@ class MCPEPlayer : public Player {
 protected:
     friend class MCPEPacketBatchThread;
     friend class MCPELoginPacket;
+    friend class MCPEMovePacket;
     friend class MCPEInteractPacket;
 
     int hotbarSlots[9];
