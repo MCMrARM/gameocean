@@ -8,6 +8,7 @@
 #include "plugin/event/player/ChatEvent.h"
 #include "plugin/event/player/PlayerQuitEvent.h"
 #include "plugin/event/player/PlayerJoinEvent.h"
+#include "plugin/event/player/PlayerMoveEvent.h"
 #include "plugin/event/entity/EntityDamageEvent.h"
 #include "plugin/event/player/PlayerAttackEvent.h"
 #include "plugin/event/player/PlayerDamageEvent.h"
@@ -114,7 +115,12 @@ bool Player::tryMove(float x, float y, float z) {
     if (teleporting)
         return true; // return true so the position won't be reverted
 
-    setPos(x, y, z);
+    PlayerMoveEvent event (*this, {x, y, z});
+    Event::broadcast(event);
+    if (event.isCancelled())
+        return false;
+
+    setPos(event.getPos().x, event.getPos().y, event.getPos().z);
     return true;
 }
 
