@@ -92,6 +92,11 @@ void MCPEUpdateBlockPacket::add(World& world, int x, int y, int z, byte flags) {
     entries.push_back({ x, z, (byte) y, b.id, b.data, flags });
 }
 
+const char* MCPEUpdateAttributesPacket::ATTRIBUTE_HEALTH = "generic.health";
+const char* MCPEUpdateAttributesPacket::ATTRIBUTE_HUNGER = "player.hunger";
+const char* MCPEUpdateAttributesPacket::ATTRIBUTE_EXPERIENCE = "player.experience";
+const char* MCPEUpdateAttributesPacket::ATTRIBUTE_EXPERIENCE_LEVEL = "player.level";
+
 void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
     if (hotbarSlot < 0 || hotbarSlot >= 9) {
         return;

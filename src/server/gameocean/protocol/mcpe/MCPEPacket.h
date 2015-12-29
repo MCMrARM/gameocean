@@ -535,6 +535,38 @@ public:
     };
 };
 
+class MCPEUpdateAttributesPacket : public MCPEPacket {
+public:
+    MCPEUpdateAttributesPacket() {
+        id = MCPE_UPDATE_ATTRIBUTES_PACKET;
+    };
+
+    static const char* ATTRIBUTE_HEALTH;
+    static const char* ATTRIBUTE_HUNGER;
+    static const char* ATTRIBUTE_EXPERIENCE;
+    static const char* ATTRIBUTE_EXPERIENCE_LEVEL;
+
+    struct Entry {
+        float minValue, maxValue;
+        float value;
+        RakNet::RakString attribute;
+    };
+
+    long long eid;
+    std::vector<Entry> entries;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        stream.Write((short) entries.size());
+        for (Entry const& e : entries) {
+            stream.Write(e.minValue);
+            stream.Write(e.maxValue);
+            stream.Write(e.value);
+            stream.Write(e.attribute);
+        }
+    };
+};
+
 class MCPEMobEquipmentPacket : public MCPEPacket {
 public:
     MCPEMobEquipmentPacket() {

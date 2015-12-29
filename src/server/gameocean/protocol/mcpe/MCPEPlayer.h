@@ -51,6 +51,7 @@ protected:
     virtual void spawnEntity(Entity* entity);
     virtual void despawnEntity(Entity* entity);
     virtual void updateEntityPos(Entity* entity);
+    virtual void sendHurtAnimation(Entity* entity);
 
     virtual void sendBlockUpdate(BlockPos bpos);
     virtual void sendWorldTime(int time, bool stopped);

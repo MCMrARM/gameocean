@@ -30,8 +30,9 @@ public:
         return pos;
     }
 
-    inline void setWorld(World* world) {
+    inline void setWorld(World* world, Vector3D pos) {
         this->world = world;
+        this->pos = pos;
     }
 
     inline void setRespawnPos(Vector3D pos) {

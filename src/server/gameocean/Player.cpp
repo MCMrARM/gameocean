@@ -335,6 +335,10 @@ void Player::damage(EntityDamageEvent& event) {
     if (damageEvent.isCancelled())
         return;
     Entity::damage(event);
+    for (Player* player : spawnedTo) {
+        player->sendHurtAnimation(this);
+    }
+    sendHurtAnimation(this);
 }
 
 void Player::setHealth(float hp) {

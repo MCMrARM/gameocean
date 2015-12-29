@@ -78,6 +78,8 @@ protected:
     };
     virtual void updateEntityPos(Entity* entity) {};
 
+    virtual void sendHurtAnimation(Entity* entity) {};
+
     virtual void sendBlockUpdate(BlockPos bpos) = 0;
 
     int calculateMiningTime();

@@ -177,6 +177,13 @@ void MCPEPlayer::updateEntityPos(Entity *entity) {
     writePacket(std::move(pk));
 }
 
+void MCPEPlayer::sendHurtAnimation(Entity* entity) {
+    std::unique_ptr<MCPEEntityEventPacket> pk (new MCPEEntityEventPacket());
+    pk->eid = (entity == this ? 0 : entity->getId());
+    pk->event = MCPEEntityEventPacket::Event::HURT_ANIMATION;
+    writePacket(std::move(pk));
+}
+
 void MCPEPlayer::sendInventorySlot(int slotId) {
     std::unique_ptr<MCPEContainerSetSlotPacket> pk (new MCPEContainerSetSlotPacket());
     pk->window = 0;
@@ -238,8 +245,9 @@ void MCPEPlayer::sendWorldTime(int time, bool stopped) {
 }
 
 void MCPEPlayer::sendHealth(float hp) {
-    std::unique_ptr<MCPESetHealthPacket> pk (new MCPESetHealthPacket());
-    pk->health = (int) hp;
+    std::unique_ptr<MCPEUpdateAttributesPacket> pk (new MCPEUpdateAttributesPacket());
+    pk->eid = 0;
+    pk->entries.push_back({0.f, 20.f, hp, MCPEUpdateAttributesPacket::ATTRIBUTE_HEALTH });
     writePacket(std::move(pk));
 }
 
