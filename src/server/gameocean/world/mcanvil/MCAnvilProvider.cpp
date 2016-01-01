@@ -10,6 +10,7 @@
 #include <gameocean/utils/CompressedBinaryStream.h>
 #include "../Chunk.h"
 #include "../World.h"
+#include "../tile/Tile.h"
 #include "../../utils/NBT.h"
 
 MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {
@@ -196,5 +197,21 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
         c->heightmap[i] = (byte) heightmap.val[i];
     }
 */
+
+    if (tag.val.count("TileEntities") > 0) {
+        c->mutex.lock();
+        NBTList& tileEntities = (NBTList&) *tag.val["TileEntities"];
+        for (std::unique_ptr<NBTTag>& e : tileEntities.val) {
+            NBTCompound& tileEntity = (NBTCompound&) *e;
+            std::string entId = ((NBTString&) *tileEntity.val["id"]).val;
+            int entX = ((NBTInt&) *tileEntity.val["x"]).val;
+            int entY = ((NBTInt&) *tileEntity.val["y"]).val;
+            int entZ = ((NBTInt&) *tileEntity.val["z"]).val;
+            std::shared_ptr<Tile> tile = Tile::createTile(entId, world, { entX, entY, entZ });
+            if (tile)
+                c->tiles.insert(tile);
+        }
+        c->mutex.unlock();
+    }
     c->ready = true;
 }

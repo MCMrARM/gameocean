@@ -51,6 +51,15 @@ bool MCPEPlayer::sendChunk(int x, int z) {
 void MCPEPlayer::receivedChunk(int x, int z) {
     Player::receivedChunk(x, z);
 
+    Chunk* chunk = world->getChunkAt({x, z}, false);
+    if (chunk != null) {
+        for (std::shared_ptr<Tile> tile : chunk->tiles) {
+            std::unique_ptr<MCPETileEntityDataPacket> pk (new MCPETileEntityDataPacket());
+            pk->tile = tile;
+            writePacket(std::move(pk));
+        }
+    }
+
     chunkArrayMutex.lock();
     if (!spawned && receivedChunks.size() > 54) {
         setSpawned();

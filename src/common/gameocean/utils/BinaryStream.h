@@ -170,16 +170,54 @@ public:
 
 class MemoryBinaryStream : public BinaryStream {
 
+protected:
     unsigned int size;
     byte *data;
     unsigned int pos = 0;
+    bool allowRealloc = false;
+
+    virtual void resize(unsigned int minimalSize) { };
 
 public:
     MemoryBinaryStream(byte *data, int size);
 
+    /**
+     * This function returns the current used buffer size when writing or the current buffer position when reading.
+     */
+    inline int getSize() { return pos; };
+
+    /**
+     * This function returns the actual size of the buffer.
+     */
+    inline int getBufferSize() { return size; };
+
     virtual void write(const byte *data, unsigned int size);
 
     virtual unsigned int read(byte *data, unsigned int size);
+
+};
+
+class DynamicMemoryBinaryStream : public MemoryBinaryStream {
+
+protected:
+    virtual void resize(unsigned int minimalSize);
+
+public:
+    DynamicMemoryBinaryStream(int size);
+    DynamicMemoryBinaryStream() : DynamicMemoryBinaryStream(1024) {
+        //
+    }
+
+    virtual ~DynamicMemoryBinaryStream() {
+        if (data != null)
+            delete data;
+    }
+
+    /**
+     * Pass 'true' if you want to avoid freeing the buffer but are not going to use this object later (trying to read
+     * or write on it will result in a crash!).
+     */
+    byte* getBuffer(bool release);
 
 };
 

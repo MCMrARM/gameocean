@@ -11,6 +11,7 @@
 #include <gameocean/utils/Config.h>
 #include "protocol/Protocol.h"
 #include "world/World.h"
+#include "world/tile/Tile.h"
 #include "world/mcanvil/MCAnvilProvider.h"
 #include "command/Command.h"
 #include "PlayerChunkQueueThread.h"
@@ -30,6 +31,7 @@ void Server::start() {
     Command::registerDefaultCommands(*this);
     ItemRegister::registerAssetItems();
     Protocol::registerDefaultProtocols(*this);
+    Tile::registerTiles();
 
     this->loadConfiguation();
 

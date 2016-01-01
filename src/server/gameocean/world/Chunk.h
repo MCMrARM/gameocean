@@ -3,6 +3,7 @@
 #include <gameocean/common.h>
 #include <map>
 #include <mutex>
+#include <atomic>
 #include <cstring>
 #include <set>
 #include "ChunkPos.h"
@@ -12,6 +13,8 @@
 #include <gameocean/game/item/BlockVariant.h>
 #include <gameocean/utils/NibbleArray.h>
 
+class Tile;
+
 class Chunk {
 
 public:
@@ -19,6 +22,7 @@ public:
 
     ChunkPos pos;
     std::map<EntityId, Entity*> entities;
+    std::set<std::shared_ptr<Tile>> tiles;
     std::set<Player*> usedBy;
     std::recursive_mutex mutex;
 
@@ -29,10 +33,10 @@ public:
     byte heightmap [16 * 16];
     uint32_t biomeColors [16 * 16];
 
-    bool ready = false;
+    std::atomic<bool> ready;
 
-    Chunk(ChunkPos pos) : pos(pos) { };
-    Chunk(int x, int z) : pos(x, z) { };
+    Chunk(ChunkPos pos) : pos(pos), ready(false) { };
+    Chunk(int x, int z) : pos(x, z), ready(false) { };
     Chunk(ChunkPos pos, bool empty) : pos(pos), ready(empty) { if (empty) clear(); };
     Chunk(int x, int z, bool empty) : pos(x, z), ready(empty) { if (empty) clear(); };
 

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 #include <RakNet/BitStream.h>
 #include <gameocean/common.h>
 #include <gameocean/utils/UUID.h>
@@ -782,6 +783,21 @@ public:
             stream.Read(i);
         }
     };
+};
+
+class Tile;
+class BinaryStream;
+class MCPETileEntityDataPacket : public MCPEPacket {
+public:
+    MCPETileEntityDataPacket() {
+        id = MCPE_TILE_ENTITY_DATA_PACKET;
+    };
+
+    std::shared_ptr<Tile> tile;
+
+    virtual void write(RakNet::BitStream& stream);
+
+    static void writeTile(BinaryStream& stream, Tile& tile);
 };
 
 class Chunk;

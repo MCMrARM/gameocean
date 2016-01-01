@@ -6,6 +6,9 @@
 #include "../../world/BlockPos.h"
 #include "../../world/Chunk.h"
 #include "../../world/World.h"
+#include "../../world/tile/Tile.h"
+#include "../../utils/NBT.h"
+#include "BinaryRakStream.h"
 
 std::map<int, MCPEPacket::CreatePacket *> MCPEPacket::packets;
 
@@ -23,11 +26,37 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPEContainerSetContentPacket>(MCPE_CONTAINER_SET_CONTENT_PACKET);
 }
 
+void MCPETileEntityDataPacket::write(RakNet::BitStream& stream) {
+    stream.Write(tile->getPos().x);
+    stream.Write(tile->getPos().y);
+    stream.Write(tile->getPos().z);
+    BinaryRakStream binaryStream (stream);
+    writeTile(binaryStream, *tile);
+}
+
+void MCPETileEntityDataPacket::writeTile(BinaryStream& stream, Tile& tile) {
+    NBTCompound compound ("");
+    compound.val["id"] = std::unique_ptr<NBTTag>(new NBTString("id", tile.getId()));
+    compound.val["x"] = std::unique_ptr<NBTTag>(new NBTInt("x", tile.getPos().x));
+    compound.val["y"] = std::unique_ptr<NBTTag>(new NBTInt("y", tile.getPos().y));
+    compound.val["z"] = std::unique_ptr<NBTTag>(new NBTInt("z", tile.getPos().z));
+    NBTTag::writeTag(stream, compound, true);
+}
+
 void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
     stream.Write(chunk->pos.x);
     stream.Write(chunk->pos.z);
     stream.Write((byte) 1); // order type
-    int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) + sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors);
+
+    DynamicMemoryBinaryStream binaryStream;
+    binaryStream << (int) 0;
+    chunk->mutex.lock();
+    for (std::shared_ptr<Tile> tile : chunk->tiles) {
+        MCPETileEntityDataPacket::writeTile(binaryStream, *tile);
+    }
+    chunk->mutex.unlock();
+
+    int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) + sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors) + binaryStream.getSize();
     stream.Write(dataSize);
     stream.Write((char*) chunk->blockId, sizeof(chunk->blockId));
     stream.Write((char*) chunk->blockMeta.array, sizeof(chunk->blockMeta.array));
@@ -35,6 +64,7 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
     stream.Write((char*) chunk->blockLight.array, sizeof(chunk->blockLight.array));
     stream.Write((char*) chunk->heightmap, sizeof(chunk->heightmap));
     stream.Write((char*) chunk->biomeColors, sizeof(chunk->biomeColors));
+    stream.Write((char*) binaryStream.getBuffer(false), binaryStream.getSize());
 }
 
 void MCPELoginPacket::handle(MCPEPlayer &player) {
