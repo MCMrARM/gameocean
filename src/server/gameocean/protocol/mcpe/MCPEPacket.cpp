@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <gameocean/utils/Time.h>
 #include "MCPEPlayer.h"
-#include "../../world/BlockPos.h"
-#include "../../world/Chunk.h"
-#include "../../world/World.h"
-#include "../../world/tile/Tile.h"
+#include <gameocean/world/BlockPos.h>
+#include <gameocean/world/Chunk.h>
+#include <gameocean/world/World.h>
+#include <gameocean/world/tile/Tile.h>
 #include "../../utils/NBT.h"
 #include "BinaryRakStream.h"
 

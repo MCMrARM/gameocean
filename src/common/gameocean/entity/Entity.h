@@ -23,7 +23,9 @@ protected:
 
     bool closed = false;
 
+#ifdef SERVER
     std::set<Player*> spawnedTo;
+#endif
 
     std::recursive_mutex generalMutex;
     float x, y, z;
@@ -72,12 +74,14 @@ public:
         return Vector2D(yaw, pitch);
     };
 
+#ifdef SERVER
     void updateViewers();
 
     void spawnTo(Player* player);
     void despawnFrom(Player* player);
     void spawnToAll();
     void despawnFromAll();
+#endif
 
     inline float getHealth() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);

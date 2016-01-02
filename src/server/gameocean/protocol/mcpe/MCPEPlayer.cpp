@@ -4,8 +4,8 @@
 #include <string>
 #include <RakNet/RakPeerInterface.h>
 #include "MCPEPacket.h"
-#include "../../world/World.h"
-#include "../../world/Chunk.h"
+#include <gameocean/world/World.h>
+#include <gameocean/world/Chunk.h>
 
 
 void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback) {

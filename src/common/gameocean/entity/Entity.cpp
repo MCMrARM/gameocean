@@ -1,10 +1,13 @@
 #include "Entity.h"
 
 #include <gameocean/common.h>
-#include "world/World.h"
-#include "world/Chunk.h"
-#include "Player.h"
-#include "plugin/event/entity/EntityDamageEvent.h"
+#include "../world/World.h"
+#include "../world/Chunk.h"
+
+#ifdef SERVER
+#include <gameocean/Player.h>
+#endif
+#include "../plugin/event/entity/EntityDamageEvent.h"
 
 EntityId Entity::currentId = 1;
 
@@ -43,9 +46,11 @@ void Entity::setWorld(World& world, float x, float y, float z) {
         chunk->addEntity(this);
         updateViewers();
     }
+#ifdef SERVER
     for (Player* p : spawnedTo) {
         p->updateEntityPos(this);
     }
+#endif
     generalMutex.unlock();
 }
 
@@ -67,9 +72,11 @@ void Entity::setPos(float x, float y, float z) {
         chunk->addEntity(this);
         updateViewers();
     }
+#ifdef SERVER
     for (Player* p : spawnedTo) {
         p->updateEntityPos(this);
     }
+#endif
     generalMutex.unlock();
 }
 
@@ -79,6 +86,7 @@ void Entity::setRot(float yaw, float pitch) {
     this->pitch = pitch;
 }
 
+#ifdef SERVER
 void Entity::updateViewers() {
     std::set<Player*> despawnFromPlayers (spawnedTo);
     for (Player* p : chunk->usedBy) {
@@ -131,6 +139,7 @@ void Entity::despawnFromAll() {
     spawnedTo.clear();
     generalMutex.unlock();
 }
+#endif
 
 void Entity::damage(EntityDamageEvent& event) {
     Event::broadcast(event);

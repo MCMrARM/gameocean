@@ -1,7 +1,7 @@
 #include "Player.h"
 
 #include <iostream>
-#include "world/World.h"
+#include <gameocean/world/World.h>
 #include "command/Command.h"
 #include <gameocean/utils/StringUtils.h>
 #include <gameocean/utils/Time.h>
@@ -9,7 +9,7 @@
 #include "plugin/event/player/PlayerQuitEvent.h"
 #include "plugin/event/player/PlayerJoinEvent.h"
 #include "plugin/event/player/PlayerMoveEvent.h"
-#include "plugin/event/entity/EntityDamageEvent.h"
+#include <gameocean/plugin/event/entity/EntityDamageEvent.h>
 #include "plugin/event/player/PlayerAttackEvent.h"
 #include "plugin/event/player/PlayerDamageEvent.h"
 #include "plugin/event/player/PlayerDeathEvent.h"

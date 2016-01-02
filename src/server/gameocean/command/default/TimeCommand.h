@@ -2,7 +2,7 @@
 
 #include <sstream>
 #include "../Command.h"
-#include "../../world/World.h"
+#include <gameocean/world/World.h>
 #include <gameocean/utils/StringUtils.h>
 
 class TimeCommand : public IngameCommand {

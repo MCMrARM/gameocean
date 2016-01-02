@@ -5,7 +5,7 @@
 #include "BlockVariant.h"
 #include "ItemRegister.h"
 #include "BlockGroup.h"
-#include "../../utils/ResourceManager.h"
+#include "../utils/ResourceManager.h"
 
 void ItemJSONUtils::parseDataDirectory(std::string path) {
     for (ResourceManager::DirEntry const& file : ResourceManager::instance->getDataDirectoryFiles(path)) {

@@ -42,6 +42,7 @@ file(GLOB_RECURSE LIBJSON_SOURCES "../libs/json/*.cpp")
 add_library(server SHARED ${COMMON_SOURCES} ${SERVER_SOURCES} ${RAKNET_SOURCES} ${LIBJSON_SOURCES})
 target_link_libraries(server ${ZLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${PNG_LIBRARIES} ${CMAKE_DL_LIBS})
 target_include_directories(server PUBLIC ../libs/RakNet)
+target_compile_definitions(server PRIVATE SERVER)
 
 #add_executable(client ${COMMON_SOURCES} ${CLIENT_SOURCES} ${LIBJSON_SOURCES} client_linux/LinuxApp.cpp client_linux/Main.cpp)
 #target_link_libraries(client ${ZLIB_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} ${OPENGL_LIBRARIES} ${GLFW_STATIC_LIBRARIES} ${GLEW_LIBRARIES} ${PNG_LIBRARIES})

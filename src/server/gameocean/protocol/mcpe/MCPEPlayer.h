@@ -7,7 +7,7 @@
 #include "MCPEProtocol.h"
 #include "MCPEPacket.h"
 #include <RakNet/RakNetTypes.h>
-#include "../../world/ChunkPos.h"
+#include <gameocean/world/ChunkPos.h>
 
 class MCPEPacket;
 class MCPEPacketBatchThread;

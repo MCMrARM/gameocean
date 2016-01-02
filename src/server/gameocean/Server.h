@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <set>
 #include "PlayerBlockDestroyThread.h"
-#include "plugin/PluginManager.h"
+#include <gameocean/plugin/PluginManager.h>
 
 class World;
 class Player;

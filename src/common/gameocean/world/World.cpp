@@ -1,6 +1,9 @@
 #include <gameocean/utils/Time.h>
 #include "World.h"
 #include "WorldProvider.h"
+#ifdef SERVER
+#include <gameocean/Player.h>
+#endif
 
 World::World(std::string name) : name(name) {
     setTime(5000, true);
@@ -31,7 +34,9 @@ void World::setTime(int time, bool stopped) {
     this->timeStopped = stopped;
     if (!stopped)
         this->startTimeMS = Time::now();
+#ifdef SERVER
     broadcastTimeUpdate(time, stopped);
+#endif
 }
 
 int World::getTime() {
@@ -40,3 +45,19 @@ int World::getTime() {
     long long now = Time::now();
     return startTime + (int) ((now - startTimeMS) / 50);
 }
+
+#ifdef SERVER
+
+void World::broadcastBlockUpdate(BlockPos pos) {
+    for (Player* p : getPlayers()) {
+        p->sendBlockUpdate(pos);
+    }
+}
+
+void World::broadcastTimeUpdate(int time, bool stopped) {
+    for (Player* p : getPlayers()) {
+        p->sendWorldTime(time, stopped);
+    }
+}
+
+#endif

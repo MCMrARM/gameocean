@@ -42,6 +42,9 @@ public:
     void unregisterEvents() {
         callbacks.clear();
     }
+
+#ifdef SERVER
     void unregisterCommands();
+#endif
 
 };

@@ -10,12 +10,12 @@
 #include <gameocean/GameInfo.h>
 #include <gameocean/utils/Config.h>
 #include "protocol/Protocol.h"
-#include "world/World.h"
-#include "world/tile/Tile.h"
+#include <gameocean/world/World.h>
+#include <gameocean/world/tile/Tile.h>
 #include "world/mcanvil/MCAnvilProvider.h"
 #include "command/Command.h"
 #include "PlayerChunkQueueThread.h"
-#include "plugin/PluginManager.h"
+#include <gameocean/plugin/PluginManager.h>
 
 Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
     mainWorld = new World("world");

@@ -8,8 +8,10 @@
 #include <set>
 #include "ChunkPos.h"
 #include "WorldBlock.h"
-#include "../Entity.h"
-#include "../Player.h"
+#include "../entity/Entity.h"
+#ifdef SERVER
+#include <gameocean/Player.h>
+#endif
 #include <gameocean/game/item/BlockVariant.h>
 #include <gameocean/utils/NibbleArray.h>
 
@@ -83,6 +85,7 @@ public:
         return { blockId[pos], blockMeta[pos] };
     }
 
+#ifdef SERVER
     inline void setUsedBy(Player* player, bool used) {
         mutex.lock();
         if (used) {
@@ -104,6 +107,7 @@ public:
         }
         mutex.unlock();
     }
+#endif
 
 };
 

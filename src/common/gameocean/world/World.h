@@ -10,6 +10,7 @@
 #include <gameocean/game/item/BlockVariant.h>
 
 class WorldProvider;
+class Player;
 
 class World {
 
@@ -40,7 +41,9 @@ public:
             return;
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         c->setBlock(x & 0xf, y, z & 0xf, id, data);
+#ifdef SERVER
         broadcastBlockUpdate({x, y, z});
+#endif
     };
     inline void setBlock(BlockPos pos, BlockId id, byte data) {
         setBlock(pos.x, pos.y, pos.z, id, data);
@@ -114,19 +117,7 @@ public:
         return players;
     };
 
-    void broadcastBlockUpdate(BlockPos pos) {
-        for (Player* p : getPlayers()) {
-            p->sendBlockUpdate(pos);
-        }
-    };
-
     void setTime(int time, bool stopped);
-
-    void broadcastTimeUpdate(int time, bool stopped) {
-        for (Player* p : getPlayers()) {
-            p->sendWorldTime(time, stopped);
-        }
-    };
 
     int getTime();
 
@@ -135,6 +126,12 @@ public:
     void setTimeStopped(bool stopped) {
         setTime(getTime(), stopped);
     }
+
+#ifdef SERVER
+    void broadcastBlockUpdate(BlockPos pos);
+
+    void broadcastTimeUpdate(int time, bool stopped);
+#endif
 
 };
 

@@ -4,7 +4,7 @@
 #include "ItemVariant.h"
 #include "BlockVariant.h"
 
-#include "../../utils/StringUtils.h"
+#include "../utils/StringUtils.h"
 
 std::map<std::string, ItemVariant*> ItemRegister::items = std::map<std::string, ItemVariant*>();
 std::map<std::string, BlockVariant*> ItemRegister::blocks = std::map<std::string, BlockVariant*>();

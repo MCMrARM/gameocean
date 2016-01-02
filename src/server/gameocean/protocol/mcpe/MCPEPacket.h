@@ -721,6 +721,43 @@ public:
     };
 };
 
+class MCPEContainerOpenPacket : public MCPEPacket {
+public:
+    MCPEContainerOpenPacket() {
+        id = MCPE_CONTAINER_OPEN_PACKET;
+    };
+
+    byte window, type;
+    short slots;
+    int x, y, z;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(window);
+        stream.Write(type);
+        stream.Write(slots);
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+    };
+};
+
+class MCPEContainerClosePacket : public MCPEPacket {
+public:
+    MCPEContainerClosePacket() {
+        id = MCPE_CONTAINER_CLOSE_PACKET;
+    };
+
+    byte window;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(window);
+    };
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(window);
+    };
+};
+
 class MCPEContainerSetSlotPacket : public MCPEPacket {
 public:
     MCPEContainerSetSlotPacket() {

@@ -4,8 +4,8 @@
 #include <mutex>
 #include <unordered_map>
 #include <memory>
-#include "../WorldProvider.h"
-#include "../ChunkPos.h"
+#include <gameocean/world/WorldProvider.h>
+#include <gameocean/world/ChunkPos.h>
 
 typedef ChunkPos RegionPos;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Event.h"
+#include <gameocean/plugin/event/Event.h>
 class Player;
 
 class PlayerEvent : public Event {

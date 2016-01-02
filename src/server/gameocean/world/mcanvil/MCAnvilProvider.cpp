@@ -8,9 +8,9 @@
 #include <gameocean/common.h>
 #include <gameocean/utils/BinaryStream.h>
 #include <gameocean/utils/CompressedBinaryStream.h>
-#include "../Chunk.h"
-#include "../World.h"
-#include "../tile/Tile.h"
+#include <gameocean/world/Chunk.h>
+#include <gameocean/world/World.h>
+#include <gameocean/world/tile/Tile.h>
 #include "../../utils/NBT.h"
 
 MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {

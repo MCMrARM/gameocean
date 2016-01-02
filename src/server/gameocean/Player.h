@@ -8,12 +8,12 @@
 #include <atomic>
 #include <gameocean/game/item/BlockVariant.h>
 #include <gameocean/common.h>
-#include "Entity.h"
+#include <gameocean/entity/Entity.h>
 #include "Server.h"
-#include "world/ChunkPos.h"
+#include <gameocean/world/ChunkPos.h>
 #include "command/CommandSender.h"
 #include "PlayerInventory.h"
-#include "world/BlockPos.h"
+#include <gameocean/world/BlockPos.h>
 
 class Server;
 class Protocol;

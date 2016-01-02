@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 #include "PlayerEvent.h"
-#include "../CallbackList.h"
+#include <gameocean/plugin/event/CallbackList.h>
 #include <gameocean/utils/Cancellable.h>
 #include <gameocean/utils/Vector3D.h>
 
