@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <gameocean/common.h>
+#include "action/DestroyBlockAction.h"
 
 #include "ItemVariant.h"
 
@@ -16,6 +17,9 @@ public:
     BlockGroup* blockGroup = null;
     bool needsTool = false;
 
+    UseItemAction::Handler useOnAction = nullptr;
+    DestroyBlockAction::Handler destroyAction = nullptr;
+
     BlockVariant(int id, short variantDataId, std::string stringId);
 
     void copyBlockProperties(BlockVariant const& item) {
@@ -26,6 +30,9 @@ public:
     };
 
     virtual std::string getNameId() { return std::string("block.") + stringId + ".name"; };
+
+    virtual bool use(UseItemAction& action);
+    bool useOn(UseItemAction& action);
 
 };
 

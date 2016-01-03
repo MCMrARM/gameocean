@@ -3,8 +3,8 @@
 #include <sstream>
 #include <gameocean/common.h>
 #include "../Command.h"
-#include <gameocean/game/item/ItemVariant.h>
-#include <gameocean/game/item/ItemRegister.h>
+#include <gameocean/item/ItemVariant.h>
+#include <gameocean/item/ItemRegister.h>
 
 class GiveCommand : public Command {
 

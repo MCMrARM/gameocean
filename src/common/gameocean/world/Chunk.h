@@ -12,7 +12,7 @@
 #ifdef SERVER
 #include <gameocean/Player.h>
 #endif
-#include <gameocean/game/item/BlockVariant.h>
+#include <gameocean/item/BlockVariant.h>
 #include <gameocean/utils/NibbleArray.h>
 
 class Tile;
@@ -84,6 +84,8 @@ public:
         int pos = getBlockPos(x, y, z);
         return { blockId[pos], blockMeta[pos] };
     }
+
+    std::shared_ptr<Tile> getTile(int x, int y, int z);
 
 #ifdef SERVER
     inline void setUsedBy(Player* player, bool used) {

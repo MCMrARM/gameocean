@@ -169,7 +169,7 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
     if (player.inventory.getHeldItem() != item) {
         player.sendInventory();
 
-        std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
+        std::unique_ptr<MCPEUpdateBlockPacket> pk(new MCPEUpdateBlockPacket());
         BlockPos pos = {x, y, z};
         pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
         pos = pos.side((BlockPos::Side) side);
@@ -181,25 +181,18 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
     if (y < 0 || y > 127)
         return;
 
-    if (item.getItemId() > 0 && item.getItemId() < 256) {
-        std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
-        BlockPos pos = {x, y, z};
-        pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
-        if (player.getWorld().getBlock(pos).id != 0) {
-            pos = pos.side((BlockPos::Side) side);
-            WorldBlock wb = player.getWorld().getBlock(pos);
-            BlockVariant* bv = wb.getBlockVariant();
-            if (wb.id == 0 || (bv != null && bv->replaceable)) {
-                player.getWorld().setBlock(pos, item.getItemId(), item.getItemData());
-                player.inventory.removeItem(ItemInstance(item.getItem(), 1, item.getItemData()));
-            }
-            pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
-        } else {
-            pos = pos.side((BlockPos::Side) side);
-            pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
-        }
-        player.writePacket(std::move(pk));
-    }
+    UseItemAction action(&player, item.getItem(), player.getWorld(),
+                         player.getWorld().getBlock({x, y, z}).getBlockVariant(), {x, y, z}, (BlockPos::Side) side);
+    if (!item.isEmpty())
+        item.getItem()->use(action);
+    else if (action.getTargetBlockVariant() != nullptr)
+        action.getTargetBlockVariant()->useOn(action);
+    std::unique_ptr<MCPEUpdateBlockPacket> pk(new MCPEUpdateBlockPacket());
+    BlockPos pos = {x, y, z};
+    pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+    pos = pos.side((BlockPos::Side) side);
+    pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
+    player.writePacket(std::move(pk));
 }
 
 void MCPEPlayerActionPacket::handle(MCPEPlayer& player) {

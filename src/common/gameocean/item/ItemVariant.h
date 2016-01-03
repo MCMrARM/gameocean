@@ -4,7 +4,10 @@
 #include <map>
 #include <set>
 #include <gameocean/common.h>
+#include <gameocean/item/action/UseItemAction.h>
+
 class BlockGroup;
+class UseItemAction;
 
 class ItemVariant {
 protected:
@@ -17,6 +20,8 @@ protected:
 public:
     std::set<BlockGroup*> toolAffects;
     float toolBreakMultiplier = 1.0f;
+
+    UseItemAction::Handler useAction = nullptr;
 
     ItemVariant(int id, short variantDataId, std::string stringId);
     inline int getId() { return id; };
@@ -33,4 +38,6 @@ public:
 
     inline int getMaxStackSize() { return maxStackSize; };
     inline void setMaxStackSize(int size) { maxStackSize = size; };
+
+    virtual bool use(UseItemAction& action);
 };

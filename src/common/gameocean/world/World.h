@@ -2,15 +2,17 @@
 
 #include <mutex>
 #include <unordered_map>
+#include <memory>
 #include "Chunk.h"
 #include "ChunkPos.h"
 #include "BlockPos.h"
 #include "WorldBlock.h"
 #include "WorldProvider.h"
-#include <gameocean/game/item/BlockVariant.h>
+#include <gameocean/item/BlockVariant.h>
 
 class WorldProvider;
 class Player;
+class Tile;
 
 class World {
 
@@ -58,6 +60,17 @@ public:
     };
     inline WorldBlock getBlock(BlockPos pos) {
         return getBlock(pos.x, pos.y, pos.z);
+    };
+
+    inline std::shared_ptr<Tile> getTile(int x, int y, int z) {
+        Chunk* c = getChunkAt(x >> 4, z >> 4, false);
+        if (c == null)
+            return nullptr;
+        std::lock_guard<std::recursive_mutex> guard (c->mutex);
+        return c->getTile(x, y, z);
+    };
+    inline std::shared_ptr<Tile> getTile(BlockPos pos) {
+        return getTile(pos.x, pos.y, pos.z);
     };
 
     Chunk* getChunkAt(ChunkPos pos, bool create);

@@ -88,6 +88,8 @@ public:
 
     void linkHeldItem(int hotbarSlot, int inventorySlot);
 
+    virtual void openContainer(std::shared_ptr<Container> container);
+
 };
 
 

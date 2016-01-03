@@ -1,0 +1,19 @@
+{
+  "type": "block",
+  "name_id": "chest",
+  "id": 54,
+  "texture": "chest",
+  "model": "chest",
+  "hardness": 2.5,
+  "resistance": 12.5,
+  "flammable": true,
+  "stack_size": 64,
+  "group": "wood",
+  "needs_tool": false,
+  "tile_entity": "Chest",
+  "actions": {
+    "use": "place_container",
+    "use_on": "open_container",
+    "destroy": "destroy_container"
+  }
+}

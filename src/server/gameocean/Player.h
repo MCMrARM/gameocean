@@ -6,7 +6,7 @@
 #include <mutex>
 #include <set>
 #include <atomic>
-#include <gameocean/game/item/BlockVariant.h>
+#include <gameocean/item/BlockVariant.h>
 #include <gameocean/common.h>
 #include <gameocean/entity/Entity.h>
 #include "Server.h"
@@ -21,6 +21,7 @@ class Chunk;
 class PlayerChunkQueueThread;
 class PlayerBlockDestroyThread;
 class Plugin;
+class Container;
 
 class Player : public Entity, public CommandSender {
     friend class Entity;
@@ -142,6 +143,8 @@ public:
 
     void* getPluginData(Plugin* plugin);
     void setPluginData(Plugin* plugin, void* data);
+
+    virtual void openContainer(std::shared_ptr<Container> container) {};
 
 };
 

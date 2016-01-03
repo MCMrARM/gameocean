@@ -1,8 +1,8 @@
 #pragma once
 
 #include <gameocean/common.h>
-#include <gameocean/game/item/BlockVariant.h>
-#include <gameocean/game/item/ItemRegister.h>
+#include <gameocean/item/BlockVariant.h>
+#include <gameocean/item/ItemRegister.h>
 
 struct WorldBlock {
     BlockId id;

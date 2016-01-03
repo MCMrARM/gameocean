@@ -5,7 +5,7 @@
 #include <gameocean/utils/Logger.h>
 #include <gameocean/utils/Config.h>
 #include <gameocean/utils/StringUtils.h>
-#include <gameocean/game/item/ItemRegister.h>
+#include <gameocean/item/ItemRegister.h>
 #include <gameocean/utils/ResourceManager.h>
 #include <gameocean/GameInfo.h>
 #include <gameocean/utils/Config.h>
@@ -16,6 +16,7 @@
 #include "command/Command.h"
 #include "PlayerChunkQueueThread.h"
 #include <gameocean/plugin/PluginManager.h>
+#include "item/action/server/ServerActions.h"
 
 Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
     mainWorld = new World("world");
@@ -29,6 +30,7 @@ void Server::start() {
 
     Logger::main->info("Main", "Loading server configuration");
     Command::registerDefaultCommands(*this);
+    ServerActions::registerActions();
     ItemRegister::registerAssetItems();
     Protocol::registerDefaultProtocols(*this);
     Tile::registerTiles();

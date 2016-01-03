@@ -1,26 +1,18 @@
 #pragma once
 
-#include "Tile.h"
-#include <gameocean/game/Inventory.h>
+#include "Container.h"
 
-class Chest : public Tile {
-
-protected:
-    Inventory inventory;
+class Chest : public Container {
 
 public:
     static std::string name;
 
-    Chest(World& world, BlockPos pos) : Tile(world, pos), inventory(27) {
+    Chest(World& world, BlockPos pos) : Container(world, pos, 27) {
         //
     }
 
     virtual std::string getId() {
         return name;
-    }
-
-    inline Inventory& getInventory() {
-        return inventory;
     }
 
 };

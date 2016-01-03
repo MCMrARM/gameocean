@@ -42,7 +42,7 @@ public:
     };
 
     bool isSameType(ItemInstance& i) {
-        return (i.item == item && i.data == data);
+        return (i.item == item);
     };
 
     inline bool operator==(const ItemInstance& s) {

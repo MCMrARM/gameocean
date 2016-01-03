@@ -107,6 +107,13 @@ void ItemJSONUtils::parseItemVariant(ItemVariant* item, Json::Value& val) {
         item->toolAffects.insert(BlockGroup::get(it->asString()));
     }
     item->toolBreakMultiplier = val.get("destroy_multiplier", item->toolBreakMultiplier).asFloat();
+
+    const Json::Value& actions = val["actions"];
+    if (!actions.empty()) {
+        std::string useAction = actions.get("use", "").asString();
+        if (useAction.length() > 0 && UseItemAction::handlers.count(useAction) > 0)
+            item->useAction = UseItemAction::handlers[useAction];
+    }
 }
 
 void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
@@ -132,4 +139,14 @@ void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
         }
     }
     item->needsTool = val.get("needs_tool", item->needsTool).asBool();
+
+    const Json::Value& actions = val["actions"];
+    if (!actions.empty()) {
+        std::string useOnAction = actions.get("use_on", "").asString();
+        if (useOnAction.length() > 0 && UseItemAction::handlers.count(useOnAction) > 0)
+            item->useOnAction = UseItemAction::handlers[useOnAction];
+        std::string destroyAction = actions.get("destroy", "").asString();
+        if (destroyAction.length() > 0 && DestroyBlockAction::handlers.count(destroyAction) > 0)
+            item->destroyAction = DestroyBlockAction::handlers[destroyAction];
+    }
 }
