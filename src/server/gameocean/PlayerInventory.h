@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gameocean/game/Inventory.h>
+#include <gameocean/inventory/Inventory.h>
 class Player;
 
 class PlayerInventory : public Inventory {

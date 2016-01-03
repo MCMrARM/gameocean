@@ -15,10 +15,9 @@ bool BlockVariant::use(UseItemAction& action) {
 #ifdef SERVER
     if (action.isUsedOnAir())
         return false;
-    BlockVariant* variant = action.getTargetBlockVariant();
-    BlockPos pos = action.getTargetBlockPos();
-    pos = pos.side(action.getTargetBlockSide());
-    if (variant != null && variant->replaceable) {
+    BlockPos pos = action.getTargetBlockPos().side(action.getTargetBlockSide());
+    BlockVariant* variant = action.getWorld().getBlock(pos).getBlockVariant();
+    if (variant == null || variant->replaceable) {
         action.getWorld().setBlock(pos, (BlockId) id, (byte) variantDataId);
         action.getPlayer()->inventory.removeItem(ItemInstance(id, 1, variantDataId));
     }

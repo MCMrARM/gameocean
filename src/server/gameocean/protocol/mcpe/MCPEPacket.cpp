@@ -7,6 +7,7 @@
 #include <gameocean/world/Chunk.h>
 #include <gameocean/world/World.h>
 #include <gameocean/world/tile/Tile.h>
+#include <gameocean/world/tile/Chest.h>
 #include "../../utils/NBT.h"
 #include "BinaryRakStream.h"
 
@@ -22,6 +23,7 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPEInteractPacket>(MCPE_INTERACT_PACKET);
     MCPEPacket::registerPacket<MCPEUseItemPacket>(MCPE_USE_ITEM_PACKET);
     MCPEPacket::registerPacket<MCPEPlayerActionPacket>(MCPE_PLAYER_ACTION_PACKET);
+    MCPEPacket::registerPacket<MCPEContainerClosePacket>(MCPE_CONTAINER_CLOSE_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetSlotPacket>(MCPE_CONTAINER_SET_SLOT_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetContentPacket>(MCPE_CONTAINER_SET_CONTENT_PACKET);
 }
@@ -204,6 +206,20 @@ void MCPEPlayerActionPacket::handle(MCPEPlayer& player) {
         player.cancelMining();
     } else if (action == Action::RESPAWN) {
         player.respawn();
+    }
+}
+
+void MCPEContainerClosePacket::handle(MCPEPlayer& player) {
+    player.closeContainer();
+}
+
+void MCPEContainerSetSlotPacket::handle(MCPEPlayer& player) {
+    if (window == 0 && item == player.inventory.getItem(slot))
+        return;
+    if (window == 0) {
+        player.addTransaction(player.inventory, slot, item);
+    } else if (window == 2) {
+        player.addTransaction(player.getOpenedContainer()->getInventory(), slot, item);
     }
 }
 

@@ -14,7 +14,7 @@ struct BlockPos {
         return (o.x == x && o.y == y && o.z == z);
     };
 
-    BlockPos side(Side side) {
+    BlockPos side(Side side) const {
         if (side == Side::DOWN)
             return { x, y - 1, z };
         if (side == Side::UP)

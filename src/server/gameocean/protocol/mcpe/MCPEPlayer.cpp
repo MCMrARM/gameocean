@@ -270,19 +270,33 @@ void MCPEPlayer::sendDeathStatus() {
 }
 
 void MCPEPlayer::openContainer(std::shared_ptr<Container> container) {
+    Player::openContainer(container);
     std::unique_ptr<MCPEContainerOpenPacket> pk (new MCPEContainerOpenPacket());
     pk->window = 2;
-    pk->type = 0;//?
+    pk->type = 0;
     pk->slots = (short) container->getInventory().getNumSlots();
     pk->x = container->getPos().x;
     pk->y = container->getPos().y;
     pk->z = container->getPos().z;
     writePacket(std::move(pk));
 
-    std::unique_ptr<MCPEContainerSetContentPacket> pk2 (new MCPEContainerSetContentPacket());
-    pk2->window = 2;
-    container->getInventory().mutex.lock();
-    pk2->items = container->getInventory().items;
-    container->getInventory().mutex.lock();
-    writePacket(std::move(pk2));
+    sendContainerContents();
+}
+
+void MCPEPlayer::sendContainerContents() {
+    if (!openedContainer)
+        return;
+    std::unique_ptr<MCPEContainerSetContentPacket> pk (new MCPEContainerSetContentPacket());
+    pk->window = 2;
+    openedContainer->getInventory().mutex.lock();
+    pk->items = openedContainer->getInventory().items;
+    openedContainer->getInventory().mutex.unlock();
+    writePacket(std::move(pk));
+}
+
+void MCPEPlayer::closeContainer() {
+    Player::closeContainer();
+    std::unique_ptr<MCPEContainerClosePacket> pk (new MCPEContainerClosePacket());
+    pk->window = 2;
+    writePacket(std::move(pk));
 }

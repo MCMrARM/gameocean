@@ -6,6 +6,7 @@
 #include <mutex>
 #include <set>
 #include <atomic>
+#include <memory>
 #include <gameocean/item/BlockVariant.h>
 #include <gameocean/common.h>
 #include <gameocean/entity/Entity.h>
@@ -14,6 +15,7 @@
 #include "command/CommandSender.h"
 #include "PlayerInventory.h"
 #include <gameocean/world/BlockPos.h>
+#include "inventory/transaction/InventoryTransaction.h"
 
 class Server;
 class Protocol;
@@ -55,6 +57,11 @@ protected:
 
     std::map<Plugin*, void*> pluginData;
 
+    std::shared_ptr<Container> openedContainer;
+
+    InventoryTransaction transaction;
+    long long transactionStart;
+
     void updateChunkQueue();
     void sendQueuedChunks();
     void updateTeleportState();
@@ -90,6 +97,8 @@ protected:
     virtual void sendHealth(float hp) = 0;
 
     virtual void sendDeathStatus() = 0;
+
+    void addTransaction(Inventory& inventory, int slot, ItemInstance to);
 
 public:
     Player(Server& server);
@@ -144,7 +153,18 @@ public:
     void* getPluginData(Plugin* plugin);
     void setPluginData(Plugin* plugin, void* data);
 
-    virtual void openContainer(std::shared_ptr<Container> container) {};
+    virtual void openContainer(std::shared_ptr<Container> container) {
+        openedContainer = container;
+    }
+    virtual void sendContainerContents() { }
+    virtual void closeContainer() {
+        openedContainer.reset();
+        transaction.revert();
+        transaction.reset();
+    }
+    inline std::shared_ptr<Container> getOpenedContainer() {
+        return openedContainer;
+    }
 
 };
 

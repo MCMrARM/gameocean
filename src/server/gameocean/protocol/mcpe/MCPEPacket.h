@@ -6,7 +6,7 @@
 #include <RakNet/BitStream.h>
 #include <gameocean/common.h>
 #include <gameocean/utils/UUID.h>
-#include <gameocean/game/item/ItemInstance.h>
+#include <gameocean/item/ItemInstance.h>
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -756,6 +756,8 @@ public:
     virtual void write(RakNet::BitStream& stream) {
         stream.Write(window);
     };
+
+    virtual void handle(MCPEPlayer& player);
 };
 
 class MCPEContainerSetSlotPacket : public MCPEPacket {
@@ -781,6 +783,8 @@ public:
         stream.Read(hotbar);
         item = readItemInstance(stream);
     };
+
+    virtual void handle(MCPEPlayer& player);
 };
 
 class MCPEContainerSetContentPacket : public MCPEPacket {

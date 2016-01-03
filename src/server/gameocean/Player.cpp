@@ -16,7 +16,7 @@
 
 const char* Player::TYPE_NAME = "Player";
 
-Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), spawned(false), teleporting(false), inventory(*this, 36) {
+Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), spawned(false), teleporting(false), inventory(*this, 36), transaction(*this) {
     maxHp = hp = 20.f;
     world->addPlayer(this);
 };
@@ -38,6 +38,24 @@ void Player::close(std::string reason, bool sendToPlayer) {
     }
     for (auto entry : receivedChunks) {
         entry.second->setUsedBy(this, false);
+    }
+}
+
+void Player::addTransaction(Inventory& inventory, int slot, ItemInstance to) {
+    if (transaction.elements.size() <= 0)
+        transactionStart = Time::now();
+    else if (Time::now() - transactionStart > 500) {
+        transaction.revert();
+        transaction.reset();
+        transactionStart = Time::now();
+    }
+    transaction.elements.push_back({ inventory, slot, inventory.getItem(slot), to });
+    if (transaction.isFinished()) {
+        if (transaction.isValid())
+            transaction.execute();
+        else
+            transaction.revert();
+        transaction.reset();
     }
 }
 

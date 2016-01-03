@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Tile.h"
-#include <gameocean/game/Inventory.h>
+#include <gameocean/inventory/Inventory.h>
 
 class Container : public Tile {
 

@@ -1,0 +1,19 @@
+{
+  "type": "block",
+  "name_id": "grass",
+  "id": 2,
+  "texture": "grass",
+  "model": "default",
+  "hardness": 0.6,
+  "resistance": 3,
+  "flammable": false,
+  "stack_size": 64,
+  "group": "ground",
+  "needs_tool": false,
+  "drops": [
+    {
+      "name_id": "dirt",
+      "count": 1
+    }
+  ]
+}

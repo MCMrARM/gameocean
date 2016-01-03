@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <mutex>
-#include <gameocean/game/item/ItemInstance.h>
+#include <gameocean/item/ItemInstance.h>
 
 class Inventory {
 

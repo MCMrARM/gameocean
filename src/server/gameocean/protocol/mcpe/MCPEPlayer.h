@@ -21,6 +21,7 @@ protected:
     friend class MCPEMovePacket;
     friend class MCPEInteractPacket;
     friend class MCPEPlayerActionPacket;
+    friend class MCPEContainerSetSlotPacket;
 
     int hotbarSlots[9];
     int hotbarSlot = 0;
@@ -89,6 +90,8 @@ public:
     void linkHeldItem(int hotbarSlot, int inventorySlot);
 
     virtual void openContainer(std::shared_ptr<Container> container);
+    virtual void sendContainerContents();
+    virtual void closeContainer();
 
 };
 

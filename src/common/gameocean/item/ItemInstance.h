@@ -15,7 +15,7 @@ protected:
 public:
     byte count = 1;
 
-    ItemInstance() {};
+    ItemInstance() : count(0) {};
     ItemInstance(ItemVariant* item, short data) : item(item), data(data) { };
     ItemInstance(int id, short data) { setItem(id, data); };
     ItemInstance(ItemVariant* item, byte count, short data) : item(item), count(count), data(data) {};
