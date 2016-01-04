@@ -104,13 +104,13 @@ void MCPETextPacket::handle(MCPEPlayer &player) {
 
 void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
     player.setRot(yaw, pitch);
-    if (!player.tryMove(x, y - 1.62f, z)) {
+    if (!player.tryMove(x, y - player.getHeadY(), z)) {
         std::unique_ptr<MCPEMovePlayerPacket> pk (new MCPEMovePlayerPacket());
         pk->eid = 0;
-        Vector3D v = player.getPos();
+        Vector3D v = player.getHeadPos();
         Vector2D r = player.getRot();
         pk->x = v.x;
-        pk->y = v.y + 1.62f;
+        pk->y = v.y;
         pk->z = v.z;
         pk->yaw = pk->headYaw = r.x;
         pk->pitch = r.y;

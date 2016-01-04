@@ -93,6 +93,8 @@ public:
     virtual void sendContainerContents();
     virtual void closeContainer();
 
+    virtual void setMotion(Vector3D motion);
+
 };
 
 

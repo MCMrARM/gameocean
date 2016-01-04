@@ -7,6 +7,7 @@
 #include <gameocean/common.h>
 #include <gameocean/utils/UUID.h>
 #include <gameocean/item/ItemInstance.h>
+#include <gameocean/Player.h>
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -644,6 +645,30 @@ public:
     };
 
     virtual void handle(MCPEPlayer& player);
+};
+
+class MCPESetEntityMotionPacket : public MCPEPacket {
+public:
+    MCPESetEntityMotionPacket() {
+        id = MCPE_SET_ENTITY_MOTION_PACKET;
+    };
+
+    struct Entry {
+        long long eid;
+        float x, y, z;
+    };
+
+    std::vector<Entry> entries;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write((int) entries.size());
+        for (Entry e : entries) {
+            stream.Write(e.eid);
+            stream.Write(e.x);
+            stream.Write(e.y);
+            stream.Write(e.z);
+        }
+    };
 };
 
 class MCPEPlayerActionPacket : public MCPEPacket {

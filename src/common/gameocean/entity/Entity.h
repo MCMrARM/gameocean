@@ -42,6 +42,7 @@ protected:
     float gravity = 0.08f;
 
     float sizeX, sizeY;
+    float headY = 0.f;
 
     void knockBack(float x, float z, float force);
 
@@ -79,9 +80,20 @@ public:
 
     virtual void moveRelative(float x, float y, float z);
 
+    virtual void setMotion(Vector3D motion) {
+        this->motion = motion;
+    };
+
     inline Vector3D getPos() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return Vector3D(x, y, z);
+    };
+    inline Vector3D getHeadPos() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return Vector3D(x, y + getHeadY(), z);
+    };
+    inline float getHeadY() {
+        return headY;
     };
 
     virtual void setRot(float yaw, float pitch);

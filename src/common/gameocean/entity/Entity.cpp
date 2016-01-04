@@ -244,7 +244,7 @@ void Entity::damage(EntityDamageEvent& event) {
     if (event.getAttacker() != null) {
         Vector3D pos = event.getAttacker()->getPos();
         generalMutex.lock();
-        knockBack(pos.x - x, pos.z - z, event.getKnockback());
+        knockBack(x - pos.x, z - pos.z, event.getKnockback());
         generalMutex.unlock();
     }
     setHealth(getHealth() - event.getDamage());
@@ -260,6 +260,7 @@ void Entity::knockBack(float x, float z, float force) {
     motion.z = motion.z / 2 + z * s * force;
     if (motion.y > force)
         motion.y = force;
+    setMotion(motion);
 }
 
 std::vector<Entity*> Entity::getNearbyEntities(float range) {

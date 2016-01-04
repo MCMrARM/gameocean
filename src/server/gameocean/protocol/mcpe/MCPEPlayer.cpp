@@ -116,7 +116,7 @@ void MCPEPlayer::sendPosition(float x, float y, float z) {
     std::unique_ptr<MCPEMovePlayerPacket> pk (new MCPEMovePlayerPacket());
     pk->eid = 0;
     pk->x = x;
-    pk->y = y;
+    pk->y = y + getHeadY();
     pk->z = z;
     pk->yaw = pk->headYaw = yaw;
     pk->pitch = pitch;
@@ -143,7 +143,7 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
         pk->uuid = uuid;
         pk->eid = entity->getId();
         pk->username = ((Player*) entity)->getName().c_str();
-        Vector3D v = entity->getPos();
+        Vector3D v = entity->getHeadPos();
         Vector2D r = entity->getRot();
         pk->x = v.x;
         pk->y = v.y;
@@ -180,7 +180,7 @@ void MCPEPlayer::despawnEntity(Entity *entity) {
 
 void MCPEPlayer::updateEntityPos(Entity *entity) {
     std::unique_ptr<MCPEMoveEntityPacket> pk (new MCPEMoveEntityPacket()); // TODO: Batch
-    Vector3D pos = entity->getPos();
+    Vector3D pos = entity->getHeadPos();
     Vector2D rot = entity->getRot();
     pk->entries.push_back({entity->getId(), pos.x, pos.y, pos.z, rot.x, rot.x, rot.y});
     writePacket(std::move(pk));
@@ -298,5 +298,12 @@ void MCPEPlayer::closeContainer() {
     Player::closeContainer();
     std::unique_ptr<MCPEContainerClosePacket> pk (new MCPEContainerClosePacket());
     pk->window = 2;
+    writePacket(std::move(pk));
+}
+
+void MCPEPlayer::setMotion(Vector3D motion) {
+    Entity::setMotion(motion);
+    std::unique_ptr<MCPESetEntityMotionPacket> pk (new MCPESetEntityMotionPacket());
+    pk->entries.push_back({ 0, motion.x, motion.y, motion.z });
     writePacket(std::move(pk));
 }

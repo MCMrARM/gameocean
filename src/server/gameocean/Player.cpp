@@ -20,6 +20,7 @@ Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shou
     maxHp = hp = 20.f;
     sizeX = 0.6f;
     sizeY = 1.8f;
+    headY = 1.62f;
     world->addPlayer(this);
 };
 
