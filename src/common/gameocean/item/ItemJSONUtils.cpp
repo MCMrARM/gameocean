@@ -5,6 +5,7 @@
 #include "BlockVariant.h"
 #include "ItemRegister.h"
 #include "BlockGroup.h"
+#include "../model/Model.h"
 #include "../utils/ResourceManager.h"
 
 void ItemJSONUtils::parseDataDirectory(std::string path) {
@@ -83,6 +84,8 @@ void ItemJSONUtils::parseStream(std::istream& data) {
                 ItemRegister::registerBlockVariant(variant);
             }
         }
+    } else if (type == "model") {
+        parseModel(val);
     } else {
         Logger::main->error("JSON/Parse", "Invalid data. Type '%s' is invalid.", type.c_str());
     }
@@ -140,6 +143,9 @@ void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
     }
     item->needsTool = val.get("needs_tool", item->needsTool).asBool();
 
+    if (item->model == nullptr || !val["model"].isNull())
+        item->model = Model::getModel(val.get("model", "default").asString());
+
     const Json::Value& actions = val["actions"];
     if (!actions.empty()) {
         std::string useOnAction = actions.get("use_on", "").asString();
@@ -148,5 +154,23 @@ void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
         std::string destroyAction = actions.get("destroy", "").asString();
         if (destroyAction.length() > 0 && DestroyBlockAction::handlers.count(destroyAction) > 0)
             item->destroyAction = DestroyBlockAction::handlers[destroyAction];
+    }
+}
+
+void ItemJSONUtils::parseModel(Json::Value& val) {
+    std::string nameId = val.get("name_id", "").asString();
+    if (nameId.length() <= 0) {
+        Logger::main->error("JSON/Model", "Cannot create model: has no name id");
+        return;
+    }
+
+    Model* model = Model::getModel(nameId);
+
+    const Json::Value& aabbs = val["aabbs"];
+    for (Json::ValueIterator it = aabbs.begin(); it != aabbs.end(); it++) {
+        if (it->isArray() && it->size() == 6) {
+            model->aabbs.push_back({(*it)[0].asFloat(), (*it)[1].asFloat(), (*it)[2].asFloat(),
+                                    (*it)[3].asFloat(), (*it)[4].asFloat(), (*it)[5].asFloat()});
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Json {
 class ItemJSONUtils {
 
 private:
+    static void parseModel(Json::Value& val);
     static void parseItemVariant(ItemVariant* item, Json::Value& val);
     static void parseBlockVariant(BlockVariant* item, Json::Value& val);
 

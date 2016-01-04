@@ -9,6 +9,8 @@
 #include "WorldBlock.h"
 #include "WorldProvider.h"
 #include <gameocean/item/BlockVariant.h>
+#include "../math/AABB.h"
+#include "../model/Model.h"
 
 class WorldProvider;
 class Player;
@@ -129,6 +131,23 @@ public:
         std::lock_guard<std::recursive_mutex> guard (chunkMutex);
         return players;
     };
+
+    template <typename T>
+    void getBlockBoxes(AABB aabb, T callback) {
+        for (int x = (int) std::floor(aabb.minX); x <= (int) std::ceil(aabb.maxX); x++) {
+            for (int y = (int) std::floor(aabb.minY); y <= (int) std::ceil(aabb.maxY); y++) {
+                for (int z = (int) std::floor(aabb.minZ); z <= (int) std::ceil(aabb.maxZ); z++) {
+                    BlockVariant* variant = getBlock(x, y, z).getBlockVariant();
+                    if (variant != nullptr) {
+                        for (AABB a : variant->model->aabbs) {
+                            a.translate(x, y, z);
+                            callback(a);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     void setTime(int time, bool stopped);
 

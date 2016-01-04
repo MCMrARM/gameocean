@@ -9,6 +9,7 @@
 
 typedef byte BlockId;
 class BlockGroup;
+class Model;
 
 class BlockVariant : public ItemVariant {
 public:
@@ -16,6 +17,7 @@ public:
     float hardness = 100;
     BlockGroup* blockGroup = null;
     bool needsTool = false;
+    Model* model = null;
 
     UseItemAction::Handler useOnAction = nullptr;
     DestroyBlockAction::Handler destroyAction = nullptr;

@@ -46,7 +46,7 @@ void Server::start() {
     PlayerChunkQueueThread chunkQueueThread (*this);
     chunkQueueThread.start();
 
-    playerBlockDestroyThread.start();
+    //playerBlockDestroyThread.start();
 
     Logger::main->trace("Main", "Loading plugins");
     pluginManager.loadPlugins();

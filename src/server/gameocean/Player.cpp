@@ -18,6 +18,8 @@ const char* Player::TYPE_NAME = "Player";
 
 Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), spawned(false), teleporting(false), inventory(*this, 36), transaction(*this) {
     maxHp = hp = 20.f;
+    sizeX = 0.6f;
+    sizeY = 1.8f;
     world->addPlayer(this);
 };
 
@@ -148,13 +150,16 @@ bool Player::tryMove(float x, float y, float z) {
     if (teleporting)
         return true; // return true so the position won't be reverted
 
-    PlayerMoveEvent event (*this, {x, y, z});
+    Vector3D pos = getPos();
+    pos.add(checkCollisions(x - pos.x, y - pos.y, z - pos.z));
+
+    PlayerMoveEvent event (*this, {pos.x, pos.y, pos.z});
     Event::broadcast(event);
     if (event.isCancelled())
         return false;
-
     setPos(event.getPos().x, event.getPos().y, event.getPos().z);
-    return true;
+
+    return (x == event.getPos().x && y == event.getPos().y && z == event.getPos().z);
 }
 
 void Player::sendQueuedChunks() {

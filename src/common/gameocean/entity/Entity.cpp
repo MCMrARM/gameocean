@@ -59,6 +59,7 @@ void Entity::setPos(float x, float y, float z) {
     this->x = x;
     this->y = y;
     this->z = z;
+    this->aabb = { x - sizeX / 2, y, z - sizeX / 2, x + sizeX / 2, y + sizeY, z + sizeX / 2 };
 
     int newChunkX = ((int) x) >> 4;
     int newChunkZ = ((int) z) >> 4;
@@ -78,6 +79,99 @@ void Entity::setPos(float x, float y, float z) {
     }
 #endif
     generalMutex.unlock();
+}
+
+Vector3D Entity::checkCollisions(float x, float y, float z) {
+    generalMutex.lock();
+    AABB aabb = this->aabb;
+    generalMutex.unlock();
+
+    AABB expanded = aabb;
+    expanded.add(0, y, 0);
+    if (y > 0) {
+        world->getBlockBoxes(expanded, [&y, aabb](AABB const& baabb) {
+            if (baabb.minX > aabb.maxX || baabb.maxX < aabb.minX ||
+                    baabb.minZ > aabb.maxZ || baabb.maxZ < aabb.minZ)
+                return;
+            if (aabb.maxY <= baabb.minY) {
+                float y2 = baabb.minY - aabb.maxY;
+                if (y2 < y)
+                    y = y2;
+            }
+        });
+    } else if (y < 0) {
+        world->getBlockBoxes(expanded, [&y, aabb](AABB const& baabb) {
+            if (baabb.minX > aabb.maxX || baabb.maxX < aabb.minX ||
+                baabb.minZ > aabb.maxZ || baabb.maxZ < aabb.minZ)
+                return;
+            if (aabb.minY >= baabb.maxY) {
+                float y2 = baabb.maxY - aabb.minY;
+                if (y2 > y)
+                    y = y2;
+            }
+        });
+    }
+    aabb.translate(0, y, 0);
+    expanded = aabb;
+    expanded.add(x, 0, 0);
+    if (x > 0) {
+        world->getBlockBoxes(expanded, [&x, aabb](AABB const& baabb) {
+            if (baabb.minY > aabb.maxY || baabb.maxY < aabb.minY ||
+                baabb.minZ > aabb.maxZ || baabb.maxZ < aabb.minZ)
+                return;
+            if (aabb.maxX < baabb.minX) {
+                float x2 = baabb.minX - aabb.maxX;
+                if (x2 < x)
+                    x = x2;
+            }
+        });
+    } else if (x < 0) {
+        world->getBlockBoxes(expanded, [&x, aabb](AABB const& baabb) {
+            if (baabb.minY > aabb.maxY || baabb.maxY < aabb.minY ||
+                baabb.minZ > aabb.maxZ || baabb.maxZ < aabb.minZ)
+                return;
+            if (aabb.minX > baabb.maxX) {
+                float x2 = baabb.maxX - aabb.minX;
+                if (x2 > x)
+                    x = x2;
+            }
+        });
+    }
+    aabb.translate(x, 0, 0);
+    expanded = aabb;
+    expanded.add(0, 0, z);
+    if (z > 0) {
+        world->getBlockBoxes(expanded, [&z, aabb](AABB const& baabb) {
+            if (baabb.minY > aabb.maxY || baabb.maxY < aabb.minY ||
+                baabb.minX > aabb.maxX || baabb.maxX < aabb.minX)
+                return;
+            if (aabb.maxZ < baabb.minZ) {
+                float z2 = baabb.minZ - aabb.maxZ;
+                if (z2 < z)
+                    z = z2;
+            }
+        });
+    } else if (z < 0) {
+        world->getBlockBoxes(expanded, [&z, aabb](AABB const& baabb) {
+            if (baabb.minY > aabb.maxY || baabb.maxY < aabb.minY ||
+                baabb.minX > aabb.maxX || baabb.maxX < aabb.minX)
+                return;
+            if (aabb.minZ > baabb.maxZ) {
+                float z2 = baabb.maxZ - aabb.minZ;
+                if (z2 > z)
+                    z = z2;
+            }
+        });
+    }
+    aabb.translate(0, 0, z);
+
+    return {x, y, z};
+}
+
+void Entity::moveRelative(float x, float y, float z) {
+    Vector3D basePos = getPos();
+    Vector3D pos = checkCollisions(x, y, z);
+    setPos(basePos.x + pos.x, basePos.y + pos.y, basePos.z + pos.z);
 }
 
 void Entity::setRot(float yaw, float pitch) {
@@ -194,4 +288,35 @@ std::vector<Entity*> Entity::getNearbyEntities(float range) {
         }
     }
     return ret;
+}
+
+void Entity::tickPhysics() {
+    generalMutex.lock();
+    std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
+    float delta = std::chrono::duration_cast<std::chrono::duration<float, std::ratio<1>>>(now - prevPhysicsTick).count();
+    prevPhysicsTick = now;
+
+    float blockSlipperiness = 0.6f;
+    float motionReduction = blockSlipperiness * 0.91f;
+
+    motion.x *= 0.98f;
+    motion.y *= 0.98f;
+    motion.z *= 0.98f;
+
+    if (std::abs(motion.x) < 0.005f)
+        motion.x = 0;
+    if (std::abs(motion.y) < 0.005f)
+        motion.y = 0;
+    if (std::abs(motion.z) < 0.005f)
+        motion.z = 0;
+
+    moveRelative(motion.x, motion.y, motion.z);
+
+    motion.y -= gravity;
+
+    motion.x *= motionReduction;
+    motion.z *= motionReduction;
+    motion.y *= 0.98f;
+
+    generalMutex.unlock();
 }
