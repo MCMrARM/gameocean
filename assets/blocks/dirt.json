@@ -1,0 +1,12 @@
+{
+  "type": "block",
+  "name_id": "dirt",
+  "id": 3,
+  "texture": "dirt",
+  "model": "default",
+  "hardness": 0.5,
+  "resistance": 2.5,
+  "flammable": false,
+  "stack_size": 64,
+  "group": "ground"
+}

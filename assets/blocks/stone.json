@@ -15,8 +15,7 @@
       "name_id": "cobblestone",
       "count": 1,
       "requires": {
-        "item_id": "pickaxe",
-        "level": "wood"
+        "group": "pickaxe"
       }
     }
   ],
@@ -55,6 +54,12 @@
       "name_id": "polished_andesite",
       "texture": "stone_polished_andesite",
       "data": 6
+    },
+    {
+      "name_id": "cobblestone",
+      "id": 4,
+      "texture": "cobblestone",
+      "hardness": 2
     }
   ]
 }

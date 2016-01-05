@@ -131,7 +131,6 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
 
     if (closed)
         return;
-    Logger::main->trace("MCPE/Player", "%s %s", entity->getTypeName(), ItemEntity::TYPE_NAME);
     if (entity->getTypeName() == Player::TYPE_NAME) {
         Logger::main->trace("MCPE/Player", "Spawning player: %s", ((Player*) entity)->getName().c_str());
         UUID uuid = {1, entity->getId()};

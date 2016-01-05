@@ -1,4 +1,5 @@
 #include "BlockVariant.h"
+#include "../utils/Random.h"
 
 #ifdef SERVER
 #include <gameocean/Player.h>
@@ -29,4 +30,27 @@ bool BlockVariant::useOn(UseItemAction& action) {
         return (*useOnAction)(action);
     }
     return false;
+}
+
+void BlockVariant::dropItems(World& world, BlockPos pos, ItemVariant* heldItem) {
+    Vector3D dropPos (pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f);
+    if (dropItself) {
+        world.dropItem(dropPos, ItemInstance (this, 1, variantDataId));
+    }
+    Random& random = Random::instance;
+    for (ItemDrop drop : drops) {
+        if (drop.requiredGroup != nullptr && heldItem->toolGroup != drop.requiredGroup)
+            continue;
+        if (drop.requiredVariantId.length() > 0 && heldItem->getStringId() != drop.requiredVariantId)
+            continue;
+        if (drop.chances != 1.f) {
+            float r = random.nextFloat();
+            if (drop.chances >= r)
+                continue;
+        }
+
+        BlockVariant* variant = ItemRegister::getBlockVariant(drop.dropVariantId);
+        if (variant != nullptr)
+            world.dropItem(dropPos, ItemInstance (variant, (byte) drop.dropCount, variant->getVariantDataId()));
+    }
 }

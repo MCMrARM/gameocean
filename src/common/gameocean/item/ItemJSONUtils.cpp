@@ -4,6 +4,7 @@
 #include "ItemVariant.h"
 #include "BlockVariant.h"
 #include "ItemRegister.h"
+#include "ItemGroup.h"
 #include "BlockGroup.h"
 #include "../model/Model.h"
 #include "../utils/ResourceManager.h"
@@ -105,17 +106,26 @@ void ItemJSONUtils::parseItemVariant(ItemVariant* item, Json::Value& val) {
     */
 
     item->setMaxStackSize(val.get("stack_size", item->getMaxStackSize()).asInt());
-    const Json::Value& multiplierAffects = val["multiplier_affects"];
-    for (Json::ValueIterator it = multiplierAffects.begin(); it != multiplierAffects.end(); it++) {
-        item->toolAffects.insert(BlockGroup::get(it->asString()));
+    {
+        std::string toolGroup = val.get("tool_group", "").asString();
+        if (toolGroup.length() > 0) {
+            item->toolGroup = ItemGroup::get(toolGroup);
+        }
     }
-    item->toolBreakMultiplier = val.get("destroy_multiplier", item->toolBreakMultiplier).asFloat();
-
-    const Json::Value& actions = val["actions"];
-    if (!actions.empty()) {
-        std::string useAction = actions.get("use", "").asString();
-        if (useAction.length() > 0 && UseItemAction::handlers.count(useAction) > 0)
-            item->useAction = UseItemAction::handlers[useAction];
+    {
+        const Json::Value& multiplierAffects = val["multiplier_affects"];
+        for (Json::ValueIterator it = multiplierAffects.begin(); it != multiplierAffects.end(); it++) {
+            item->toolAffects.insert(BlockGroup::get(it->asString()));
+        }
+        item->toolBreakMultiplier = val.get("destroy_multiplier", item->toolBreakMultiplier).asFloat();
+    }
+    {
+        const Json::Value& actions = val["actions"];
+        if (!actions.empty()) {
+            std::string useAction = actions.get("use", "").asString();
+            if (useAction.length() > 0 && UseItemAction::handlers.count(useAction) > 0)
+                item->useAction = UseItemAction::handlers[useAction];
+        }
     }
 }
 
@@ -146,14 +156,41 @@ void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
     if (item->model == nullptr || !val["model"].isNull())
         item->model = Model::getModel(val.get("model", "default").asString());
 
-    const Json::Value& actions = val["actions"];
-    if (!actions.empty()) {
-        std::string useOnAction = actions.get("use_on", "").asString();
-        if (useOnAction.length() > 0 && UseItemAction::handlers.count(useOnAction) > 0)
-            item->useOnAction = UseItemAction::handlers[useOnAction];
-        std::string destroyAction = actions.get("destroy", "").asString();
-        if (destroyAction.length() > 0 && DestroyBlockAction::handlers.count(destroyAction) > 0)
-            item->destroyAction = DestroyBlockAction::handlers[destroyAction];
+    {
+        const Json::Value& actions = val["actions"];
+        if (!actions.empty()) {
+            std::string useOnAction = actions.get("use_on", "").asString();
+            if (useOnAction.length() > 0 && UseItemAction::handlers.count(useOnAction) > 0)
+                item->useOnAction = UseItemAction::handlers[useOnAction];
+            std::string destroyAction = actions.get("destroy", "").asString();
+            if (destroyAction.length() > 0 && DestroyBlockAction::handlers.count(destroyAction) > 0)
+                item->destroyAction = DestroyBlockAction::handlers[destroyAction];
+        }
+    }
+    {
+        const Json::Value& drops = val["drops"];
+        if (!drops.empty()) {
+            for (const Json::Value& drop : drops) {
+                ItemDrop itmDrop;
+                itmDrop.dropVariantId = drop.get("name_id", item->getNameId()).asString();
+                itmDrop.dropCount = drop.get("count", 1).asInt();
+                itmDrop.chances = drop.get("chances", 1.f).asFloat();
+
+                const Json::Value& requires = drop["requires"];
+                if (!requires.empty()) {
+                    itmDrop.requiredVariantId = requires.get("name_id", "").asString();
+
+                    std::string toolGroup = requires.get("group", "").asString();
+                    if (toolGroup.length() > 0) {
+                        itmDrop.requiredGroup = ItemGroup::get(toolGroup);
+                    }
+                }
+
+                item->drops.push_back(itmDrop);
+            }
+        }
+        if (item->drops.size() > 0)
+            item->dropItself = false;
     }
 }
 

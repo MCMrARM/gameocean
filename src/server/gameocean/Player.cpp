@@ -288,8 +288,8 @@ void Player::finishedMining() {
         cancelMining();
         return;
     }
-    world->dropItem({ miningBlockPos.x + 0.5f, miningBlockPos.y + 0.5f, miningBlockPos.z + 0.5f }, ItemInstance (miningBlock, 1, miningBlock->getVariantDataId()));
     world->setBlock(miningBlockPos, 0, 0);
+    miningBlock->dropItems(*world, miningBlockPos, inventory.getHeldItem().getItem());
     cancelMining();
 }
 

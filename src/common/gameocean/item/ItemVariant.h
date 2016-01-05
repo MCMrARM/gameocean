@@ -6,6 +6,7 @@
 #include <gameocean/common.h>
 #include <gameocean/item/action/UseItemAction.h>
 
+class ItemGroup;
 class BlockGroup;
 class UseItemAction;
 
@@ -18,6 +19,7 @@ protected:
     int maxStackSize = 64;
 
 public:
+    ItemGroup* toolGroup = nullptr;
     std::set<BlockGroup*> toolAffects;
     float toolBreakMultiplier = 1.0f;
 
@@ -25,13 +27,14 @@ public:
 
     ItemVariant(int id, short variantDataId, std::string stringId);
     inline int getId() { return id; };
-    virtual std::string getStringId() { return stringId; };
+    virtual std::string const& getStringId() { return stringId; };
     inline short getVariantDataId() { return variantDataId; };
     virtual std::string getNameId() { return std::string("item.") + stringId + ".name"; };
     std::string getName();
 
     void copyItemProperties(ItemVariant const& item) {
         this->maxStackSize = item.maxStackSize;
+        this->toolGroup = item.toolGroup;
         this->toolAffects = item.toolAffects;
         this->toolBreakMultiplier = item.toolBreakMultiplier;
     };
