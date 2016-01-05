@@ -166,7 +166,7 @@ public:
         return openedContainer;
     }
 
-    virtual void tickPhysics() { }; // stub
+    virtual void tickPhysics();
 
 };
 

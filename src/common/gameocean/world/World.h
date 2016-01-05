@@ -141,9 +141,15 @@ public:
 
     template <typename T>
     void getBlockBoxes(AABB aabb, T callback) {
-        for (int x = (int) std::floor(aabb.minX); x <= (int) std::ceil(aabb.maxX); x++) {
-            for (int y = (int) std::floor(aabb.minY); y <= (int) std::ceil(aabb.maxY); y++) {
-                for (int z = (int) std::floor(aabb.minZ); z <= (int) std::ceil(aabb.maxZ); z++) {
+        int minX = (int) std::floor(aabb.minX);
+        int maxX = (int) std::ceil(aabb.maxX);
+        int minY = (int) std::floor(aabb.minY);
+        int maxY = (int) std::ceil(aabb.maxY);
+        int minZ = (int) std::floor(aabb.minZ);
+        int maxZ = (int) std::ceil(aabb.maxZ);
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
                     BlockVariant* variant = getBlock(x, y, z).getBlockVariant();
                     if (variant != nullptr) {
                         for (AABB a : variant->model->aabbs) {
@@ -152,6 +158,26 @@ public:
                         }
                     }
                 }
+            }
+        }
+    }
+
+    template <typename T>
+    void getNearbyEntities(AABB aabb, T callback) {
+        int minX = (int) std::floor(aabb.minX) >> 4;
+        int maxX = (int) std::ceil(aabb.maxX) >> 4;
+        int minZ = (int) std::floor(aabb.minZ) >> 4;
+        int maxZ = (int) std::ceil(aabb.maxZ) >> 4;
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                Chunk* chunk = getChunkAt(x, z, false);
+                chunk->mutex.lock();
+                for (auto const& pair : chunk->entities) {
+                    Entity* ent = pair.second;
+                    if (ent->getAABB().intersects(aabb))
+                        callback(ent);
+                }
+                chunk->mutex.unlock();
             }
         }
     }

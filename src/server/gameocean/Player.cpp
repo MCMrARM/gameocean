@@ -13,6 +13,7 @@
 #include "plugin/event/player/PlayerAttackEvent.h"
 #include "plugin/event/player/PlayerDamageEvent.h"
 #include "plugin/event/player/PlayerDeathEvent.h"
+#include <gameocean/entity/ItemEntity.h>
 
 const char* Player::TYPE_NAME = "Player";
 
@@ -408,4 +409,13 @@ void* Player::getPluginData(Plugin* plugin) {
 void Player::setPluginData(Plugin* plugin, void* data) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
     pluginData[plugin] = data;
+}
+
+void Player::tickPhysics() {
+    world->getNearbyEntities(getAABB().expand(1.f, 0.5f, 1.f), [this](Entity* ent) {
+        if (ent->getTypeName() == ItemEntity::TYPE_NAME) {
+            inventory.addItem(((ItemEntity*) ent)->getItem());
+            ent->kill();
+        }
+    });
 }

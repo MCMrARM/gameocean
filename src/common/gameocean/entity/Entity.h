@@ -95,6 +95,10 @@ public:
     inline float getHeadY() {
         return headY;
     };
+    AABB getAABB() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return aabb;
+    }
     inline Vector3D getMotion() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return motion;
