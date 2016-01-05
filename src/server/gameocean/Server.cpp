@@ -18,7 +18,7 @@
 #include <gameocean/plugin/PluginManager.h>
 #include "item/action/server/ServerActions.h"
 
-Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
+Server::Server() : playerBlockDestroyThread(*this), physicsTickTask(*this), pluginManager(*this) {
     mainWorld = new World("world");
 }
 
@@ -45,8 +45,9 @@ void Server::start() {
 
     PlayerChunkQueueThread chunkQueueThread (*this);
     chunkQueueThread.start();
+    physicsTickTask.start();
 
-    //playerBlockDestroyThread.start();
+    playerBlockDestroyThread.start();
 
     Logger::main->trace("Main", "Loading plugins");
     pluginManager.loadPlugins();
@@ -103,6 +104,7 @@ void Server::loadConfiguation() {
         sendChunksDelay = chunkSending->getInt("tick-rate", sendChunksDelay);
         sendChunksCount = chunkSending->getInt("per-tick", sendChunksCount);
     }
+    physicsTickRate = c.getInt("physics-tick-rate", physicsTickRate);
     std::shared_ptr<ContainerConfigNode> protocols = c.getContainer("protocols");
     if (protocols != null) {
         for (auto const& p : protocols->val) {

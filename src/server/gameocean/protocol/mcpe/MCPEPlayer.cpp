@@ -7,6 +7,7 @@
 #include <gameocean/world/World.h>
 #include <gameocean/world/Chunk.h>
 #include <gameocean/world/tile/Container.h>
+#include <gameocean/entity/ItemEntity.h>
 
 void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback) {
     packetQueueMutex.lock();
@@ -130,6 +131,7 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
 
     if (closed)
         return;
+    Logger::main->trace("MCPE/Player", "%s %s", entity->getTypeName(), ItemEntity::TYPE_NAME);
     if (entity->getTypeName() == Player::TYPE_NAME) {
         Logger::main->trace("MCPE/Player", "Spawning player: %s", ((Player*) entity)->getName().c_str());
         UUID uuid = {1, entity->getId()};
@@ -154,6 +156,20 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
 
         updateEntityPos(entity);
         return;
+    } else if (entity->getTypeName() == ItemEntity::TYPE_NAME) {
+        std::unique_ptr<MCPEAddItemEntityPacket> pk (new MCPEAddItemEntityPacket());
+        pk->eid = entity->getId();
+        pk->item = ((ItemEntity*) entity)->getItem();
+        Vector3D v = entity->getHeadPos();
+        Vector3D m = entity->getMotion();
+        pk->x = v.x;
+        pk->y = v.y;
+        pk->z = v.z;
+        pk->motionX = m.x;
+        pk->motionY = m.y;
+        pk->motionZ = m.z;
+        writePacket(std::move(pk));
+        return;
     }
 }
 void MCPEPlayer::despawnEntity(Entity *entity) {
@@ -175,6 +191,10 @@ void MCPEPlayer::despawnEntity(Entity *entity) {
         lpk->removeEntries.push_back({uuid});
         writePacket(std::move(lpk));
         return;
+    } else {
+        std::unique_ptr<MCPERemoveEntityPacket> pk (new MCPERemoveEntityPacket());
+        pk->eid = entity->getId();
+        writePacket(std::move(pk));
     }
 }
 

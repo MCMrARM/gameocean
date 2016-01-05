@@ -5,6 +5,8 @@
 #include <gameocean/Player.h>
 #endif
 
+#include "../entity/ItemEntity.h"
+
 World::World(std::string name) : name(name) {
     setTime(5000, true);
 }
@@ -44,6 +46,10 @@ int World::getTime() {
         return startTime;
     long long now = Time::now();
     return startTime + (int) ((now - startTimeMS) / 50);
+}
+
+void World::dropItem(Vector3D pos, ItemInstance item) {
+    new ItemEntity(*this, pos, item);
 }
 
 #ifdef SERVER

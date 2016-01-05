@@ -171,6 +171,8 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
 void Entity::moveRelative(float x, float y, float z) {
     Vector3D basePos = getPos();
     Vector3D pos = checkCollisions(x, y, z);
+    if (pos.x == 0 && pos.y == 0 && pos.z == 0)
+        return;
     setPos(basePos.x + pos.x, basePos.y + pos.y, basePos.z + pos.z);
 }
 
@@ -297,12 +299,21 @@ void Entity::tickPhysics() {
     float delta = std::chrono::duration_cast<std::chrono::duration<float, std::ratio<1>>>(now - prevPhysicsTick).count();
     prevPhysicsTick = now;
 
+    float multiplier = delta / (1.f / 20);
+
     float blockSlipperiness = 0.6f;
     float motionReduction = blockSlipperiness * 0.91f;
 
-    motion.x *= 0.98f;
-    motion.y *= 0.98f;
-    motion.z *= 0.98f;
+    motion.y -= gravity * multiplier;
+
+    motion.x *= motionReduction;
+    motion.z *= motionReduction;
+    motion.y *= pow(0.98f, multiplier);
+
+
+    motion.x *= pow(0.98f, multiplier);
+    motion.y *= pow(0.98f, multiplier);
+    motion.z *= pow(0.98f, multiplier);
 
     if (std::abs(motion.x) < 0.005f)
         motion.x = 0;
@@ -312,12 +323,6 @@ void Entity::tickPhysics() {
         motion.z = 0;
 
     moveRelative(motion.x, motion.y, motion.z);
-
-    motion.y -= gravity;
-
-    motion.x *= motionReduction;
-    motion.z *= motionReduction;
-    motion.y *= 0.98f;
 
     generalMutex.unlock();
 }

@@ -374,6 +374,42 @@ public:
     };
 };
 
+class MCPERemoveEntityPacket : public MCPEPacket {
+public:
+    MCPERemoveEntityPacket() {
+        id = MCPE_REMOVE_ENTITY_PACKET;
+    };
+
+    long long eid = 0;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+    };
+};
+
+class MCPEAddItemEntityPacket : public MCPEPacket {
+public:
+    MCPEAddItemEntityPacket() {
+        id = MCPE_ADD_ITEM_ENTITY_PACKET;
+    };
+
+    long long eid;
+    ItemInstance item;
+    float x, y, z;
+    float motionX, motionY, motionZ;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        writeItemInstance(stream, item);
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+        stream.Write(motionX);
+        stream.Write(motionY);
+        stream.Write(motionZ);
+    };
+};
+
 class MCPEMoveEntityPacket : public MCPEPacket {
 public:
     MCPEMoveEntityPacket() {

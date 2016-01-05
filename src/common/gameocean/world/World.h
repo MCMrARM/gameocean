@@ -94,6 +94,11 @@ public:
         return isChunkLoaded(ChunkPos(x, z));
     };
 
+    inline std::unordered_map<ChunkPos, Chunk*> getChunks() {
+        std::lock_guard<std::recursive_mutex> guard (chunkMutex);
+        return chunks;
+    };
+
     void loadSpawnTerrain() {
         int spawnChunkX = spawn.x >> 4;
         int spawnChunkZ = spawn.z >> 4;
@@ -131,6 +136,8 @@ public:
         std::lock_guard<std::recursive_mutex> guard (chunkMutex);
         return players;
     };
+
+    void dropItem(Vector3D pos, ItemInstance item);
 
     template <typename T>
     void getBlockBoxes(AABB aabb, T callback) {

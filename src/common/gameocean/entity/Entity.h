@@ -58,7 +58,6 @@ public:
         id = Entity::currentId++;
         prevPhysicsTick = std::chrono::high_resolution_clock::now();
     };
-    Entity(World& world, float x, float y, float z) : Entity(world) { setPos(x, y, z); };
     virtual ~Entity() {};
 
     virtual void close();
@@ -81,6 +80,7 @@ public:
     virtual void moveRelative(float x, float y, float z);
 
     virtual void setMotion(Vector3D motion) {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
         this->motion = motion;
     };
 
@@ -94,6 +94,10 @@ public:
     };
     inline float getHeadY() {
         return headY;
+    };
+    inline Vector3D getMotion() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return motion;
     };
 
     virtual void setRot(float yaw, float pitch);
@@ -137,7 +141,7 @@ public:
 
     std::vector<Entity*> getNearbyEntities(float range);
 
-    void tickPhysics();
+    virtual void tickPhysics();
 
 };
 
