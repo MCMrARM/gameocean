@@ -27,6 +27,7 @@ public:
     std::set<std::shared_ptr<Tile>> tiles;
     std::set<Player*> usedBy;
     std::recursive_mutex mutex;
+    std::recursive_mutex entityMutex;
 
     byte blockId [16 * 16 * 128];
     NibbleArray<16 * 16 * 128 / 2> blockMeta;

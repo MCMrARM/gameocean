@@ -22,6 +22,7 @@ public:
     ItemGroup* toolGroup = nullptr;
     std::set<BlockGroup*> toolAffects;
     float toolBreakMultiplier = 1.0f;
+    float attackDamage = 1.f;
 
     UseItemAction::Handler useAction = nullptr;
 

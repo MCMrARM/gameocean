@@ -1,0 +1,46 @@
+{
+  "type": "item",
+  "name_id": "sword",
+  "is_base": true,
+  "tool_group": "sword",
+  "item_damage_block_break": 2,
+  "item_damage_attack": 1,
+  "stack_size": 1,
+  "variants": [
+    {
+      "name_id": "wooden_sword",
+      "id": 268,
+      "texture": "wooden_sword",
+      "max_uses": 60,
+      "attack_damage": 5
+    },
+    {
+      "name_id": "stone_sword",
+      "id": 272,
+      "texture": "stone_sword",
+      "max_uses": 132,
+      "attack_damage": 6
+    },
+    {
+      "name_id": "iron_sword",
+      "id": 267,
+      "texture": "iron_sword",
+      "max_uses": 251,
+      "attack_damage": 7
+    },
+    {
+      "name_id": "diamond_sword",
+      "id": 276,
+      "texture": "diamond_sword",
+      "max_uses": 1562,
+      "attack_damage": 8
+    },
+    {
+      "name_id": "gold_sword",
+      "id": 283,
+      "texture": "gold_sword",
+      "max_uses": 33,
+      "attack_damage": 5
+    }
+  ]
+}

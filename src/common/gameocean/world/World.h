@@ -173,13 +173,13 @@ public:
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
                 Chunk* chunk = getChunkAt(x, z, false);
-                chunk->mutex.lock();
+                chunk->entityMutex.lock();
                 for (auto const& pair : chunk->entities) {
                     Entity* ent = pair.second;
                     if (ent->getAABB().intersects(aabb))
                         callback(ent);
                 }
-                chunk->mutex.unlock();
+                chunk->entityMutex.unlock();
             }
         }
     }

@@ -13,12 +13,12 @@ void EntityPhysicsTickTask::run() {
 
         for (auto const& it : world.getChunks()) {
             Chunk* chunk = it.second;
-            chunk->mutex.lock();
+            chunk->entityMutex.lock();
             for (auto const& ent : chunk->entities) {
                 Entity* entity = ent.second;
                 entity->tickPhysics();
             }
-            chunk->mutex.unlock();
+            chunk->entityMutex.unlock();
         }
     }
 }

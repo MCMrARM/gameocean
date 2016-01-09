@@ -15,6 +15,38 @@
       "texture": "wooden_pickaxe",
       "max_uses": 60,
       "attack_damage": 3
+    },
+    {
+      "name_id": "stone_pickaxe",
+      "id": 274,
+      "destroy_multiplier": 4,
+      "texture": "stone_pickaxe",
+      "max_uses": 132,
+      "attack_damage": 4
+    },
+    {
+      "name_id": "iron_pickaxe",
+      "id": 257,
+      "destroy_multiplier": 6,
+      "texture": "iron_pickaxe",
+      "max_uses": 251,
+      "attack_damage": 5
+    },
+    {
+      "name_id": "diamond_pickaxe",
+      "id": 278,
+      "destroy_multiplier": 8,
+      "texture": "diamond_pickaxe",
+      "max_uses": 1562,
+      "attack_damage": 6
+    },
+    {
+      "name_id": "gold_pickaxe",
+      "id": 285,
+      "destroy_multiplier": 12,
+      "texture": "gold_pickaxe",
+      "max_uses": 33,
+      "attack_damage": 3
     }
   ]
 }

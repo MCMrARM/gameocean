@@ -121,6 +121,9 @@ void JSONItemLoader::parseItemVariant(ItemVariant* item, const Json::Value& val)
         }
         item->toolBreakMultiplier = val.get("destroy_multiplier", item->toolBreakMultiplier).asFloat();
     }
+
+    item->attackDamage = val.get("attack_damage", item->attackDamage).asInt();
+
     {
         const Json::Value& actions = val["actions"];
         if (!actions.empty()) {

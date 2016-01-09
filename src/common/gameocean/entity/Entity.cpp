@@ -315,14 +315,14 @@ std::vector<Entity*> Entity::getNearbyEntities(float range) {
         for (int chunkZ = (((int) myPos.z - (int) ceil(range)) >> 4); chunkZ <= (((int) myPos.z + (int) ceil(range)) >> 4); chunkZ++) {
             if (world.isChunkLoaded(chunkX, chunkZ)) {
                 Chunk* chunk = world.getChunkAt(chunkX, chunkZ, false);
-                chunk->mutex.lock();
+                chunk->entityMutex.lock();
                 for (auto const& e : chunk->entities) {
                     Entity* ent = e.second;
                     Vector3D pos = ent->getPos();
                     if (pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY && pos.z >= minZ && pos.z <= maxZ)
                         ret.push_back(ent);
                 }
-                chunk->mutex.unlock();
+                chunk->entityMutex.unlock();
             }
         }
     }

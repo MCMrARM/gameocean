@@ -95,7 +95,7 @@ void Player::setSpawned() {
     chunkArrayMutex.lock();
     for (auto entry : sentChunks) {
         Chunk* c = entry.second;
-        std::lock_guard<std::recursive_mutex> guard (c->mutex);
+        std::lock_guard<std::recursive_mutex> guard (c->entityMutex);
         for (auto e : c->entities) {
             e.second->spawnTo(this);
         }
@@ -347,7 +347,11 @@ void Player::processMessage(std::string text) {
 }
 
 void Player::attack(Entity& entity) {
-    EntityDamageEvent event (entity, 1.f, EntityDamageEvent::DamageSource::ENTITY, this, 0.3f);
+    float damage = 1.f;
+    if (!inventory.getHeldItem().isEmpty())
+        damage = inventory.getHeldItem().getItem()->attackDamage;
+
+    EntityDamageEvent event (entity, damage, EntityDamageEvent::DamageSource::ENTITY, this, 0.3f);
 
     PlayerAttackEvent attackEvent (*this, event);
     Event::broadcast(attackEvent);
