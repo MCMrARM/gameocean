@@ -2,7 +2,7 @@
 
 #include <gameocean/utils/Thread.h>
 
-class Server;
+class World;
 
 class EntityPhysicsTickTask : public Thread {
 
@@ -10,9 +10,11 @@ protected:
     bool shouldStop = false;
 
 public:
-    Server& server;
+    static int tickRate;
 
-    EntityPhysicsTickTask(Server& server) : server(server) { };
+    World& world;
+
+    EntityPhysicsTickTask(World& world) : world(world) { };
 
     virtual void run();
     virtual void stop() { shouldStop = true; };

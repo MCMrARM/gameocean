@@ -1,17 +1,17 @@
 #include "EntityPhysicsTickTask.h"
 
-#include "Server.h"
-#include <gameocean/world/World.h>
+#include "World.h"
+
+int EntityPhysicsTickTask::tickRate = 50;
 
 void EntityPhysicsTickTask::run() {
     while(true) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(server.physicsTickRate));
+        std::this_thread::sleep_for(std::chrono::milliseconds(EntityPhysicsTickTask::tickRate));
 
         if (shouldStop)
             break;
 
-        World* world = server.mainWorld;
-        for (auto const& it : world->getChunks()) {
+        for (auto const& it : world.getChunks()) {
             Chunk* chunk = it.second;
             chunk->mutex.lock();
             for (auto const& ent : chunk->entities) {

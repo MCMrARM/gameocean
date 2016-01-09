@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <set>
 #include "PlayerBlockDestroyThread.h"
-#include "EntityPhysicsTickTask.h"
 #include <gameocean/plugin/PluginManager.h>
 
 class World;
@@ -26,11 +25,9 @@ public:
     int maxPlayers = 100;
     int sendChunksCount = 4;
     int sendChunksDelay = 25; // in ms
-    int physicsTickRate = 100; // in ms
     World* mainWorld;
     std::set<Protocol*> enabledProtocols;
     PlayerBlockDestroyThread playerBlockDestroyThread;
-    EntityPhysicsTickTask physicsTickTask;
     PluginManager pluginManager;
 
     Server();

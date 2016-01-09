@@ -279,6 +279,7 @@ void Player::startMining(BlockPos pos) {
 }
 
 void Player::cancelMining() {
+    sendBlockUpdate(miningBlockPos);
     miningBlockPos = {};
     miningBlock = nullptr;
     miningStarted = 0;

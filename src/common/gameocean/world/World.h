@@ -11,6 +11,7 @@
 #include <gameocean/item/BlockVariant.h>
 #include "../math/AABB.h"
 #include "../model/Model.h"
+#include "EntityPhysicsTickTask.h"
 
 class WorldProvider;
 class Player;
@@ -27,6 +28,7 @@ private:
     int startTime;
     long long startTimeMS;
     bool timeStopped = false;
+    EntityPhysicsTickTask physicsTickTask;
 
 public:
     World(std::string name);

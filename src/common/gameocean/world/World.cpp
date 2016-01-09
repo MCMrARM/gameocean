@@ -7,8 +7,10 @@
 
 #include "../entity/ItemEntity.h"
 
-World::World(std::string name) : name(name) {
+World::World(std::string name) : name(name), physicsTickTask(*this) {
     setTime(5000, true);
+
+    physicsTickTask.start();
 }
 
 Chunk* World::getChunkAt(ChunkPos pos, bool create) {
