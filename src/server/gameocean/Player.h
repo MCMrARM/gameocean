@@ -98,7 +98,7 @@ protected:
 
     virtual void sendDeathStatus() = 0;
 
-    void addTransaction(Inventory& inventory, int slot, ItemInstance to);
+    void addTransaction(Inventory& inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to);
 
 public:
     Player(Server& server);

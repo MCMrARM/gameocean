@@ -220,12 +220,15 @@ void MCPEContainerClosePacket::handle(MCPEPlayer& player) {
 }
 
 void MCPEContainerSetSlotPacket::handle(MCPEPlayer& player) {
+    printf("SetSlot [window=%i,slot=%i,hotbar=%i,item=%i:%ix%i]\n", window, slot, hotbar, item.getItemId(), item.getItemData(), item.count);
     if (window == 0 && item == player.inventory.getItem(slot))
         return;
     if (window == 0) {
-        player.addTransaction(player.inventory, slot, item);
+        player.addTransaction(player.inventory, InventoryTransaction::InventoryKind::PLAYER, slot, item);
     } else if (window == 2) {
-        player.addTransaction(player.getOpenedContainer()->getInventory(), slot, item);
+        player.addTransaction(player.getOpenedContainer()->getInventory(), InventoryTransaction::InventoryKind::CONTAINER, slot, item);
+    } else if (window == 120) {
+        player.addTransaction(player.inventory, InventoryTransaction::InventoryKind::ARMOR, slot, item);
     }
 }
 

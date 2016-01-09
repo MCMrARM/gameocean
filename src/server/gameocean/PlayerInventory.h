@@ -1,15 +1,15 @@
 #pragma once
 
-#include <gameocean/inventory/Inventory.h>
+#include <gameocean/inventory/InventoryWithArmor.h>
 class Player;
 
-class PlayerInventory : public Inventory {
+class PlayerInventory : public InventoryWithArmor {
 
 public:
     Player& player;
     int heldSlot = -1;
 
-    PlayerInventory(Player& player, int numSlots) : Inventory(numSlots), player(player) { };
+    PlayerInventory(Player& player, int numSlots) : InventoryWithArmor(numSlots), player(player) { };
 
     virtual void setItem(int slot, ItemInstance item);
 

@@ -14,12 +14,17 @@ public:
         //
     }
 
+    enum class InventoryKind {
+        PLAYER, ARMOR, CONTAINER
+    };
+
     struct Element {
         Inventory& inventory;
+        InventoryKind kind;
         int slot;
         ItemInstance fromItem, toItem;
 
-        int getDiff() {
+        int getDiff() const {
             if (fromItem.isEmpty() && toItem.isEmpty())
                 return 0;
             if (fromItem.isEmpty())
@@ -49,6 +54,11 @@ public:
      * Checks if the whole operation only happens in the user's inventory
      */
     bool isInInventoryTransfer();
+
+    /**
+     * Checks if the transfer happens between the inventory and armor slots
+     */
+    bool isArmorSlotTransfer();
 
 
     void execute();

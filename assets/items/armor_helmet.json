@@ -1,0 +1,45 @@
+{
+  "type": "item",
+  "name_id": "helmet",
+  "is_base": true,
+  "is_armor": true,
+  "armor_slot": 0,
+  "stack_size": 1,
+  "variants": [
+    {
+      "name_id": "leather_cap",
+      "id": 298,
+      "texture": "leather_cap",
+      "max_damage": 56,
+      "damage_reduction": 0.04
+    },
+    {
+      "name_id": "chain_helmet",
+      "id": 302,
+      "texture": "chain_helmet",
+      "max_damage": 166,
+      "damage_reduction": 0.08
+    },
+    {
+      "name_id": "iron_helmet",
+      "id": 306,
+      "texture": "iron_helmet",
+      "max_damage": 166,
+      "damage_reduction": 0.08
+    },
+    {
+      "name_id": "diamond_helmet",
+      "id": 310,
+      "texture": "diamond_helmet",
+      "max_damage": 364,
+      "damage_reduction": 0.12
+    },
+    {
+      "name_id": "gold_helmet",
+      "id": 314,
+      "texture": "gold_helmet",
+      "max_damage": 78,
+      "damage_reduction": 0.08
+    }
+  ]
+}

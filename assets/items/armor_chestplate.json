@@ -1,0 +1,45 @@
+{
+  "type": "item",
+  "name_id": "chestplate",
+  "is_base": true,
+  "is_armor": true,
+  "armor_slot": 0,
+  "stack_size": 1,
+  "variants": [
+    {
+      "name_id": "leather_tunic",
+      "id": 299,
+      "texture": "leather_tunic",
+      "max_damage": 81,
+      "damage_reduction": 0.12
+    },
+    {
+      "name_id": "chain_chestplate",
+      "id": 303,
+      "texture": "chain_chestplate",
+      "max_damage": 241,
+      "damage_reduction": 0.2
+    },
+    {
+      "name_id": "iron_chestplate",
+      "id": 307,
+      "texture": "iron_chestplate",
+      "max_damage": 241,
+      "damage_reduction": 0.24
+    },
+    {
+      "name_id": "diamond_chestplate",
+      "id": 311,
+      "texture": "diamond_chestplate",
+      "max_damage": 529,
+      "damage_reduction": 0.32
+    },
+    {
+      "name_id": "gold_chestplate",
+      "id": 315,
+      "texture": "gold_chestplate",
+      "max_damage": 113,
+      "damage_reduction": 0.2
+    }
+  ]
+}

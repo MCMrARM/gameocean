@@ -45,7 +45,7 @@ void Player::close(std::string reason, bool sendToPlayer) {
     }
 }
 
-void Player::addTransaction(Inventory& inventory, int slot, ItemInstance to) {
+void Player::addTransaction(Inventory& inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to) {
     if (transaction.elements.size() <= 0)
         transactionStart = Time::now();
     else if (Time::now() - transactionStart > 500) {
@@ -53,7 +53,7 @@ void Player::addTransaction(Inventory& inventory, int slot, ItemInstance to) {
         transaction.reset();
         transactionStart = Time::now();
     }
-    transaction.elements.push_back({ inventory, slot, inventory.getItem(slot), to });
+    transaction.elements.push_back({ inventory, kind, slot, (kind == InventoryTransaction::InventoryKind::ARMOR ? ((InventoryWithArmor&) inventory).getArmorSlot(slot) : inventory.getItem(slot)), to });
     if (transaction.isFinished()) {
         if (transaction.isValid())
             transaction.execute();
