@@ -23,6 +23,7 @@ public:
     std::set<BlockGroup*> toolAffects;
     float toolBreakMultiplier = 1.0f;
     float attackDamage = 1.f;
+    float damageReduction = 0.f;
 
     UseItemAction::Handler useAction = nullptr;
 

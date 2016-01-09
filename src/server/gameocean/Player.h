@@ -151,6 +151,7 @@ public:
 
     void attack(Entity& entity);
     virtual void damage(EntityDamageEvent& event);
+    float getArmorReductionMultiplier();
 
     virtual void setHealth(float hp);
 

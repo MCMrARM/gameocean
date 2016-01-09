@@ -288,6 +288,8 @@ void Player::startMining(BlockPos pos) {
 }
 
 void Player::cancelMining() {
+    if (miningBlock == nullptr)
+        return;
     sendBlockUpdate(miningBlockPos);
     miningBlockPos = {};
     miningBlock = nullptr;
@@ -370,6 +372,8 @@ void Player::attack(Entity& entity) {
 }
 
 void Player::damage(EntityDamageEvent& event) {
+    event.setDamage(std::round(event.getDamage() * getArmorReductionMultiplier()));
+
     PlayerDamageEvent damageEvent (*this, event);
     Event::broadcast(damageEvent);
     if (damageEvent.isCancelled())
@@ -379,6 +383,16 @@ void Player::damage(EntityDamageEvent& event) {
         player->sendHurtAnimation(this);
     }
     sendHurtAnimation(this);
+}
+
+float Player::getArmorReductionMultiplier() {
+    float m = 1.f;
+    for (int i = 0; i < 4; i++) {
+        ItemInstance itm = inventory.getArmorSlot(i);
+        if (!itm.isEmpty())
+            m -= itm.getItem()->damageReduction;
+    }
+    return m;
 }
 
 void Player::setHealth(float hp) {
