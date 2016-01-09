@@ -123,8 +123,10 @@ void Player::respawn() {
 }
 
 void Player::setWorld(World& world, float x, float y, float z) {
+    this->world->removePlayer(this);
     Entity::setWorld(world, x, y, z);
     shouldUpdateChunkQueue = true;
+    world.addPlayer(this);
 }
 
 void Player::setPos(float x, float y, float z) {
