@@ -28,6 +28,7 @@ class Container;
 class Player : public Entity, public CommandSender {
     friend class Entity;
     friend class World;
+    friend class PlayerInventory;
     friend class PlayerChunkQueueThread;
     friend class PlayerBlockDestroyThread;
 
@@ -85,8 +86,10 @@ protected:
         spawnedEntities.erase(entity);
     };
     virtual void updateEntityPos(Entity* entity) {};
-
     virtual void sendHurtAnimation(Entity* entity) {};
+
+    virtual void sendPlayerArmor(Player* player) {};
+    virtual void sendPlayerHeldItem(Player* player) {};
 
     virtual void sendBlockUpdate(BlockPos bpos) = 0;
 
@@ -99,6 +102,8 @@ protected:
     virtual void sendDeathStatus() = 0;
 
     void addTransaction(Inventory& inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to);
+
+    void broadcastArmorChange();
 
 public:
     Player(Server& server);
@@ -135,7 +140,8 @@ public:
 
     virtual void sendInventorySlot(int slotId) = 0;
     virtual void sendInventory() = 0;
-    virtual void sendHeldItem() = 0;
+    virtual void sendArmor() { sendPlayerArmor(this); };
+    virtual void sendHeldItem() { sendPlayerHeldItem(this); };
 
     virtual void startMining(BlockPos pos);
     virtual void cancelMining();

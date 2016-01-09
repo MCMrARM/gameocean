@@ -13,6 +13,8 @@ public:
 
     virtual void setItem(int slot, ItemInstance item);
 
+    virtual void setArmorSlot(int slot, ItemInstance item);
+
     inline int getHeldSlot() {
         mutex.lock();
         int ret = heldSlot;

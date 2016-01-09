@@ -645,6 +645,28 @@ public:
     virtual void handle(MCPEPlayer& player);
 };
 
+class MCPEMobArmorEquipmentPacket : public MCPEPacket {
+public:
+    MCPEMobArmorEquipmentPacket() {
+        id = MCPE_MOB_ARMOR_EQUIPMENT_PACKET;
+    };
+
+    long long eid;
+    ItemInstance slots[4];
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        for (int i = 0; i < 4; i++)
+            writeItemInstance(stream, slots[i]);
+    };
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(eid);
+        for (int i = 0; i < 4; i++)
+            slots[i] = readItemInstance(stream);
+    };
+};
+
 class MCPEInteractPacket : public MCPEPacket {
 public:
     MCPEInteractPacket() {

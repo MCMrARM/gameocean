@@ -54,6 +54,9 @@ protected:
     virtual void updateEntityPos(Entity* entity);
     virtual void sendHurtAnimation(Entity* entity);
 
+    virtual void sendPlayerHeldItem(Player* player);
+    virtual void sendPlayerArmor(Player* player);
+
     virtual void sendBlockUpdate(BlockPos bpos);
     virtual void sendWorldTime(int time, bool stopped);
 
@@ -85,7 +88,6 @@ public:
 
     virtual void sendInventorySlot(int slotId);
     virtual void sendInventory();
-    virtual void sendHeldItem();
 
     void linkHeldItem(int hotbarSlot, int inventorySlot);
 

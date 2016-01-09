@@ -16,7 +16,7 @@ public:
         std::unique_lock<std::mutex> lock (mutex);
         return armor[slot];
     };
-    inline void setArmorSlot(int slot, ItemInstance item) {
+    virtual void setArmorSlot(int slot, ItemInstance item) {
         std::unique_lock<std::mutex> lock (mutex);
         armor[slot] = item;
     };

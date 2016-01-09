@@ -63,6 +63,13 @@ void Player::addTransaction(Inventory& inventory, InventoryTransaction::Inventor
     }
 }
 
+void Player::broadcastArmorChange() {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    for (Player* viewer : spawnedTo) {
+        viewer->sendPlayerArmor(this);
+    }
+}
+
 bool Player::sendChunk(int x, int z) {
     ChunkPos pos (x, z);
     Chunk* chunk = world->getChunkAt(pos, true);

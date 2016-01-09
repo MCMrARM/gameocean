@@ -235,13 +235,13 @@ void MCPEPlayer::sendInventory() {
     sendHeldItem();
 }
 
-void MCPEPlayer::sendHeldItem() {
+void MCPEPlayer::sendPlayerHeldItem(Player* player) {
     std::unique_ptr<MCPEMobEquipmentPacket> pk (new MCPEMobEquipmentPacket());
-    pk->eid = 0;
-    pk->item = inventory.getHeldItem();
+    pk->eid = (player == this ? 0 : player->getId());
+    pk->item = player->inventory.getHeldItem();
     generalMutex.lock();
-    pk->slot = inventory.getHeldSlot();
-    pk->hotbarSlot = hotbarSlot;
+    pk->slot = (byte) (player == this ? inventory.getHeldSlot() : 0);
+    pk->hotbarSlot = (byte) (player == this ? hotbarSlot : 0);
     generalMutex.unlock();
     writePacket(std::move(pk));
 }
@@ -252,6 +252,14 @@ void MCPEPlayer::linkHeldItem(int hotbarSlot, int inventorySlot) {
     inventory.setHeldSlot(inventorySlot);
     hotbarSlots[hotbarSlot] = inventorySlot;
     generalMutex.unlock();
+}
+
+void MCPEPlayer::sendPlayerArmor(Player* player) {
+    std::unique_ptr<MCPEMobArmorEquipmentPacket> pk (new MCPEMobArmorEquipmentPacket());
+    pk->eid = (player == this ? 0 : player->getId());
+    for (int i = 0; i < 4; i++)
+        pk->slots[i] = player->inventory.getArmorSlot(i);
+    writePacket(std::move(pk));
 }
 
 void MCPEPlayer::sendBlockUpdate(BlockPos bpos) {

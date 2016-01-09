@@ -21,6 +21,7 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPERemoveBlockPacket>(MCPE_REMOVE_BLOCK_PACKET);
     MCPEPacket::registerPacket<MCPEEntityEventPacket>(MCPE_ENTITY_EVENT_PACKET);
     MCPEPacket::registerPacket<MCPEMobEquipmentPacket>(MCPE_MOB_EQUIPMENT_PACKET);
+    MCPEPacket::registerPacket<MCPEMobArmorEquipmentPacket>(MCPE_MOB_ARMOR_EQUIPMENT_PACKET);
     MCPEPacket::registerPacket<MCPEInteractPacket>(MCPE_INTERACT_PACKET);
     MCPEPacket::registerPacket<MCPEUseItemPacket>(MCPE_USE_ITEM_PACKET);
     MCPEPacket::registerPacket<MCPEPlayerActionPacket>(MCPE_PLAYER_ACTION_PACKET);
@@ -220,7 +221,6 @@ void MCPEContainerClosePacket::handle(MCPEPlayer& player) {
 }
 
 void MCPEContainerSetSlotPacket::handle(MCPEPlayer& player) {
-    printf("SetSlot [window=%i,slot=%i,hotbar=%i,item=%i:%ix%i]\n", window, slot, hotbar, item.getItemId(), item.getItemData(), item.count);
     if (window == 0 && item == player.inventory.getItem(slot))
         return;
     if (window == 0) {
