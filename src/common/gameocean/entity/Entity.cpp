@@ -78,7 +78,35 @@ void Entity::setPos(float x, float y, float z) {
         p->updateEntityPos(this);
     }
 #endif
+
+    updateOnGround();
     generalMutex.unlock();
+}
+
+void Entity::updateOnGround() {
+    AABB aabb = getAABB();
+    AABB aabbCheck = aabb;
+    aabbCheck.maxY = aabb.minY + 0.5f;
+    aabbCheck.minY -= 0.5f;
+    bool onGround = false;
+    world->getBlockBoxes(aabbCheck, [&onGround, aabb](AABB const& baabb) {
+        if (baabb.minX > aabb.maxX || baabb.maxX < aabb.minX ||
+                baabb.minZ > aabb.maxZ || baabb.maxZ < aabb.minZ ||
+                baabb.minY > aabb.maxY || baabb.maxY < aabb.minY)
+            return;
+        onGround = true;
+    });
+    generalMutex.lock();
+    bool prevOnGround = this->onGround;
+    this->onGround = onGround;
+    generalMutex.unlock();
+    if (onGround && !prevOnGround) {
+        float dist = fallStart - aabb.minY;
+        if (dist > 0.f)
+            damageFall(dist);
+    } else if (!onGround && prevOnGround) {
+        fallStart = aabb.minY;
+    }
 }
 
 Vector3D Entity::checkCollisions(float x, float y, float z) {
@@ -263,6 +291,14 @@ void Entity::knockBack(float x, float z, float force) {
     if (motion.y > force)
         motion.y = force;
     setMotion(motion);
+}
+
+void Entity::damageFall(float distance) {
+    distance = std::round(distance);
+    if (distance > 3.f) {
+        EntityDamageEvent ev (*this, (distance - 3.f), EntityDamageEvent::DamageSource::FALL, nullptr, 0.f);
+        damage(ev);
+    }
 }
 
 std::vector<Entity*> Entity::getNearbyEntities(float range) {

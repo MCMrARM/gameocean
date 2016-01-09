@@ -35,6 +35,9 @@ protected:
     float yaw, pitch;
     Vector3D motion;
 
+    bool onGround = true;
+    float fallStart = 0.f;
+
     float hp, maxHp;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> prevPhysicsTick;
@@ -50,6 +53,10 @@ protected:
      * This methods check for collisions in a relative movement and returns the corrected movement.
      */
     Vector3D checkCollisions(float x, float y, float z);
+
+    void updateOnGround();
+
+    virtual void damageFall(float distance);
 
 public:
     static EntityId currentId;
