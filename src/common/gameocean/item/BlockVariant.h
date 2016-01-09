@@ -16,9 +16,9 @@ class BlockVariant : public ItemVariant {
 public:
     bool replaceable = false; // determines if the block can be replaced as it was air
     float hardness = 100;
-    BlockGroup* blockGroup = null;
+    BlockGroup* blockGroup = nullptr;
     bool needsTool = false;
-    Model* model = null;
+    Model* model = nullptr;
     bool dropItself = true;
     std::vector<ItemDrop> drops;
 

@@ -8,6 +8,7 @@
 #include <gameocean/utils/UUID.h>
 #include <gameocean/item/ItemInstance.h>
 #include <gameocean/Player.h>
+#include <gameocean/utils/BinaryStream.h>
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -95,6 +96,10 @@ protected:
         stream.Write(uuid.part1);
         stream.Write(uuid.part2);
     }
+    void writeUUID(BinaryStream& stream, UUID& uuid) {
+        stream << uuid.part1;
+        stream << uuid.part2;
+    }
     ItemInstance readItemInstance(RakNet::BitStream& stream) {
         short id;
         stream.Read(id);
@@ -115,13 +120,21 @@ protected:
 
         return ItemInstance (id, count, damage);
     }
-    void writeItemInstance(RakNet::BitStream& stream, ItemInstance& i) {
+    void writeItemInstance(RakNet::BitStream& stream, ItemInstance const& i) {
         stream.Write((short) i.getItemId());
         if (i.getItemId() == 0)
             return;
         stream.Write(i.count);
         stream.Write(i.getItemData());
         stream.Write((short) 0); // no nbt data
+    }
+    void writeItemInstance(BinaryStream& stream, ItemInstance const& i) {
+        stream << (short) i.getItemId();
+        if (i.getItemId() == 0)
+            return;
+        stream << (char) i.count;
+        stream << i.getItemData();
+        stream << (short) 0; // no nbt data
     }
 
 public:
@@ -141,7 +154,7 @@ public:
         if (packets.count(id) > 0) {
             return packets.at(id)();
         }
-        return null;
+        return nullptr;
     };
 
     virtual void read(RakNet::BitStream& stream) { };
@@ -885,6 +898,50 @@ public:
             stream.Read(i);
         }
     };
+};
+
+class Recipe;
+
+class MCPECraftingDataPacket : public MCPEPacket {
+public:
+    MCPECraftingDataPacket() {
+        id = MCPE_CRAFTING_DATA_PACKET;
+    };
+
+    std::map<int, Recipe*> recipes;
+    bool clearRecipes = true;
+
+    virtual void write(RakNet::BitStream& stream);
+};
+
+class MCPECraftingEventPacket : public MCPEPacket {
+public:
+    MCPECraftingEventPacket() {
+        id = MCPE_CRAFTING_EVENT_PACKET;
+    };
+
+    byte window;
+    int type;
+    UUID uuid;
+    std::vector<ItemInstance> input;
+    std::vector<ItemInstance> output;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(window);
+        stream.Read(type);
+        stream.Read(uuid);
+        int count;
+        stream.Read(count);
+        for (int i = 0; i < count; i++) {
+            input.push_back(readItemInstance(stream));
+        }
+        stream.Read(count);
+        for (int i = 0; i < count; i++) {
+            output.push_back(readItemInstance(stream));
+        }
+    };
+
+    virtual void handle(MCPEPlayer& player);
 };
 
 class Tile;

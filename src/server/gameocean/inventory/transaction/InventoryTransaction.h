@@ -50,11 +50,6 @@ public:
      */
     bool isInInventoryTransfer();
 
-    /**
-     * A crafting operation can have multiple ingredients but only one output sent at the end, so we check for that
-     */
-    bool isCrafting();
-
 
     void execute();
 

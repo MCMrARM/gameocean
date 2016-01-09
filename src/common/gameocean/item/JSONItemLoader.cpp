@@ -1,4 +1,5 @@
-#include "ItemJSONUtils.h"
+#include <gameocean/item/recipes/Recipe.h>
+#include "JSONItemLoader.h"
 
 #include "json/json.h"
 #include "ItemVariant.h"
@@ -8,8 +9,9 @@
 #include "BlockGroup.h"
 #include "../model/Model.h"
 #include "../utils/ResourceManager.h"
+#include "recipes/Recipe.h"
 
-void ItemJSONUtils::parseDataDirectory(std::string path) {
+void JSONItemLoader::parseDataDirectory(std::string path) {
     for (ResourceManager::DirEntry const& file : ResourceManager::instance->getDataDirectoryFiles(path)) {
         if (file.isDir) {
             parseDataDirectory(path + "/" + file.name + "/");
@@ -21,7 +23,7 @@ void ItemJSONUtils::parseDataDirectory(std::string path) {
     }
 }
 
-void ItemJSONUtils::parseAssetDirectory(std::string path) {
+void JSONItemLoader::parseAssetDirectory(std::string path) {
     for (ResourceManager::DirEntry const& file : ResourceManager::instance->getAssetDirectoryFiles(path)) {
         if (file.isDir) {
             parseAssetDirectory(path + "/" + file.name + "/");
@@ -33,15 +35,15 @@ void ItemJSONUtils::parseAssetDirectory(std::string path) {
     }
 }
 
-void ItemJSONUtils::parseDataFile(std::string filePath) {
+void JSONItemLoader::parseDataFile(std::string filePath) {
     parseStream(*ResourceManager::instance->openDataFile(filePath, std::ios_base::in));
 }
 
-void ItemJSONUtils::parseAssetFile(std::string filePath) {
+void JSONItemLoader::parseAssetFile(std::string filePath) {
     parseStream(*ResourceManager::instance->openAssetFile(filePath, std::ios_base::in));
 }
 
-void ItemJSONUtils::parseStream(std::istream& data) {
+void JSONItemLoader::parseStream(std::istream& data) {
     Json::Value val;
     data >> val;
     std::string type = val.get("type", "unknown").asString();
@@ -92,7 +94,7 @@ void ItemJSONUtils::parseStream(std::istream& data) {
     }
 }
 
-void ItemJSONUtils::parseItemVariant(ItemVariant* item, Json::Value& val) {
+void JSONItemLoader::parseItemVariant(ItemVariant* item, const Json::Value& val) {
     /*
     std::string base = val.get("base", "").asString();
     if (base.length() > 0) {
@@ -127,9 +129,21 @@ void ItemJSONUtils::parseItemVariant(ItemVariant* item, Json::Value& val) {
                 item->useAction = UseItemAction::handlers[useAction];
         }
     }
+    {
+        const Json::Value& recipe = val["recipe"];
+        if (!recipe.empty()) {
+            parseItemRecipe(item, recipe);
+        }
+    }
+    {
+        const Json::Value& recipes = val["recipes"];
+        for (const Json::Value& recipe : recipes) {
+            parseItemRecipe(item, recipe);
+        }
+    }
 }
 
-void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
+void JSONItemLoader::parseBlockVariant(BlockVariant* item, const Json::Value& val) {
     parseItemVariant(item, val);
 
     /*
@@ -194,7 +208,7 @@ void ItemJSONUtils::parseBlockVariant(BlockVariant* item, Json::Value& val) {
     }
 }
 
-void ItemJSONUtils::parseModel(Json::Value& val) {
+void JSONItemLoader::parseModel(const Json::Value& val) {
     std::string nameId = val.get("name_id", "").asString();
     if (nameId.length() <= 0) {
         Logger::main->error("JSON/Model", "Cannot create model: has no name id");
@@ -210,4 +224,94 @@ void ItemJSONUtils::parseModel(Json::Value& val) {
                                     (*it)[3].asFloat(), (*it)[4].asFloat(), (*it)[5].asFloat()});
         }
     }
+}
+
+void JSONItemLoader::parseItemRecipe(ItemVariant* item, const Json::Value& val) {
+    std::string type = val.get("type", "shaped").asString();
+
+    int outCount = val.get("count", 1).asInt();
+
+    JSONRecipe recipe;
+    recipe.output = ItemInstance (item, (byte) outCount, item->getVariantDataId());
+    if (type == "shaped") {
+        recipe.type = JSONRecipe::Type::SHAPED;
+
+        const Json::Value& ingredients = val["ingredients"];
+        recipe.shapedSizeY = ingredients.size();
+        recipe.shapedSizeX = ingredients[0].size();
+
+        for (int y = 0; y < recipe.shapedSizeY; y++) {
+            const Json::Value& i = ingredients[y];
+            for (int x = 0; x < recipe.shapedSizeX; x++) {
+                recipe.input.push_back(getRecipeItem(i[x]));
+            }
+        }
+    } else if (type == "shapeless") {
+        recipe.type = JSONRecipe::Type::SHAPELESS;
+
+        const Json::Value& ingredients = val["ingredients"];
+        for (const Json::Value& ingredient : ingredients) {
+            recipe.input.push_back(getRecipeItem(ingredient));
+        }
+    }
+
+    const Json::Value& extra_result = val["extra_result"];
+    for (const Json::Value& extra : extra_result) {
+        recipe.extraOutput.push_back(getRecipeItem(extra));
+    }
+
+    recipes.push_back(std::move(recipe));
+}
+
+JSONItemLoader::JSONItemDef JSONItemLoader::getRecipeItem(const Json::Value& val) {
+    if (val.isArray()) {
+        return { val[0].asString(), val.get(1, 1).asInt() };
+    } else {
+        return { val.asString(), 1 };
+    }
+}
+
+void JSONItemLoader::registerRecipes() {
+    for (JSONRecipe const& recipe : recipes) {
+        Recipe* r = nullptr;
+        if (recipe.type == JSONRecipe::Type::SHAPED) {
+            ShapedRecipe* shaped = new ShapedRecipe(recipe.output, recipe.shapedSizeX, recipe.shapedSizeY);
+            r = shaped;
+
+            int x = 0;
+            int y = 0;
+            for (JSONItemDef const& i : recipe.input) {
+                ItemInstance itm = i.getItemInstance();
+                if (!itm.isEmpty())
+                    shaped->addIngredient(x, y, itm);
+                x++;
+                if (y >= recipe.shapedSizeX) {
+                    y++;
+                    x = 0;
+                }
+            }
+        } else if (recipe.type == JSONRecipe::Type::SHAPELESS) {
+            ShapelessRecipe* shapeless = new ShapelessRecipe(recipe.output);
+            r = shapeless;
+
+            for (JSONItemDef const& i : recipe.input) {
+                ItemInstance itm = i.getItemInstance();
+                if (!itm.isEmpty())
+                    shapeless->addIngredient(itm);
+            }
+        }
+
+        if (r == nullptr)
+            continue;
+        for (JSONItemDef const& i : recipe.extraOutput) {
+            r->result.push_back(i.getItemInstance());
+        }
+    }
+}
+
+ItemInstance JSONItemLoader::JSONItemDef::getItemInstance() const {
+    ItemVariant* v = ItemRegister::getItemVariant(name);
+    if (v == nullptr)
+        return ItemInstance ();
+    return ItemInstance (v, (byte) count, v->getVariantDataId());
 }

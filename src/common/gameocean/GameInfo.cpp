@@ -2,4 +2,4 @@
 
 #include "common.h"
 
-GameInfo* GameInfo::current = null;
+GameInfo* GameInfo::current = nullptr;

@@ -43,5 +43,5 @@ Command* Command::getCommand(std::string name) {
     if (commands.count(name) > 0) {
         return commands.at(name);
     }
-    return null;
+    return nullptr;
 }

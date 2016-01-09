@@ -8,7 +8,7 @@ class BlockVariant;
 
 class ItemInstance {
 protected:
-    ItemVariant* item = null;
+    ItemVariant* item = nullptr;
     short data = 0;
     std::string nameOverride;
 
@@ -24,24 +24,24 @@ public:
     inline ItemVariant* getItem() { return item; };
     void setItem(ItemVariant* v, short data) { item = v; this->data = data; nameOverride = ""; };
     void setItem(int id, short damage);
-    int getItemId();
+    int getItemId() const;
     inline void setItemId(int id) { setItem(id, data); };
-    inline short getItemData() { return data; };
+    inline short getItemData() const { return data; };
     void setItemDamage(short damage);
 
-    inline bool isEmpty() { return (item == null); };
+    inline bool isEmpty() const { return (item == nullptr); };
     inline std::string& getNameOverride() { return nameOverride; };
     inline void overrideName(std::string val) { nameOverride = val; };
-    std::string getName();
+    std::string getName() const;
 
     void setEmpty() {
-        item = null;
+        item = nullptr;
         nameOverride = "";
         count = 0;
         data = 0;
     };
 
-    bool isSameType(ItemInstance& i) {
+    bool isSameType(const ItemInstance& i) const {
         return (i.item == item);
     };
 

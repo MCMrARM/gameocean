@@ -28,7 +28,7 @@ public:
 
     virtual void stop();
 
-    inline bool isRunning() { return (thread != null); };
+    inline bool isRunning() { return (thread != nullptr); };
 
 };
 

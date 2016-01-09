@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <iostream>
 
-Logger* Logger::main = null;
+Logger* Logger::main = nullptr;
 
 void Logger::vlog(LogLevel level, const char *tag, const char *text, va_list args) {
     lock.lock();

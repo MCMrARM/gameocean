@@ -27,11 +27,11 @@ void Packet::registerCommonPackets() {
 
 Packet *Packet::getPacket(int id, bool client) {
     if (client) {
-        if (Packet::clientPackets.count(id) <= 0) { return null; }
+        if (Packet::clientPackets.count(id) <= 0) { return nullptr; }
         Packet::CreatePacket *pk = Packet::clientPackets[id];
         return pk();
     } else {
-        if (Packet::serverPackets.count(id) <= 0) { return null; }
+        if (Packet::serverPackets.count(id) <= 0) { return nullptr; }
         Packet::CreatePacket *pk = Packet::serverPackets[id];
         return pk();
     }
@@ -51,7 +51,7 @@ Packet *Packet::getPacket(BinaryStream &stream, bool client) {
     Logger::main->trace("Packet", "Received packet with id: %i", pkId);
 
     Packet *pk = Packet::getPacket(pkId, client);
-    if (pk == null) {
+    if (pk == nullptr) {
         Logger::main->warn("Packet", "Unknown packet received: %i, size: %i", pkId, pkLen);
         pk = new UnknownPacket(pkId);
     }

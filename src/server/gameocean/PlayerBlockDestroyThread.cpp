@@ -19,7 +19,7 @@ void PlayerBlockDestroyThread::run() {
         waitTime = -1;
         std::vector<Player*> players = server.getPlayers();
         for (Player* player : players) {
-            if (player->miningBlock != null) {
+            if (player->miningBlock != nullptr) {
                 int r = player->getRemainingMiningTime();
                 if (r <= 0) {
                     // mined

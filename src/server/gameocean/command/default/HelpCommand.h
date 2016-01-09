@@ -19,7 +19,7 @@ public:
         int page = 0;
         if (args.size() > 1 && args[1].length() > 0) {
             Command* command = Command::getCommand(args[1]);
-            if (command != null) {
+            if (command != nullptr) {
                 sender.sendMessage(command->getUsage() + ": " + command->getDescription());
                 return;
             }
@@ -49,7 +49,7 @@ public:
 
         for (int i = 0; it != Command::commands.end() && i < COMMANDS_PER_PAGE; it++, i++) {
             Command* cmd = it->second;
-            if (cmd == null)
+            if (cmd == nullptr)
                 return;
             sender.sendMessage(cmd->getName() + ": " + cmd->getDescription());
         }

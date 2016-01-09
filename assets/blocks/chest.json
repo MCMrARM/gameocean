@@ -15,5 +15,14 @@
     "use": "place_container",
     "use_on": "open_container",
     "destroy": "destroy_container"
+  },
+  "recipe": {
+    "type": "shaped",
+    "ingredients": [
+      [ "wood_planks", "wood_planks", "wood_planks" ],
+      [ "wood_planks", null, "wood_planks" ],
+      [ "wood_planks", "wood_planks", "wood_planks" ]
+    ],
+    "count": 1
   }
 }

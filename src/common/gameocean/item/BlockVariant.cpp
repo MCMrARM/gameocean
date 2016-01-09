@@ -18,7 +18,7 @@ bool BlockVariant::use(UseItemAction& action) {
         return false;
     BlockPos pos = action.getTargetBlockPos().side(action.getTargetBlockSide());
     BlockVariant* variant = action.getWorld().getBlock(pos).getBlockVariant();
-    if (variant == null || variant->replaceable) {
+    if (variant == nullptr || variant->replaceable) {
         action.getWorld().setBlock(pos, (BlockId) id, (byte) variantDataId);
         action.getPlayer()->inventory.removeItem(ItemInstance(id, 1, variantDataId));
     }
@@ -26,7 +26,7 @@ bool BlockVariant::use(UseItemAction& action) {
 }
 
 bool BlockVariant::useOn(UseItemAction& action) {
-    if (useOnAction != null) {
+    if (useOnAction != nullptr) {
         return (*useOnAction)(action);
     }
     return false;

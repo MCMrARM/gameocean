@@ -145,7 +145,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
                 Logger::main->trace("MCPE/BatchPacket", "Reading: %i", pkId);
 
                 MCPEPacket* pk = MCPEPacket::getPacket(pkId);
-                if (pk != null) {
+                if (pk != nullptr) {
                     int s = BITS_TO_BYTES(dbs.GetReadOffset());
                     pk->read(dbs);
                     int used = BITS_TO_BYTES(dbs.GetReadOffset()) - s;
@@ -168,7 +168,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
             break;
         default:
             MCPEPacket* pk = MCPEPacket::getPacket(packet->data[0]);
-            if (pk != null) {
+            if (pk != nullptr) {
                 RakNet::BitStream bs(packet->data, packet->length, false);
                 bs.IgnoreBytes(sizeof(RakNet::MessageID));
                 pk->read(bs);

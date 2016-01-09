@@ -12,7 +12,7 @@ class ItemRegister {
 private:
     struct Entry {
         int id = 0;
-        ItemVariant* defaultVariant = null;
+        ItemVariant* defaultVariant = nullptr;
         std::map<short, ItemVariant*> variants;
 
         Entry(int id, ItemVariant* def) : id(id), defaultVariant(def) { };

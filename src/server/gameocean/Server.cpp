@@ -80,7 +80,7 @@ void Server::start() {
         if (v.size() <= 0)
             continue;
         Command* c = Command::getCommand(v[0]);
-        if (c == null) {
+        if (c == nullptr) {
             std::cout << "Unknown command: " << v[0] << std::endl;
             continue;
         }
@@ -100,19 +100,19 @@ void Server::loadConfiguation() {
     name = c.getString("name", "Test Server");
     maxPlayers = c.getInt("max-players", maxPlayers);
     std::shared_ptr<ContainerConfigNode> chunkSending = c.getContainer("chunk-sending");
-    if (chunkSending != null) {
+    if (chunkSending != nullptr) {
         sendChunksDelay = chunkSending->getInt("tick-rate", sendChunksDelay);
         sendChunksCount = chunkSending->getInt("per-tick", sendChunksCount);
     }
     physicsTickRate = c.getInt("physics-tick-rate", physicsTickRate);
     std::shared_ptr<ContainerConfigNode> protocols = c.getContainer("protocols");
-    if (protocols != null) {
+    if (protocols != nullptr) {
         for (auto const& p : protocols->val) {
             if (p.second->type != ConfigNode::Type::CONTAINER)
                 continue;
 
             Protocol* protocol = Protocol::getProtocol(p.first);
-            if (protocol == null) {
+            if (protocol == nullptr) {
                 Logger::main->warn("Config", "Unknown protocol: %s", p.first.c_str());
                 continue;
             }
@@ -128,7 +128,7 @@ void Server::loadConfiguation() {
 }
 
 Player* Server::findPlayer(std::string like) {
-    Player* rp = null;
+    Player* rp = nullptr;
     int m = 0;
 
     playersMutex.lock();

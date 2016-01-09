@@ -8,17 +8,17 @@ void ItemInstance::setItem(int id, short data) {
     nameOverride = "";
 }
 
-int ItemInstance::getItemId() {
-    if (item == null)
+int ItemInstance::getItemId() const {
+    if (item == nullptr)
         return 0;
     return item->getId();
 }
 
-std::string ItemInstance::getName() {
+std::string ItemInstance::getName() const {
     if (nameOverride.length() > 0) {
         return nameOverride;
     }
-    if (item != null) {
+    if (item != nullptr) {
         return item->getName();
     }
     return "empty";

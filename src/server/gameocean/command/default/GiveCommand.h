@@ -21,7 +21,7 @@ public:
             return;
         }
         Player* player = server.findPlayer(args[1]);
-        if (player == null) {
+        if (player == nullptr) {
             sender.sendMessage("Specified player could't be found!");
             return;
         }
@@ -42,7 +42,7 @@ public:
         }
 
         ItemVariant* item = ItemRegister::findItem(itemName);
-        if (item == null) {
+        if (item == nullptr) {
             sender.sendMessage("Specified item doesn't exist!");
             return;
         }

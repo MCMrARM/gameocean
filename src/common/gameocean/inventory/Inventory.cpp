@@ -57,15 +57,16 @@ bool Inventory::removeItem(ItemInstance item) {
     return false;
 }
 
-bool Inventory::findItem(ItemInstance item, bool exact) {
+bool Inventory::findItem(ItemInstance const& item, bool exact) {
+    int c = item.count;
     for (ItemInstance& s : items) {
         if (s.isSameType(item)) {
             if (exact) {
                 if (s.count == item.count)
                     return true;
             } else {
-                item.count -= s.count;
-                if (item.count <= 0)
+                c -= s.count;
+                if (c <= 0)
                     return true;
             }
         }

@@ -15,7 +15,7 @@ Plugin* PluginManager::loadPlugin(std::string name) {
     std::ifstream inStream ("plugins/" + name + "/plugin.yml");
     if (!inStream) {
         Logger::main->error("PluginManager", "Failed to open plugin info: %s", name.c_str());
-        return null;
+        return nullptr;
     }
     Config config (inStream);
 
@@ -30,13 +30,13 @@ Plugin* PluginManager::loadPlugin(std::string name) {
 
     if (i.libFile.size() <= 0) {
         Logger::main->error("PluginManager", "Plugin (%s) doesn't have binary path set!", name.c_str());
-        return null;
+        return nullptr;
     }
 
     void* handle = dlopen(i.libFile[0] == '/' ? i.libFile.c_str() : ("plugins/" + name + "/" + i.libFile).c_str(), RTLD_LAZY);
-    if (handle == null) {
+    if (handle == nullptr) {
         Logger::main->error("PluginManager", "Failed to open plugin binary: %s (%s): %s", i.libFile.c_str(), name.c_str(), dlerror());
-        return null;
+        return nullptr;
     }
     i.handle = handle;
     Plugin* (*initFunc)(PluginManager*) = (Plugin* (*)(PluginManager*)) dlsym(handle, "_Z4initP13PluginManager");
@@ -102,5 +102,5 @@ void PluginManager::doReload() {
 Plugin* PluginManager::getPluginByName(std::string name) {
     if (plugins.count(name) > 0)
         return plugins.at(name);
-    return null;
+    return nullptr;
 }

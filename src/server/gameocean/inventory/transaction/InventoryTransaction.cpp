@@ -7,8 +7,6 @@ bool InventoryTransaction::isFinished() {
     if (!isStillValid() || elements.size() < 2)
         return false;
 
-    if (isCrafting())
-        return true;
     if (isInInventoryTransfer())
         return false;
     if (isContainerTransfer())
@@ -20,8 +18,6 @@ bool InventoryTransaction::isValid() {
     if (!isStillValid() || elements.size() < 2)
         return false;
 
-    if (isCrafting())
-        return false; // we don't support that yet
     if (isInInventoryTransfer())
         return false; // no support yet too
     if (isContainerTransfer()) {
@@ -64,17 +60,6 @@ bool InventoryTransaction::isInInventoryTransfer() {
         }
     }
     return true;
-}
-
-bool InventoryTransaction::isCrafting() {
-    if (!isInInventoryTransfer() || elements.size() < 2)
-        return false;
-    for (int i = 0; i < elements.size() - 1; i++) {
-        if (elements[i].getDiff() >= 0)
-            return false;
-    }
-    Element& last = elements[elements.size() - 1];
-    return (last.getDiff() > 0);
 }
 
 bool InventoryTransaction::isContainerTransfer() {

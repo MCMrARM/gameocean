@@ -66,7 +66,7 @@ void Player::addTransaction(Inventory& inventory, int slot, ItemInstance to) {
 bool Player::sendChunk(int x, int z) {
     ChunkPos pos (x, z);
     Chunk* chunk = world->getChunkAt(pos, true);
-    if (chunk == null || !chunk->ready)
+    if (chunk == nullptr || !chunk->ready)
         return false;
     chunkArrayMutex.lock();
     sentChunks[pos] = chunk;
@@ -83,7 +83,7 @@ void Player::receivedChunk(int x, int z) {
     chunkArrayMutex.unlock();
 
     Chunk* chunk = world->getChunkAt(pos, false);
-    if (chunk != null)
+    if (chunk != nullptr)
         chunk->setUsedBy(this, true);
 }
 
@@ -165,7 +165,7 @@ bool Player::tryMove(float x, float y, float z) {
 }
 
 void Player::sendQueuedChunks() {
-    if (chunk == null)
+    if (chunk == nullptr)
         return;
 
     chunkArrayMutex.lock();
@@ -189,7 +189,7 @@ void Player::sendQueuedChunks() {
 }
 
 void Player::updateChunkQueue() {
-    if (chunk == null)
+    if (chunk == nullptr)
         return;
 
     if (!shouldUpdateChunkQueue) {
@@ -280,7 +280,7 @@ void Player::startMining(BlockPos pos) {
 
 void Player::cancelMining() {
     miningBlockPos = {};
-    miningBlock = null;
+    miningBlock = nullptr;
     miningStarted = 0;
 }
 
@@ -295,19 +295,19 @@ void Player::finishedMining() {
 }
 
 int Player::getRemainingMiningTime() {
-    if (miningBlock == null)
+    if (miningBlock == nullptr)
         return -1;
     return miningTime - (Time::now() - miningStarted);
 }
 
 int Player::calculateMiningTime() {
-    if (miningBlock == null)
+    if (miningBlock == nullptr)
         return -1;
 
     float r = miningBlock->hardness * 1500.0f;
     bool hasTool = false;
     ItemVariant* held = inventory.getHeldItem().getItem();
-    if (held != null && miningBlock->blockGroup != null) {
+    if (held != nullptr && miningBlock->blockGroup != nullptr) {
         if (held->toolAffects.count(miningBlock->blockGroup) > 0) {
             hasTool = true;
             r /= held->toolBreakMultiplier;
@@ -331,7 +331,7 @@ void Player::processMessage(std::string text) {
         std::string commandName = v[0];
 
         Command* c = Command::getCommand(commandName);
-        if (c == null) {
+        if (c == nullptr) {
             sendMessage("Command not found.");
             return;
         }
@@ -387,7 +387,7 @@ void Player::kill() {
     z = event.getRespawnPos().z;
     world = event.getWorld();
     chunk->removeEntity(this);
-    chunk = null;
+    chunk = nullptr;
 
     sendDeathStatus();
     chunkArrayMutex.lock();
@@ -403,7 +403,7 @@ void* Player::getPluginData(Plugin* plugin) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
     if (pluginData.count(plugin) > 0)
         return pluginData.at(plugin);
-    return null;
+    return nullptr;
 }
 
 void Player::setPluginData(Plugin* plugin, void* data) {

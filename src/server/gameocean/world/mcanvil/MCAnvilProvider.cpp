@@ -52,11 +52,11 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
     if (regions.count(r) <= 0)
         loadRegion(r);
 
-    Chunk* c = null;
+    Chunk* c = nullptr;
     if (world.isChunkLoaded(pos)) {
         c = world.getChunkAt(pos, false);
     }
-    if (c == null) {
+    if (c == nullptr) {
         c = new Chunk(pos);
         world.setChunk(c);
     }

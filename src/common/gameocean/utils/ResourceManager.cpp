@@ -4,7 +4,7 @@
 #include <png.h>
 #include "membuf.h"
 
-ResourceManager* ResourceManager::instance = null;
+ResourceManager* ResourceManager::instance = nullptr;
 
 void readGameImageFile_callback(png_structp png_ptr, png_bytep out, png_size_t size) {
     png_voidp io_ptr = png_get_io_ptr(png_ptr);
@@ -32,7 +32,7 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
         return false;
     }
 
-    png_struct* png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, null, null, null);
+    png_struct* png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!png_ptr) return false;
 
     png_info* info_ptr = png_create_info_struct(png_ptr);
@@ -43,7 +43,7 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
 
     int depth, colorType;
     png_uint_32 _width, _height;
-    png_get_IHDR(png_ptr, info_ptr, &_width, &_height, &depth, &colorType, null, null, null);
+    png_get_IHDR(png_ptr, info_ptr, &_width, &_height, &depth, &colorType, NULL, NULL, NULL);
     width = (unsigned int) _width;
     height = (unsigned int) _height;
 
@@ -63,7 +63,7 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
 
     png_read_image(png_ptr, rows);
 
-    png_destroy_read_struct(&png_ptr, &info_ptr, null);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     return true;
 }
 
@@ -72,7 +72,7 @@ bool ResourceManager::PNGInfo::init(std::istream& dataStream) {
 std::vector<ResourceManager::DirEntry> FileResourceManager::getAssetDirectoryFiles(std::string path) {
     std::vector<ResourceManager::DirEntry> ret;
     DIR* dir = opendir((assetPath + path).c_str());
-    if (dir == null)
+    if (dir == nullptr)
         return ret;
 
     dirent* ent;
@@ -87,7 +87,7 @@ std::vector<ResourceManager::DirEntry> FileResourceManager::getAssetDirectoryFil
 std::vector<ResourceManager::DirEntry> FileResourceManager::getDataDirectoryFiles(std::string path) {
     std::vector<ResourceManager::DirEntry> ret;
     DIR* dir = opendir((dataPath + path).c_str());
-    if (dir == null)
+    if (dir == nullptr)
         return ret;
 
     dirent* ent;

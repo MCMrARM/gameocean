@@ -8,6 +8,7 @@
 #include <gameocean/world/World.h>
 #include <gameocean/world/tile/Tile.h>
 #include <gameocean/world/tile/Chest.h>
+#include <gameocean/item/recipes/Recipe.h>
 #include "../../utils/NBT.h"
 #include "BinaryRakStream.h"
 
@@ -26,6 +27,7 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPEContainerClosePacket>(MCPE_CONTAINER_CLOSE_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetSlotPacket>(MCPE_CONTAINER_SET_SLOT_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetContentPacket>(MCPE_CONTAINER_SET_CONTENT_PACKET);
+    MCPEPacket::registerPacket<MCPECraftingEventPacket>(MCPE_CRAFTING_EVENT_PACKET);
 }
 
 void MCPETileEntityDataPacket::write(RakNet::BitStream& stream) {
@@ -94,6 +96,10 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     pk2->z = z;
     pk2->gamemode = MCPEStartGamePacket::GameMode::SURVIVAL;
     player.writePacket(std::move(pk2));
+
+    std::unique_ptr<MCPECraftingDataPacket> pk3 (new MCPECraftingDataPacket());
+    pk3->recipes = Recipe::recipes;
+    player.writePacket(std::move(pk3));
 
     player.sendWorldTime(player.getWorld().getTime(), player.getWorld().isTimeStopped());
 }
@@ -220,6 +226,75 @@ void MCPEContainerSetSlotPacket::handle(MCPEPlayer& player) {
         player.addTransaction(player.inventory, slot, item);
     } else if (window == 2) {
         player.addTransaction(player.getOpenedContainer()->getInventory(), slot, item);
+    }
+}
+
+void MCPECraftingDataPacket::write(RakNet::BitStream& stream) {
+    stream.Write((int) recipes.size());
+    for (auto const& e : recipes) {
+        Recipe* recipe = e.second;
+        UUID uuid = { e.first, recipe->id };
+        if (recipe->isShaped()) {
+            stream.Write((int) 1);
+
+            DynamicMemoryBinaryStream memStream;
+            memStream.swapEndian = true;
+            ShapedRecipe* shaped = (ShapedRecipe*) recipe;
+            memStream << shaped->sizeX << shaped->sizeY;
+            const ItemInstance* ingredients = shaped->getIngredients();
+            for (int i = 0; i < shaped->sizeX * shaped->sizeY; i++) {
+                writeItemInstance(memStream, ingredients[i]);
+            }
+            memStream << (int) shaped->result.size();
+            for (ItemInstance const& itm : shaped->result) {
+                writeItemInstance(memStream, itm);
+            }
+            writeUUID(memStream, uuid);
+
+            stream.Write(memStream.getSize());
+            stream.Write((char*) memStream.getBuffer(false), (unsigned int) memStream.getSize());
+        } else {
+            stream.Write((int) 0);
+
+            DynamicMemoryBinaryStream memStream;
+            memStream.swapEndian = true;
+            ShapelessRecipe* shapeless = (ShapelessRecipe*) recipe;
+            memStream << (int) shapeless->getIngredients().size();
+            for (ItemInstance const& itm : shapeless->getIngredients()) {
+                writeItemInstance(memStream, itm);
+            }
+            memStream << (int) shapeless->result.size();
+            for (ItemInstance const& itm : shapeless->result) {
+                writeItemInstance(memStream, itm);
+            }
+            writeUUID(memStream, uuid);
+
+            stream.Write(memStream.getSize());
+            stream.Write((char*) memStream.getBuffer(false), (unsigned int) memStream.getSize());
+        }
+    }
+    writeBool(stream, clearRecipes);
+}
+
+void MCPECraftingEventPacket::handle(MCPEPlayer& player) {
+    if (window != 0 || Recipe::recipes.count((int) uuid.part1) <= 0) {
+        player.sendInventory();
+        return;
+    }
+    Recipe* r = Recipe::recipes[(int) uuid.part1];
+    for (auto const& pair : r->summedIngredients) {
+        ItemInstance const& itm = pair.second;
+        if (!player.inventory.findItem(itm, false)) {
+            player.sendInventory();
+            return;
+        }
+    }
+    for (auto const& pair : r->summedIngredients) {
+        ItemInstance const& itm = pair.second;
+        player.inventory.removeItem(itm);
+    }
+    for (ItemInstance const& i : r->result) {
+        player.inventory.addItem(i);
     }
 }
 

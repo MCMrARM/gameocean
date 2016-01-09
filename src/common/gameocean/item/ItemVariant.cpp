@@ -12,7 +12,7 @@ std::string ItemVariant::getName() {
 }
 
 bool ItemVariant::use(UseItemAction& action) {
-    if (useAction != null) {
+    if (useAction != nullptr) {
         if ((*useAction)(action))
             return true;
     }

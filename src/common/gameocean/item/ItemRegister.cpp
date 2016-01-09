@@ -1,6 +1,6 @@
 #include "ItemRegister.h"
 
-#include "ItemJSONUtils.h"
+#include "JSONItemLoader.h"
 #include "ItemVariant.h"
 #include "BlockVariant.h"
 
@@ -12,8 +12,10 @@ std::map<int, std::shared_ptr<ItemRegister::Entry>> ItemRegister::itemsByIds = s
 std::map<int, std::shared_ptr<ItemRegister::Entry>> ItemRegister::blocksByIds = std::map<int, std::shared_ptr<ItemRegister::Entry>>();
 
 void ItemRegister::registerAssetItems() {
-    ItemJSONUtils::parseAssetDirectory("items");
-    ItemJSONUtils::parseAssetDirectory("blocks");
+    JSONItemLoader loader;
+    loader.parseAssetDirectory("items");
+    loader.parseAssetDirectory("blocks");
+    loader.registerRecipes();
 }
 
 void ItemRegister::registerItemVariant(ItemVariant* variant) {
@@ -40,7 +42,7 @@ void ItemRegister::registerBlockVariant(BlockVariant* variant) {
 
 ItemVariant* ItemRegister::getItemVariant(int id, int data) {
     if (itemsByIds.count(id) <= 0) {
-        return null;
+        return nullptr;
     }
     std::shared_ptr<Entry> e = itemsByIds.at(id);
     if (e->variants.count(data) <= 0)
@@ -50,7 +52,7 @@ ItemVariant* ItemRegister::getItemVariant(int id, int data) {
 
 BlockVariant* ItemRegister::getBlockVariant(int id, int data) {
     if (blocksByIds.count(id) <= 0) {
-        return null;
+        return nullptr;
     }
     std::shared_ptr<Entry> e = blocksByIds.at(id);
     if (e->variants.count(data) <= 0)
@@ -74,17 +76,19 @@ ItemVariant* ItemRegister::findItem(std::string id) {
     int iid = StringUtils::asInt(id, -1);
     if (iid > 0 && iid < 512) {
         ItemVariant* ret = ItemRegister::getItemVariant(iid, data);
-        if (ret != null)
+        if (ret != nullptr)
             return ret;
     }
 
     int m = 0;
-    ItemVariant* ret = null;
+    int ml = -1;
+    ItemVariant* ret = nullptr;
     for (auto const& e : ItemRegister::items) {
         int i = StringUtils::compare(e.first, id);
-        if (i > m) {
-            i = m;
+        if (i > m || (i == m && e.first.length() < ml)) {
             ret = e.second;
+            m = i;
+            ml = (int) e.first.length();
         }
     }
     return ret;
@@ -92,17 +96,17 @@ ItemVariant* ItemRegister::findItem(std::string id) {
 
 ItemVariant* ItemRegister::getItemVariant(std::string id, bool allowVirtual) {
     if (items.count(id) <= 0)
-        return null;
+        return nullptr;
     ItemVariant* ret = items.at(id);
     if (!allowVirtual && ret->getId() < 0)
-        return null;
+        return nullptr;
     return ret;
 }
 BlockVariant* ItemRegister::getBlockVariant(std::string id, bool allowVirtual) {
     if (blocks.count(id) <= 0)
-        return null;
+        return nullptr;
     BlockVariant* ret = blocks.at(id);
     if (!allowVirtual && ret->getId() < 0)
-        return null;
+        return nullptr;
     return ret;
 }

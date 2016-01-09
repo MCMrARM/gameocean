@@ -27,13 +27,13 @@ public:
     };
     std::string getString(const std::string& name, std::string d) {
         std::shared_ptr<ConfigNode> n = (*this)[name];
-        if (n == null) return d;
+        if (n == nullptr) return d;
         return *n;
     };
     int getInt(const std::string& name, int d);
     bool getBool(const std::string& name, bool d) {
         std::shared_ptr<ConfigNode> n = (*this)[name];
-        if (n == null) return d;
+        if (n == nullptr) return d;
         std::string nt = *n;
         if (nt == "y" || nt == "yes" || nt == "true" || nt == "on" || nt == "enabled") {
             return true;

@@ -54,7 +54,7 @@ void DynamicMemoryBinaryStream::resize(unsigned int minimalSize) {
 byte* DynamicMemoryBinaryStream::getBuffer(bool release) {
     byte* b = data;
     if (release)
-        data = null;
+        data = nullptr;
     return b;
 }
 

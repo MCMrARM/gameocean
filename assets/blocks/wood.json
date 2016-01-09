@@ -1,0 +1,39 @@
+{
+  "type": "block",
+  "name_id": "wood",
+  "id": 17,
+  "texture": "wood",
+  "model": "default",
+  "hardness": 2,
+  "resistance": 10,
+  "flammable": true,
+  "stack_size": 64,
+  "group": "wood",
+  "variants": [
+    {
+      "name_id": "oak_wood",
+      "texture": "oak_wood",
+      "data": 0
+    },
+    {
+      "name_id": "spruce_wood",
+      "texture": "spruce_wood",
+      "data": 1
+    },
+    {
+      "name_id": "birch_wood",
+      "texture": "birch_wood",
+      "data": 2
+    },
+    {
+      "name_id": "jungle_wood_planks",
+      "texture": "jungle_planks",
+      "data": 3
+    },
+    {
+      "name_id": "jungle_wood",
+      "texture": "jungle_wood",
+      "data": 4
+    }
+  ]
+}

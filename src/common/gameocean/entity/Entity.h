@@ -21,7 +21,7 @@ protected:
     unsigned int typeId = 0;
     World* world;
     EntityId id;
-    Chunk* chunk = null;
+    Chunk* chunk = nullptr;
 
     bool closed = false;
 

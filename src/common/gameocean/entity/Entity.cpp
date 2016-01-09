@@ -21,7 +21,7 @@ void Entity::close() {
     closed = true;
 
     despawnFromAll();
-    if (chunk != null) {
+    if (chunk != nullptr) {
         chunk->removeEntity(this);
     }
     generalMutex.unlock();
@@ -36,7 +36,7 @@ void Entity::setWorld(World& world, float x, float y, float z) {
 
     int newChunkX = ((int) x) >> 4;
     int newChunkZ = ((int) z) >> 4;
-    if (chunk == null) {
+    if (chunk == nullptr) {
         chunk = world.getChunkAt(newChunkX, newChunkZ);
         chunk->addEntity(this);
         updateViewers();
@@ -63,7 +63,7 @@ void Entity::setPos(float x, float y, float z) {
 
     int newChunkX = ((int) x) >> 4;
     int newChunkZ = ((int) z) >> 4;
-    if (chunk == null) {
+    if (chunk == nullptr) {
         chunk = world->getChunkAt(newChunkX, newChunkZ);
         chunk->addEntity(this);
         updateViewers();
@@ -243,7 +243,7 @@ void Entity::damage(EntityDamageEvent& event) {
     if (event.isCancelled())
         return;
 
-    if (event.getAttacker() != null) {
+    if (event.getAttacker() != nullptr) {
         Vector3D pos = event.getAttacker()->getPos();
         generalMutex.lock();
         knockBack(x - pos.x, z - pos.z, event.getKnockback());

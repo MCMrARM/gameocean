@@ -41,7 +41,7 @@ public:
 
     void setBlock(int x, int y, int z, BlockId id, byte data) {
         Chunk* c = getChunkAt(x >> 4, z >> 4, false);
-        if (c == null)
+        if (c == nullptr)
             return;
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         c->setBlock(x & 0xf, y, z & 0xf, id, data);
@@ -55,7 +55,7 @@ public:
 
     WorldBlock getBlock(int x, int y, int z) {
         Chunk* c = getChunkAt(x >> 4, z >> 4, false);
-        if (c == null)
+        if (c == nullptr)
             return { 0, 0 };
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         return c->getBlock(x & 0xf, y, z & 0xf);
@@ -66,7 +66,7 @@ public:
 
     inline std::shared_ptr<Tile> getTile(int x, int y, int z) {
         Chunk* c = getChunkAt(x >> 4, z >> 4, false);
-        if (c == null)
+        if (c == nullptr)
             return nullptr;
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         return c->getTile(x, y, z);
@@ -113,7 +113,7 @@ public:
         chunkMutex.lock();
         if (isChunkLoaded(chunk->pos)) {
             Chunk* old = getChunkAt(chunk->pos);
-            if (old != null)
+            if (old != nullptr)
                 delete old;
         }
         chunks[chunk->pos] = chunk;

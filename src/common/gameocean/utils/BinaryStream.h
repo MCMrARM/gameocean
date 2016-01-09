@@ -209,7 +209,7 @@ public:
     }
 
     virtual ~DynamicMemoryBinaryStream() {
-        if (data != null)
+        if (data != nullptr)
             delete data;
     }
 

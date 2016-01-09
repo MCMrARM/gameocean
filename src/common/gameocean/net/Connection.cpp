@@ -40,7 +40,7 @@ void Connection::setHandler(ConnectionHandler &handler) {
 }
 
 ConnectionHandler& Connection::getHandler() {
-    if (handler == null) {
+    if (handler == nullptr) {
         if (client) {
             handler = new ClientConnectionHandler(*this);
         } else {

@@ -24,7 +24,7 @@ public:
     };
     bool addItem(ItemInstance item);
     bool removeItem(ItemInstance item);
-    bool findItem(ItemInstance item, bool exact);
+    bool findItem(ItemInstance const& item, bool exact);
 
     inline ItemInstance getItem(int slot) {
         if (slot < 0 || slot >= numSlots)

@@ -25,7 +25,7 @@ public:
     static Protocol* getProtocol(std::string name) {
         if (protocols.count(name) > 0)
             return protocols[name];
-        return null;
+        return nullptr;
     };
     static void registerDefaultProtocols(Server& server);
 

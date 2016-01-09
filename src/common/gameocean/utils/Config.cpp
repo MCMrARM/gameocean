@@ -73,16 +73,16 @@ std::shared_ptr<ConfigNode> ConfigNode::operator[](const std::string& name) {
     if (type == Type::CONTAINER) {
         ContainerConfigNode* t = (ContainerConfigNode*) this;
         if (t->val.count(name) <= 0) {
-            return null;
+            return nullptr;
         }
         return t->val.at(name);
     }
-    return null;
+    return nullptr;
 }
 
 int ConfigNode::getInt(const std::string &name, int d) {
     std::shared_ptr<ConfigNode> n = (*this)[name];
-    if (n == null) return d;
+    if (n == nullptr) return d;
     std::string nt = *n;
     return StringUtils::asInt(nt, d);
 }

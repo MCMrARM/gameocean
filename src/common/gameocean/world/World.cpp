@@ -18,14 +18,14 @@ Chunk* World::getChunkAt(ChunkPos pos, bool create) {
         chunkMutex.unlock();
         return c;
     }
-    Chunk* ret = null;
-    if (provider != null) {
+    Chunk* ret = nullptr;
+    if (provider != nullptr) {
         ret = provider->requestChunk(pos);
     }
-    if (ret == null && create) {
+    if (ret == nullptr && create) {
         ret = new Chunk(pos, true); // create an empty chunk
     }
-    if (ret != null)
+    if (ret != nullptr)
         chunks[pos] = ret;
     chunkMutex.unlock();
     return ret;

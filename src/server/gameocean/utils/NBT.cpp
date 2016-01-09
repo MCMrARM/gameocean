@@ -67,7 +67,7 @@ std::unique_ptr<NBTTag> NBTTag::getTag(BinaryStream &stream, bool hasName, char 
         std::unique_ptr<NBTCompound> rtag (new NBTCompound(name));
         while (true) {
             std::unique_ptr<NBTTag> tag = NBTTag::getTag(stream, true, -1);
-            if (tag == null || tag->ID == 0) break;
+            if (tag == nullptr || tag->ID == 0) break;
             rtag->val[tag->name] = std::move(tag);
         }
         return std::move(rtag);
@@ -82,5 +82,5 @@ std::unique_ptr<NBTTag> NBTTag::getTag(BinaryStream &stream, bool hasName, char 
         }
         return std::unique_ptr<NBTTag>(new NBTIntArray(name, val));
     }
-    return null;
+    return nullptr;
 }

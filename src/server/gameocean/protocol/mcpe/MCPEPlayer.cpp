@@ -37,7 +37,7 @@ int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
 bool MCPEPlayer::sendChunk(int x, int z) {
     if (!Player::sendChunk(x, z)) return false;
     Chunk* chunk = this->world->getChunkAt(x, z, true);
-    if (chunk == null) return false;
+    if (chunk == nullptr) return false;
 
     std::unique_ptr<MCPEFullChunkDataPacket> pk (new MCPEFullChunkDataPacket());
     pk->chunk = chunk;
@@ -53,7 +53,7 @@ void MCPEPlayer::receivedChunk(int x, int z) {
     Player::receivedChunk(x, z);
 
     Chunk* chunk = world->getChunkAt({x, z}, false);
-    if (chunk != null) {
+    if (chunk != nullptr) {
         for (std::shared_ptr<Tile> tile : chunk->tiles) {
             std::unique_ptr<MCPETileEntityDataPacket> pk (new MCPETileEntityDataPacket());
             pk->tile = tile;
