@@ -29,6 +29,7 @@ void Server::start() {
     ResourceManager::instance = resManager;
 
     Logger::main->info("Main", "Loading server configuration");
+    Permission::initializeDefaultPermissions();
     Command::registerDefaultCommands(*this);
     ServerActions::registerActions();
     ItemRegister::registerAssetItems();

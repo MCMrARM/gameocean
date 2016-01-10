@@ -10,6 +10,7 @@ public:
     virtual std::string getName() { return "version"; };
     virtual std::string getDescription() { return "Shows info about this server software"; };
     virtual std::string getUsage() { return "/version"; };
+    virtual Permission* getRequiredPermission() { return Permission::serverVersionCommand; };
 
     VersionCommand(Server& server) : Command(server) { };
 

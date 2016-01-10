@@ -9,6 +9,7 @@ public:
     virtual std::string getName() { return "tp"; };
     virtual std::string getDescription() { return "Teleports you to the specified coordinates"; };
     virtual std::string getUsage() { return "/tp <x> <y> <z>"; };
+    virtual Permission* getRequiredPermission() { return Permission::teleportPlayerCommand; };
 
     TeleportCommand(Server& server) : IngameCommand(server) { };
 

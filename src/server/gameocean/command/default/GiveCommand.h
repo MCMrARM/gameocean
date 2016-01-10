@@ -12,6 +12,7 @@ public:
     virtual std::string getName() { return "give"; };
     virtual std::string getDescription() { return "Gives an item"; };
     virtual std::string getUsage() { return "/give <player> <item[:damage]> [count]"; };
+    virtual Permission* getRequiredPermission() { return Permission::giveItemCommand; };
 
     GiveCommand(Server& server) : Command(server) { };
 

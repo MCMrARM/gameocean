@@ -11,6 +11,7 @@ public:
     virtual std::string getName() { return "time"; };
     virtual std::string getDescription() { return "Sets the time"; };
     virtual std::string getUsage() { return "/time <start|stop|set <time>>"; };
+    virtual Permission* getRequiredPermission() { return Permission::worldTimeCommand; };
 
     TimeCommand(Server& server) : IngameCommand(server) { };
 

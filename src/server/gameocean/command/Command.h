@@ -5,6 +5,7 @@
 #include <vector>
 #include "CommandSender.h"
 #include "../Player.h"
+#include "../permission/Permission.h"
 
 class Server;
 class Plugin;
@@ -34,6 +35,7 @@ public:
     virtual std::string getDescription() { return ""; };
     virtual std::string getUsage() = 0;
     virtual std::vector<std::string> getAlternativeNames() { return {}; };
+    virtual Permission* getRequiredPermission() { return nullptr; };
 
     virtual void process(CommandSender& sender, std::vector<std::string> args) = 0;
     virtual void process(Player& sender, std::vector<std::string> args) { process((CommandSender&) sender, args); };

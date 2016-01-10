@@ -7,8 +7,9 @@ class ReloadCommand : public Command {
 
 public:
     virtual std::string getName() { return "reload"; };
-    virtual std::string getDescription() { return "Reloads the server configuration and plugin"; };
+    virtual std::string getDescription() { return "Reloads the server configuration and plugins"; };
     virtual std::string getUsage() { return "/reload"; };
+    virtual Permission* getRequiredPermission() { return Permission::reloadServerCommand; };
 
     ReloadCommand(Server& server) : Command(server) { };
 

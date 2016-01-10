@@ -14,6 +14,7 @@
 #include "plugin/event/player/PlayerDamageEvent.h"
 #include "plugin/event/player/PlayerDeathEvent.h"
 #include <gameocean/entity/ItemEntity.h>
+#include "permission/Permission.h"
 
 const char* Player::TYPE_NAME = "Player";
 
@@ -23,6 +24,8 @@ Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shou
     sizeY = 1.8f;
     headY = 1.62f;
     world->addPlayer(this);
+
+    grantPermissions(Permission::getPlayerPermissions(), false);
 };
 
 void Player::close(std::string reason, bool sendToPlayer) {
@@ -347,6 +350,11 @@ void Player::processMessage(std::string text) {
             sendMessage("Command not found.");
             return;
         }
+        Permission* p = c->getRequiredPermission();
+        if (p != nullptr && !hasPermission(p)) {
+            sendMessage("You don't have enough permissions!");
+            return;
+        }
         c->process(*this, v);
     } else if (spawned) {
         ChatEvent event (*this, text, "<%s> %s");
@@ -425,6 +433,44 @@ void Player::kill() {
     }
     chunkArrayMutex.unlock();
     despawnFromAll();
+}
+
+void Player::setOperator(bool op) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    this->isOp = op;
+    if (op)
+        grantPermissions(Permission::getOperatorPermissions(), false);
+    else
+        removePermissions(Permission::getOperatorPermissions(), false);
+}
+
+bool Player::hasPermission(Permission* perm) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    return (permissions.count(perm) > 0);
+}
+
+void Player::grantPermissions(std::set<Permission*> perms, bool children) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    for (Permission* perm : perms) {
+        permissions.insert(perm);
+        if (children) {
+            for (Permission* child : perm->children) {
+                perms.insert(child);
+            }
+        }
+    }
+}
+
+void Player::removePermissions(std::set<Permission*> perms, bool children) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    for (Permission* perm : perms) {
+        permissions.erase(perm);
+        if (children) {
+            for (Permission* child : perm->children) {
+                perms.insert(child);
+            }
+        }
+    }
 }
 
 void* Player::getPluginData(Plugin* plugin) {

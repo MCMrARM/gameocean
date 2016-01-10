@@ -24,6 +24,7 @@ class PlayerChunkQueueThread;
 class PlayerBlockDestroyThread;
 class Plugin;
 class Container;
+class Permission;
 
 class Player : public Entity, public CommandSender {
     friend class Entity;
@@ -55,6 +56,9 @@ protected:
     std::vector<ChunkPos> sendChunksQueue;
 
     std::set<Entity*> spawnedEntities;
+
+    bool isOp = false;
+    std::set<Permission*> permissions;
 
     std::map<Plugin*, void*> pluginData;
 
@@ -156,6 +160,21 @@ public:
     virtual void setHealth(float hp);
 
     virtual void kill();
+
+    inline bool isOperator() {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        return isOp;
+    }
+    void setOperator(bool op);
+    bool hasPermission(Permission* perm);
+    void grantPermissions(std::set<Permission*> perms, bool children);
+    inline void grantPermission(Permission* perm, bool children) {
+        grantPermissions({ perm }, children);
+    }
+    void removePermissions(std::set<Permission*> perms, bool children);
+    inline void removePermissions(Permission* perm, bool children) {
+        removePermissions({ perm }, children);
+    }
 
     void* getPluginData(Plugin* plugin);
     void setPluginData(Plugin* plugin, void* data);

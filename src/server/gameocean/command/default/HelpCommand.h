@@ -12,6 +12,7 @@ public:
     virtual std::string getName() { return "help"; };
     virtual std::string getDescription() { return "Displays this help"; };
     virtual std::string getUsage() { return "/help [command|page]"; };
+    virtual Permission* getRequiredPermission() { return Permission::helpCommand; };
 
     HelpCommand(Server& server) : Command(server) { };
 
