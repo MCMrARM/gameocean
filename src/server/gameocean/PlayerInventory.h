@@ -21,11 +21,7 @@ public:
         mutex.unlock();
         return ret;
     };
-    inline void setHeldSlot(int v) {
-        mutex.lock();
-        heldSlot = v;
-        mutex.unlock();
-    };
+    void setHeldSlot(int v);
     inline ItemInstance getHeldItem() {
         return getItem(getHeldSlot());
     };

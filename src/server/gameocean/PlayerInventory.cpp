@@ -11,3 +11,10 @@ void PlayerInventory::setArmorSlot(int slot, ItemInstance item) {
     InventoryWithArmor::setArmorSlot(slot, item);
     player.broadcastArmorChange();
 }
+
+void PlayerInventory::setHeldSlot(int v) {
+    mutex.lock();
+    heldSlot = v;
+    mutex.unlock();
+    player.broadcastHeldItem();
+}

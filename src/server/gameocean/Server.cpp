@@ -74,7 +74,7 @@ void Server::start() {
             continue;
 
         std::string command;
-        std::cin >> command;
+        std::getline(std::cin, command);
 
         std::vector<std::string> v = StringUtils::split(command, " ");
         if (v.size() <= 0)

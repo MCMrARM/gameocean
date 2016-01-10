@@ -154,6 +154,8 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
         writePacket(std::move(pk));
 
         updateEntityPos(entity);
+        sendPlayerArmor((Player*) entity);
+        sendPlayerHeldItem((Player*) entity);
         return;
     } else if (entity->getTypeName() == ItemEntity::TYPE_NAME) {
         std::unique_ptr<MCPEAddItemEntityPacket> pk (new MCPEAddItemEntityPacket());

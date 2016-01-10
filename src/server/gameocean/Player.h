@@ -108,6 +108,7 @@ protected:
     void addTransaction(Inventory& inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to);
 
     void broadcastArmorChange();
+    void broadcastHeldItem();
 
 public:
     Player(Server& server);
