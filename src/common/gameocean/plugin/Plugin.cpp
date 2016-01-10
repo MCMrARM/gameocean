@@ -3,6 +3,7 @@
 
 void Plugin::disable() {
 #ifdef SERVER
+    unregisterPermissions();
     unregisterCommands();
 #endif
     unregisterEvents();
@@ -10,6 +11,15 @@ void Plugin::disable() {
 
 #ifdef SERVER
 #include <gameocean/command/Command.h>
+void Plugin::unregisterPermissions() {
+    for (Player* p : server->getPlayers()) {
+        p->removePermissions(permissions, false);
+    }
+    for (Permission* perm : permissions) {
+        delete perm;
+    }
+    permissions.clear();
+}
 void Plugin::unregisterCommands() {
     for (Command* c : commands) {
         Command::unregisterCommand(c);
