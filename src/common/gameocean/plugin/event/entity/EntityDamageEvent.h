@@ -15,6 +15,7 @@ public:
     enum class DamageSource {
         UNKNOWN,
         SUICIDE,
+        HUNGER,
         FALL,
         DROWNING,
         SUFFOCATION,
@@ -29,6 +30,9 @@ protected:
     float knockback;
 
 public:
+    EntityDamageEvent(Entity& entity, float hp, DamageSource source) : EntityEvent(entity), hp(hp), attacker(nullptr), knockback(0.f) {
+        //
+    }
     EntityDamageEvent(Entity& entity, float hp, DamageSource source, Entity* attacker, float knockback) : EntityEvent(entity), hp(hp), attacker(attacker), knockback(knockback) {
         //
     }

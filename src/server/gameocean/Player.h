@@ -38,12 +38,20 @@ protected:
 
     std::string name;
 
+    bool hungerDisabled = false;
+    float hunger = 20.f;
+    float foodSaturation = 0.f;
+    float foodExhaustion = 0.f;
+    long long foodLastHpChange = -1;
+
     std::atomic<bool> spawned;
     std::atomic<bool> teleporting;
     int viewChunks = 94;
 
+    bool isSprinting = false;
+
     BlockPos miningBlockPos;
-    BlockVariant* miningBlock;
+    BlockVariant* miningBlock = nullptr;
     long long miningStarted = -1;
     int miningTime;
 
@@ -102,6 +110,7 @@ protected:
     virtual void sendWorldTime(int time, bool stopped) = 0;
 
     virtual void sendHealth(float hp) = 0;
+    virtual void sendHunger(float hunger) = 0;
 
     virtual void sendDeathStatus() = 0;
 
@@ -138,6 +147,9 @@ public:
     void teleport(World& world, float x, float y, float z);
 
     bool tryMove(float x, float y, float z);
+
+    bool isInFluid();
+    bool isUnderFluid();
 
     virtual void sendMessage(std::string text) {};
 
@@ -194,6 +206,16 @@ public:
     }
 
     virtual void tickPhysics();
+
+    virtual void update();
+
+    void tickHunger();
+    void addFoodExhaustion(float amount);
+
+    inline bool setFoodEnabled(bool enabled) {
+        std::unique_lock<std::recursive_mutex> lock (generalMutex);
+        hungerDisabled = !enabled;
+    }
 
 };
 

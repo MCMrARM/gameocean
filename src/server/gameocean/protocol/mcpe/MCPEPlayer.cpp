@@ -289,6 +289,13 @@ void MCPEPlayer::sendHealth(float hp) {
     writePacket(std::move(pk));
 }
 
+void MCPEPlayer::sendHunger(float hunger) {
+    std::unique_ptr<MCPEUpdateAttributesPacket> pk (new MCPEUpdateAttributesPacket());
+    pk->eid = 0;
+    pk->entries.push_back({0.f, 20.f, hunger, MCPEUpdateAttributesPacket::ATTRIBUTE_HUNGER });
+    writePacket(std::move(pk));
+}
+
 void MCPEPlayer::sendDeathStatus() {
     sendHealth(0);
     std::unique_ptr<MCPERespawnPacket> pk (new MCPERespawnPacket());

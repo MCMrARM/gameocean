@@ -61,6 +61,7 @@ protected:
     virtual void sendWorldTime(int time, bool stopped);
 
     virtual void sendHealth(float hp);
+    virtual void sendHunger(float hunger);
     virtual void sendDeathStatus();
 
 public:

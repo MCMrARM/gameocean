@@ -329,6 +329,10 @@ std::vector<Entity*> Entity::getNearbyEntities(float range) {
     return ret;
 }
 
+void Entity::update() {
+
+}
+
 void Entity::tickPhysics() {
     generalMutex.lock();
     std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();

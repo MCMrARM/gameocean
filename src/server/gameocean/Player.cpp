@@ -171,16 +171,40 @@ bool Player::tryMove(float x, float y, float z) {
     if (teleporting)
         return true; // return true so the position won't be reverted
 
-    Vector3D pos = getPos();
+    Vector3D prevPos = getPos();
+    Vector3D pos = prevPos;
     pos.add(checkCollisions(x - pos.x, y - pos.y, z - pos.z));
 
     PlayerMoveEvent event (*this, {pos.x, pos.y, pos.z});
     Event::broadcast(event);
     if (event.isCancelled())
         return false;
-    setPos(event.getPos().x, event.getPos().y, event.getPos().z);
+    generalMutex.lock();
+    bool wasOnGround = onGround;
+    pos = event.getPos();
+    setPos(pos.x, pos.y, pos.z);
+
+    float multiplier = isInFluid() ? 0.015f : (isSprinting ? 0.1f : 0.01f);
+    addFoodExhaustion(multiplier * std::sqrt(std::pow(pos.x - prevPos.x, 2) + std::pow(pos.z - prevPos.z, 2)));
+    if (wasOnGround && pos.y - prevPos.y > 0)
+        addFoodExhaustion(isSprinting ? 0.8f : 0.2f);
+    generalMutex.unlock();
 
     return (x == event.getPos().x && y == event.getPos().y && z == event.getPos().z);
+}
+
+bool Player::isInFluid() {
+    generalMutex.lock();
+    BlockVariant* v = world->getBlock((int) (x + 0.5f), (int) (y + 0.5f), (int) (z + 0.5f)).getBlockVariant();
+    generalMutex.unlock();
+    return (v != nullptr && v->fluid);
+}
+
+bool Player::isUnderFluid() {
+    generalMutex.lock();
+    BlockVariant* v = world->getBlock((int) (x + 0.5f), (int) (aabb.maxY), (int) (z + 0.5f)).getBlockVariant();
+    generalMutex.unlock();
+    return (v != nullptr && v->fluid);
 }
 
 void Player::sendQueuedChunks() {
@@ -313,6 +337,7 @@ void Player::finishedMining() {
     }
     world->setBlock(miningBlockPos, 0, 0);
     miningBlock->dropItems(*world, miningBlockPos, inventory.getHeldItem().getItem());
+    addFoodExhaustion(0.025f);
     cancelMining();
 }
 
@@ -338,8 +363,12 @@ int Player::calculateMiningTime() {
 
     if (miningBlock->needsTool && !hasTool) {
         r *= 3.3f;
+    } else {
+        if (!onGround)
+            r *= 5.f;
+        if (isUnderFluid())
+            r *= 5.f;
     }
-    // TODO: On ground
     return (int) r;
 }
 
@@ -383,6 +412,7 @@ void Player::attack(Entity& entity) {
     if (attackEvent.isCancelled())
         return;
 
+    addFoodExhaustion(0.3f);
     entity.damage(event);
 }
 
@@ -398,6 +428,7 @@ void Player::damage(EntityDamageEvent& event) {
         player->sendHurtAnimation(this);
     }
     sendHurtAnimation(this);
+    addFoodExhaustion(0.3f);
 }
 
 float Player::getArmorReductionMultiplier() {
@@ -499,4 +530,49 @@ void Player::tickPhysics() {
             ent->kill();
         }
     });
+}
+
+void Player::update() {
+    tickHunger();
+}
+
+void Player::tickHunger() {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    if (hungerDisabled)
+        return;
+    long long now = Time::now();
+    if (hunger <= 0.f && (now - foodLastHpChange) >= 4000) {
+        EntityDamageEvent event (*this, 1.f, EntityDamageEvent::DamageSource::HUNGER);
+        damage(event);
+        foodLastHpChange = Time::now();
+    } else if (hp < 20.f) {
+        if (hunger >= 20.f && foodSaturation > 0.f && (now - foodLastHpChange) >= 500) {
+            setHealth(hp + 1.f);
+            foodExhaustion += 4.f;
+            foodLastHpChange = Time::now();
+        } else if (hunger >= 18.f && (now - foodLastHpChange) >= 4000) {
+            setHealth(hp + 1.f);
+            foodExhaustion += 3.f;
+            foodLastHpChange = Time::now();
+        }
+    } else {
+        foodLastHpChange = Time::now();
+    }
+
+    if (foodExhaustion > 4.f) {
+        foodSaturation = std::max(0.f, foodSaturation - 1.f);
+        foodExhaustion -= 4.f;
+        if (foodSaturation <= 0.f) {
+            hunger -= 1.f;
+            sendHunger(hunger);
+        }
+    }
+    generalMutex.unlock();
+}
+
+void Player::addFoodExhaustion(float amount) {
+    generalMutex.lock();
+    if (!hungerDisabled)
+        foodExhaustion += amount;
+    generalMutex.unlock();
 }

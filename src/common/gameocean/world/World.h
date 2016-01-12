@@ -12,6 +12,7 @@
 #include "../math/AABB.h"
 #include "../model/Model.h"
 #include "EntityPhysicsTickTask.h"
+#include "EntityUpdateTickTask.h"
 
 class WorldProvider;
 class Player;
@@ -29,6 +30,7 @@ private:
     long long startTimeMS;
     bool timeStopped = false;
     EntityPhysicsTickTask physicsTickTask;
+    EntityUpdateTickTask updateTickTask;
 
 public:
     World(std::string name);

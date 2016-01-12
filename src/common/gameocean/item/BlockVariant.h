@@ -18,6 +18,7 @@ public:
     float hardness = 100;
     BlockGroup* blockGroup = nullptr;
     bool needsTool = false;
+    bool fluid = false;
     Model* model = nullptr;
     bool dropItself = true;
     std::vector<ItemDrop> drops;

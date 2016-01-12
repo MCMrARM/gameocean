@@ -152,6 +152,8 @@ public:
 
     std::vector<Entity*> getNearbyEntities(float range);
 
+    virtual void update();
+
     virtual void tickPhysics();
 
 };
