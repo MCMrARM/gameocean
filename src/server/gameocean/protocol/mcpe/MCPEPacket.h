@@ -9,6 +9,8 @@
 #include <gameocean/item/ItemInstance.h>
 #include <gameocean/Player.h>
 #include <gameocean/utils/BinaryStream.h>
+#include "MCPEEntityMetadata.h"
+#include "BinaryRakStream.h"
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -397,6 +399,36 @@ public:
 
     virtual void write(RakNet::BitStream& stream) {
         stream.Write(eid);
+    };
+};
+
+class MCPEAddEntityPacket : public MCPEPacket {
+public:
+    MCPEAddEntityPacket() {
+        id = MCPE_ADD_ENTITY_PACKET;
+    };
+
+    long long eid;
+    int typeId;
+    float x, y, z;
+    float motionX, motionY, motionZ;
+    float yaw, pitch;
+    MCPEEntityMetadata metadata;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(eid);
+        stream.Write(typeId);
+        stream.Write(x);
+        stream.Write(y);
+        stream.Write(z);
+        stream.Write(motionX);
+        stream.Write(motionY);
+        stream.Write(motionZ);
+        stream.Write(yaw);
+        stream.Write(pitch);
+        BinaryRakStream binStream (stream);
+        metadata.write(binStream);
+        stream.Write((short) 0); // links
     };
 };
 

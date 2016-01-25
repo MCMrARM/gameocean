@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 
 class Vector3D {
 
@@ -13,6 +14,19 @@ public:
         x += v.x;
         y += v.y;
         z += v.z;
+    }
+
+    float distance() {
+        return std::sqrt(x * x + y * y + z * z);
+    }
+
+    void normalize() {
+        float d = distance();
+        if (d != 0.f) {
+            x /= d;
+            y /= d;
+            z /= d;
+        }
     }
 
 };

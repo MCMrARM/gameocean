@@ -16,6 +16,7 @@
 #include "command/Command.h"
 #include "PlayerChunkQueueThread.h"
 #include <gameocean/plugin/PluginManager.h>
+#include <gameocean/item/action/default/DefaultActions.h>
 #include "item/action/server/ServerActions.h"
 
 Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
@@ -31,6 +32,7 @@ void Server::start() {
     Logger::main->info("Main", "Loading server configuration");
     Permission::initializeDefaultPermissions();
     Command::registerDefaultCommands(*this);
+    DefaultActions::registerActions();
     ServerActions::registerActions();
     ItemRegister::registerAssetItems();
     Protocol::registerDefaultProtocols(*this);

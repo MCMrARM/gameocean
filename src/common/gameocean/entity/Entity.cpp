@@ -213,6 +213,7 @@ void Entity::setRot(float yaw, float pitch) {
 #ifdef SERVER
 void Entity::updateViewers() {
     std::set<Player*> despawnFromPlayers (spawnedTo);
+    chunk->entityMutex.lock();
     for (Player* p : chunk->usedBy) {
         if (despawnFromPlayers.count(p) > 0) {
             despawnFromPlayers.erase(p);
@@ -220,6 +221,7 @@ void Entity::updateViewers() {
             spawnTo(p);
         }
     }
+    chunk->entityMutex.unlock();
     for (Player* p : despawnFromPlayers) {
         despawnFrom(p);
     }
@@ -249,9 +251,11 @@ void Entity::despawnFrom(Player *player) {
 
 void Entity::spawnToAll() {
     generalMutex.lock();
+    chunk->entityMutex.lock();
     for (Player* p : chunk->usedBy) {
         spawnTo(p);
     }
+    chunk->entityMutex.unlock();
     generalMutex.unlock();
 }
 
@@ -341,19 +345,21 @@ void Entity::tickPhysics() {
 
     float multiplier = delta / (1.f / 20);
 
-    float blockSlipperiness = 0.6f;
-    float motionReduction = blockSlipperiness * 0.91f;
+    float dragMultiplier = std::pow(1.f - drag, multiplier);
+
+    float blockSlipperiness = onGround ? 0.6f : 1.f;
+    float motionReduction = std::pow(blockSlipperiness * (1.f - drag), multiplier);
 
     motion.y -= gravity * multiplier;
 
     motion.x *= motionReduction;
     motion.z *= motionReduction;
-    motion.y *= pow(0.98f, multiplier);
+    motion.y *= dragMultiplier;
 
 
-    motion.x *= pow(0.98f, multiplier);
-    motion.y *= pow(0.98f, multiplier);
-    motion.z *= pow(0.98f, multiplier);
+    motion.x *= dragMultiplier;
+    motion.y *= dragMultiplier;
+    motion.z *= dragMultiplier;
 
     if (std::abs(motion.x) < 0.005f)
         motion.x = 0;

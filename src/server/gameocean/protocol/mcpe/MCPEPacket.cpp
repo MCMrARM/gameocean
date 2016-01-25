@@ -182,6 +182,8 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
     if (player.inventory.getHeldItem() != item) {
         player.sendInventory();
 
+        if (side != 0xff)
+            return;
         std::unique_ptr<MCPEUpdateBlockPacket> pk(new MCPEUpdateBlockPacket());
         BlockPos pos = {x, y, z};
         pk->add(player.getWorld(), pos.x, pos.y, pos.z, MCPEUpdateBlockPacket::FLAG_ALL);
@@ -191,8 +193,16 @@ void MCPEUseItemPacket::handle(MCPEPlayer &player) {
         return;
     }
 
-    if (y < 0 || y > 127)
+    if ((y < 0 || y > 127) && side != 0xff)
         return;
+
+    BlockVariant* variant = nullptr;
+    if (side == 0xff) {
+        UseItemAction action(&player, item.getItem(), player.getWorld(), nullptr, {x, y, z}, (BlockPos::Side) side);
+        if (!item.isEmpty())
+            item.getItem()->use(action);
+        return;
+    }
 
     UseItemAction action(&player, item.getItem(), player.getWorld(),
                          player.getWorld().getBlock({x, y, z}).getBlockVariant(), {x, y, z}, (BlockPos::Side) side);

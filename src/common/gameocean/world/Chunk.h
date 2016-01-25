@@ -53,14 +53,14 @@ public:
     };
 
     void addEntity(Entity* entity) {
-        mutex.lock();
+        entityMutex.lock();
         entities[entity->getId()] = entity;
-        mutex.unlock();
+        entityMutex.unlock();
     };
     void removeEntity(Entity* entity) {
-        mutex.lock();
+        entityMutex.lock();
         entities.erase(entity->getId());
-        mutex.unlock();
+        entityMutex.unlock();
     };
 
     inline int getBlockPos(int x, int y, int z) {
@@ -90,7 +90,7 @@ public:
 
 #ifdef SERVER
     inline void setUsedBy(Player* player, bool used) {
-        mutex.lock();
+        entityMutex.lock();
         if (used) {
             if (usedBy.count(player) <= 0)
                 usedBy.insert(player);
@@ -108,7 +108,7 @@ public:
                 e.second->despawnFrom(player);
             }
         }
-        mutex.unlock();
+        entityMutex.unlock();
     }
 #endif
 

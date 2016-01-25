@@ -389,7 +389,7 @@ void Player::processMessage(std::string text) {
         Permission* p = c->getRequiredPermission();
         if (p != nullptr && !hasPermission(p)) {
             sendMessage("You don't have enough permissions!");
-            return;
+            //return;
         }
         c->process(*this, v);
     } else if (spawned) {

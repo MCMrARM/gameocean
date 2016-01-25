@@ -32,7 +32,8 @@ protected:
     std::recursive_mutex generalMutex;
     float x, y, z;
     AABB aabb;
-    float yaw, pitch;
+    float yaw = 0.f;
+    float pitch = 0.f;
     Vector3D motion;
 
     bool onGround = true;
@@ -43,6 +44,7 @@ protected:
     std::chrono::time_point<std::chrono::high_resolution_clock> prevPhysicsTick;
 
     float gravity = 0.08f;
+    float drag = 0.02f;
 
     float sizeX, sizeY;
     float headY = 0.f;

@@ -1,0 +1,9 @@
+{
+  "type": "item",
+  "name_id": "snowball",
+  "id": 332,
+  "stack_size": 16,
+  "actions": {
+    "use": "throw_snowball"
+  }
+}

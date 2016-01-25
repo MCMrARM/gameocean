@@ -8,6 +8,7 @@
 #include <gameocean/world/Chunk.h>
 #include <gameocean/world/tile/Container.h>
 #include <gameocean/entity/ItemEntity.h>
+#include <gameocean/entity/Snowball.h>
 
 void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback) {
     packetQueueMutex.lock();
@@ -169,6 +170,31 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
         pk->motionX = m.x;
         pk->motionY = m.y;
         pk->motionZ = m.z;
+        writePacket(std::move(pk));
+        return;
+    } else if (entity->getTypeName() == Snowball::TYPE_NAME) {
+        std::unique_ptr<MCPEAddEntityPacket> pk (new MCPEAddEntityPacket());
+        pk->eid = entity->getId();
+        pk->typeId = 81;
+        Vector3D v = entity->getHeadPos();
+        Vector2D r = entity->getRot();
+        Vector3D m = entity->getMotion();
+        pk->x = v.x;
+        pk->y = v.y;
+        pk->z = v.z;
+        pk->motionX = m.x;
+        pk->motionY = m.y;
+        pk->motionZ = m.z;
+        pk->yaw = r.x;
+        pk->pitch = r.y;
+        pk->metadata.setByte(MCPEEntityMetadata::FLAGS, 0);
+        pk->metadata.setShort(MCPEEntityMetadata::AIR, 300);
+        pk->metadata.setString(MCPEEntityMetadata::NAMETAG, "");
+        pk->metadata.setByte(MCPEEntityMetadata::SHOW_NAMETAG, 0);
+        pk->metadata.setByte(MCPEEntityMetadata::SILENT, 0);
+        pk->metadata.setByte(MCPEEntityMetadata::NO_AI, 0);
+        if (((Snowball*) entity)->getThrownBy() != nullptr)
+            pk->metadata.setLong(17, ((Snowball*) entity)->getThrownBy()->getId());
         writePacket(std::move(pk));
         return;
     }

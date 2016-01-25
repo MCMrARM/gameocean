@@ -13,12 +13,16 @@ void EntityUpdateTickTask::run() {
 
         for (auto const& it : world.getChunks()) {
             Chunk* chunk = it.second;
-            chunk->entityMutex.lock();
-            for (auto const& ent : chunk->entities) {
-                Entity* entity = ent.second;
+            std::unique_lock<std::recursive_mutex> lock (chunk->entityMutex);
+            auto it2 = chunk->entities.begin();
+
+            while (true) {
+                if (it2 == chunk->entities.end())
+                    break;
+                Entity* entity = it2->second;
+                it2++;
                 entity->update();
             }
-            chunk->entityMutex.unlock();
         }
     }
 }

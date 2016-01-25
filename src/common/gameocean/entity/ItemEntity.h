@@ -13,6 +13,7 @@ public:
         sizeX = 0.25f;
         sizeY = 0.25f;
         headY = 0.125f;
+        gravity = 0.04f;
         setPos(pos.x, pos.y, pos.z);
     }
 
