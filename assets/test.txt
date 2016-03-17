@@ -1,4 +1,0 @@
-l1: testing
-line2: testing more!
-line three: even moar testing
-^ this all should be printed into logcat

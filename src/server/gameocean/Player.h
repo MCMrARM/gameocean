@@ -211,6 +211,9 @@ public:
 
     void tickHunger();
     void addFoodExhaustion(float amount);
+    void setHunger(float points);
+    float getHunger();
+    void restoreHunger(float hunger, float saturation);
 
     inline bool setFoodEnabled(bool enabled) {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);

@@ -1,0 +1,9 @@
+{
+  "type": "item",
+  "name_id": "apple",
+  "id": 260,
+  "stack_size": 64,
+  "is_food": true,
+  "food_points": 4,
+  "food_saturation": 2.4
+}

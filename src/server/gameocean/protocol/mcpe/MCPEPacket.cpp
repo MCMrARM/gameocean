@@ -158,6 +158,7 @@ void MCPEMobEquipmentPacket::handle(MCPEPlayer& player) {
     }
 
     if (slot >= 0 && player.inventory.getItem(slot) != item) {
+        ItemInstance itm = player.inventory.getItem(slot);
         player.sendInventory();
         return;
     }
@@ -323,6 +324,16 @@ void MCPERemoveBlockPacket::handle(MCPEPlayer& player) {
     std::unique_ptr<MCPEUpdateBlockPacket> pk(new MCPEUpdateBlockPacket());
     pk->add(player.getWorld(), x, y, z, MCPEUpdateBlockPacket::FLAG_ALL);
     player.writePacket(std::move(pk));
+}
+
+void MCPEEntityEventPacket::handle(MCPEPlayer& player) {
+    if (eid == 0 && event == Event::USE_ITEM) {
+        // eating
+        ItemVariant* item = player.inventory.getHeldItem().getItem();
+        if (item != nullptr && item->isFood) {
+            player.restoreHunger(item->restoreFoodPoints, item->restoreFoodSaturation);
+        }
+    }
 }
 
 void MCPERequestChunkRadiusPacket::handle(MCPEPlayer& player) {

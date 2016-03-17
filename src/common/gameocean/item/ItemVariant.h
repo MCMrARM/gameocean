@@ -24,6 +24,9 @@ public:
     float toolBreakMultiplier = 1.0f;
     float attackDamage = 1.f;
     float damageReduction = 0.f;
+    bool isFood = false;
+    float restoreFoodPoints = 0.f;
+    float restoreFoodSaturation = 0.f;
 
     UseItemAction::Handler useAction = nullptr;
 
@@ -39,6 +42,11 @@ public:
         this->toolGroup = item.toolGroup;
         this->toolAffects = item.toolAffects;
         this->toolBreakMultiplier = item.toolBreakMultiplier;
+        this->attackDamage = item.attackDamage;
+        this->damageReduction = item.damageReduction;
+        this->isFood = item.isFood;
+        this->restoreFoodPoints = item.restoreFoodPoints;
+        this->restoreFoodSaturation = item.restoreFoodSaturation;
     };
 
     inline int getMaxStackSize() { return maxStackSize; };

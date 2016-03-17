@@ -124,6 +124,9 @@ void JSONItemLoader::parseItemVariant(ItemVariant* item, const Json::Value& val)
 
     item->attackDamage = val.get("attack_damage", item->attackDamage).asFloat();
     item->damageReduction = val.get("damage_reduction", item->damageReduction).asFloat();
+    item->isFood = val.get("is_food", item->isFood).asBool();
+    item->restoreFoodPoints = val.get("food_points", item->restoreFoodPoints).asFloat();
+    item->restoreFoodSaturation = val.get("food_saturation", item->restoreFoodSaturation).asFloat();
 
     {
         const Json::Value& actions = val["actions"];

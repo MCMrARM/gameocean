@@ -536,6 +536,24 @@ void Player::update() {
     tickHunger();
 }
 
+void Player::setHunger(float points) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    hunger = points;
+    sendHunger(hunger);
+}
+
+float Player::getHunger() {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    return hunger;
+}
+
+void Player::restoreHunger(float hunger, float saturation) {
+    std::unique_lock<std::recursive_mutex> lock (generalMutex);
+    this->hunger = std::max(std::min(this->hunger + hunger, 20.f), 0.f);
+    foodSaturation = std::max(std::min(foodSaturation + saturation, this->hunger), 0.f);
+    sendHunger(this->hunger);
+}
+
 void Player::tickHunger() {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
     if (hungerDisabled)

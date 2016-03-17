@@ -623,6 +623,8 @@ public:
         stream.Read(eid);
         stream.Read((byte&) event);
     };
+
+    virtual void handle(MCPEPlayer& player);
 };
 
 class MCPEUpdateAttributesPacket : public MCPEPacket {
