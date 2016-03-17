@@ -34,6 +34,7 @@ void MCPEPacketBatchThread::run() {
                     player->packetQueueMutex.unlock();
 
                     RakNet::BitStream bs;
+                    bs.Write((RakNet::MessageID) 0x8e);
                     bs.Write((RakNet::MessageID) MCPE_BATCH_PACKET);
                     bs.Write((int) 0);
 
@@ -63,7 +64,7 @@ void MCPEPacketBatchThread::run() {
                         pbs.Write((RakNet::MessageID) pk->id);
                         pk->write(pbs);
 
-                        int o = pbs.GetWriteOffset();
+                        RakNet::BitSize_t o = pbs.GetWriteOffset();
                         pbs.SetWriteOffset(0);
                         pbs.Write(BITS_TO_BYTES(o) - 4);
                         pbs.SetWriteOffset(o);
@@ -91,8 +92,8 @@ void MCPEPacketBatchThread::run() {
                     }
                     deflateEnd(&zs);
                     int o = bs.GetWriteOffset();
-                    bs.SetWriteOffset(8);
-                    bs.Write(BITS_TO_BYTES(o) - 5);
+                    bs.SetWriteOffset(16);
+                    bs.Write(BITS_TO_BYTES(o) - 6);
                     bs.SetWriteOffset(o);
 
                     int i = protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE, 0, player->address, false);

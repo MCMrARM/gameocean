@@ -66,7 +66,14 @@ enum MCPEMessages {
     MCPE_CHANGE_DIMENSION_PACKET = 0xc1,
     MCPE_SET_PLAYER_GAMETYPE_PACKET = 0xc2,
     MCPE_PLAYER_LIST_PACKET = 0xc3,
-    MCPE_TELEMETRY_EVENT_PACKET = 0xc4
+    MCPE_TELEMETRY_EVENT_PACKET = 0xc4,
+    MCPE_SPAWN_EXPERIENCE_ORB_PACKET = 0xc5,
+    MCPE_CLIENTBOUND_MAP_ITEM_DATA_PACKET = 0xc6,
+    MCPE_MAP_INFO_REQUEST_PACKET = 0xc7,
+    MCPE_REQUEST_CHUNK_RADIUS_PACKET = 0xc8,
+    MCPE_CHUNK_RADIUS_UPDATE_PACKET = 0xc9,
+    MCPE_ITEM_FRAME_DROP_ITEM_PACKET = 0xca,
+    MCPE_REPLACE_SELECTED_ITEM_PACKET = 0xcb
 };
 
 class MCPEPlayer;
@@ -1067,5 +1074,33 @@ public:
                 writeUUID(stream, e.uuid);
             }
         }
+    };
+};
+
+class MCPERequestChunkRadiusPacket : public MCPEPacket {
+public:
+    MCPERequestChunkRadiusPacket() {
+        id = MCPE_REQUEST_CHUNK_RADIUS_PACKET;
+    };
+
+    int radius;
+
+    virtual void read(RakNet::BitStream& stream) {
+        stream.Read(radius);
+    };
+
+    virtual void handle(MCPEPlayer& player);
+};
+
+class MCPEChunkRadiusUpdatePacket : public MCPEPacket {
+public:
+    MCPEChunkRadiusUpdatePacket() {
+        id = MCPE_CHUNK_RADIUS_UPDATE_PACKET;
+    };
+
+    int radius;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(radius);
     };
 };

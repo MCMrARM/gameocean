@@ -12,7 +12,7 @@
 #include "../../utils/NBT.h"
 #include "BinaryRakStream.h"
 
-std::map<int, MCPEPacket::CreatePacket *> MCPEPacket::packets;
+std::map<int, MCPEPacket::CreatePacket*> MCPEPacket::packets;
 
 void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPELoginPacket>(MCPE_LOGIN_PACKET);
@@ -29,18 +29,19 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPEContainerSetSlotPacket>(MCPE_CONTAINER_SET_SLOT_PACKET);
     MCPEPacket::registerPacket<MCPEContainerSetContentPacket>(MCPE_CONTAINER_SET_CONTENT_PACKET);
     MCPEPacket::registerPacket<MCPECraftingEventPacket>(MCPE_CRAFTING_EVENT_PACKET);
+    MCPEPacket::registerPacket<MCPERequestChunkRadiusPacket>(MCPE_REQUEST_CHUNK_RADIUS_PACKET);
 }
 
 void MCPETileEntityDataPacket::write(RakNet::BitStream& stream) {
     stream.Write(tile->getPos().x);
     stream.Write(tile->getPos().y);
     stream.Write(tile->getPos().z);
-    BinaryRakStream binaryStream (stream);
+    BinaryRakStream binaryStream(stream);
     writeTile(binaryStream, *tile);
 }
 
 void MCPETileEntityDataPacket::writeTile(BinaryStream& stream, Tile& tile) {
-    NBTCompound compound ("");
+    NBTCompound compound("");
     compound.val["id"] = std::unique_ptr<NBTTag>(new NBTString("id", tile.getId()));
     compound.val["x"] = std::unique_ptr<NBTTag>(new NBTInt("x", tile.getPos().x));
     compound.val["y"] = std::unique_ptr<NBTTag>(new NBTInt("y", tile.getPos().y));
@@ -48,7 +49,7 @@ void MCPETileEntityDataPacket::writeTile(BinaryStream& stream, Tile& tile) {
     NBTTag::writeTag(stream, compound, true);
 }
 
-void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
+void MCPEFullChunkDataPacket::write(RakNet::BitStream& stream) {
     stream.Write(chunk->pos.x);
     stream.Write(chunk->pos.z);
     stream.Write((byte) 1); // order type
@@ -61,7 +62,9 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
     }
     chunk->mutex.unlock();
 
-    int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) + sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors) + binaryStream.getSize();
+    int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) +
+                   sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors) +
+                   binaryStream.getSize();
     stream.Write(dataSize);
     stream.Write((char*) chunk->blockId, sizeof(chunk->blockId));
     stream.Write((char*) chunk->blockMeta.array, sizeof(chunk->blockMeta.array));
@@ -72,13 +75,13 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream &stream) {
     stream.Write((char*) binaryStream.getBuffer(false), binaryStream.getSize());
 }
 
-void MCPELoginPacket::handle(MCPEPlayer &player) {
+void MCPELoginPacket::handle(MCPEPlayer& player) {
     player.setName(std::string(username));
 
     player.skinModel = skinModel;
     player.skin = skin;
 
-    std::unique_ptr<MCPEPlayStatusPacket> pk (new MCPEPlayStatusPacket());
+    std::unique_ptr<MCPEPlayStatusPacket> pk(new MCPEPlayStatusPacket());
     pk->status = MCPEPlayStatusPacket::Status::SUCCESS;
     player.writePacket(std::move(pk));
 
@@ -87,7 +90,7 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     int z = player.getWorld().spawn.z;
     player.setPos(x, y, z);
 
-    std::unique_ptr<MCPEStartGamePacket> pk2 (new MCPEStartGamePacket());
+    std::unique_ptr<MCPEStartGamePacket> pk2(new MCPEStartGamePacket());
     pk2->eid = 0;
     pk2->spawnX = x;
     pk2->spawnY = y;
@@ -98,25 +101,25 @@ void MCPELoginPacket::handle(MCPEPlayer &player) {
     pk2->gamemode = MCPEStartGamePacket::GameMode::SURVIVAL;
     player.writePacket(std::move(pk2));
 
-    std::unique_ptr<MCPECraftingDataPacket> pk3 (new MCPECraftingDataPacket());
+    std::unique_ptr<MCPECraftingDataPacket> pk3(new MCPECraftingDataPacket());
     pk3->recipes = Recipe::recipes;
     player.writePacket(std::move(pk3));
 
     player.sendWorldTime(player.getWorld().getTime(), player.getWorld().isTimeStopped());
 }
 
-void MCPETextPacket::handle(MCPEPlayer &player) {
+void MCPETextPacket::handle(MCPEPlayer& player) {
     player.processMessage(std::string(message));
 }
 
-void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
+void MCPEMovePlayerPacket::handle(MCPEPlayer& player) {
     player.setRot(yaw, pitch);
     float y = this->y - player.getHeadY();
     if (y - (int) y < 0.008f) {
         y = (int) y;
     }
     if (!player.tryMove(x, y, z)) {
-        std::unique_ptr<MCPEMovePlayerPacket> pk (new MCPEMovePlayerPacket());
+        std::unique_ptr<MCPEMovePlayerPacket> pk(new MCPEMovePlayerPacket());
         pk->eid = 0;
         Vector3D v = player.getHeadPos();
         Vector2D r = player.getRot();
@@ -132,7 +135,7 @@ void MCPEMovePlayerPacket::handle(MCPEPlayer &player) {
 
 void MCPEUpdateBlockPacket::add(World& world, int x, int y, int z, byte flags) {
     WorldBlock b = world.getBlock(x, y, z);
-    entries.push_back({ x, z, (byte) y, b.id, b.data, flags });
+    entries.push_back({x, z, (byte) y, b.id, b.data, flags});
 }
 
 const char* MCPEUpdateAttributesPacket::ATTRIBUTE_HEALTH = "generic.health";
@@ -140,7 +143,7 @@ const char* MCPEUpdateAttributesPacket::ATTRIBUTE_HUNGER = "player.hunger";
 const char* MCPEUpdateAttributesPacket::ATTRIBUTE_EXPERIENCE = "player.experience";
 const char* MCPEUpdateAttributesPacket::ATTRIBUTE_EXPERIENCE_LEVEL = "player.level";
 
-void MCPEMobEquipmentPacket::handle(MCPEPlayer &player) {
+void MCPEMobEquipmentPacket::handle(MCPEPlayer& player) {
     if (hotbarSlot < 0 || hotbarSlot >= 9) {
         return;
     }
@@ -178,7 +181,7 @@ void MCPEInteractPacket::handle(MCPEPlayer& player) {
     }
 }
 
-void MCPEUseItemPacket::handle(MCPEPlayer &player) {
+void MCPEUseItemPacket::handle(MCPEPlayer& player) {
     if (player.inventory.getHeldItem() != item) {
         player.sendInventory();
 
@@ -222,7 +225,7 @@ void MCPEPlayerActionPacket::handle(MCPEPlayer& player) {
     if (action == Action::START_BREAK) {
         if (y < 0 || y > 127)
             return;
-        player.startMining({ x, y, z });
+        player.startMining({x, y, z});
     } else if (action == Action::ABORT_BREAK) {
         player.cancelMining();
     } else if (action == Action::RESPAWN) {
@@ -240,7 +243,8 @@ void MCPEContainerSetSlotPacket::handle(MCPEPlayer& player) {
     if (window == 0) {
         player.addTransaction(player.inventory, InventoryTransaction::InventoryKind::PLAYER, slot, item);
     } else if (window == 2) {
-        player.addTransaction(player.getOpenedContainer()->getInventory(), InventoryTransaction::InventoryKind::CONTAINER, slot, item);
+        player.addTransaction(player.getOpenedContainer()->getInventory(),
+                              InventoryTransaction::InventoryKind::CONTAINER, slot, item);
     } else if (window == 120) {
         player.addTransaction(player.inventory, InventoryTransaction::InventoryKind::ARMOR, slot, item);
     }
@@ -250,7 +254,7 @@ void MCPECraftingDataPacket::write(RakNet::BitStream& stream) {
     stream.Write((int) recipes.size());
     for (auto const& e : recipes) {
         Recipe* recipe = e.second;
-        UUID uuid = { e.first, recipe->id };
+        UUID uuid = {e.first, recipe->id};
         if (recipe->isShaped()) {
             stream.Write((int) 1);
 
@@ -316,7 +320,26 @@ void MCPECraftingEventPacket::handle(MCPEPlayer& player) {
 }
 
 void MCPERemoveBlockPacket::handle(MCPEPlayer& player) {
-    std::unique_ptr<MCPEUpdateBlockPacket> pk (new MCPEUpdateBlockPacket());
+    std::unique_ptr<MCPEUpdateBlockPacket> pk(new MCPEUpdateBlockPacket());
     pk->add(player.getWorld(), x, y, z, MCPEUpdateBlockPacket::FLAG_ALL);
+    player.writePacket(std::move(pk));
+}
+
+void MCPERequestChunkRadiusPacket::handle(MCPEPlayer& player) {
+    if (radius < 0 || radius > 32)
+        Logger::main->trace("MCPE/RequestChunkRadiusPacket", "Requested chunk radius is %i (seems invalid)", radius);
+
+    int radius = this->radius * this->radius;
+    if (radius >= player.server.maxChunkSendCount)
+        radius = player.server.maxChunkSendCount;
+
+    player.chunkArrayMutex.lock();
+    player.viewChunks = radius;
+    player.chunkArrayMutex.unlock();
+
+    std::unique_ptr<MCPEChunkRadiusUpdatePacket> pk(new MCPEChunkRadiusUpdatePacket());
+    pk->radius = (int) sqrt(radius);
+    Logger::main->trace("MCPE/RequestChunkRadiusPacket", "Requested %i; using %i blocks distance (that's %i chunks)",
+                        this->radius, radius, pk->radius);
     player.writePacket(std::move(pk));
 }

@@ -22,6 +22,7 @@ protected:
     friend class MCPEInteractPacket;
     friend class MCPEPlayerActionPacket;
     friend class MCPEContainerSetSlotPacket;
+    friend class MCPERequestChunkRadiusPacket;
 
     int hotbarSlots[9];
     int hotbarSlot = 0;

@@ -29,7 +29,7 @@ public:
 
     virtual std::string getName() { return "MCPE"; };
 
-    static const int CURRENT_VERSION = 34;
+    static const int CURRENT_VERSION = 45;
     int packetBatchDelay = 50; // in ms
 
     inline RakNet::RakPeerInterface* getPeer() { return peer; };

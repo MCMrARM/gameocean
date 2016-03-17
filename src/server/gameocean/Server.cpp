@@ -105,6 +105,7 @@ void Server::loadConfiguation() {
     if (chunkSending != nullptr) {
         sendChunksDelay = chunkSending->getInt("tick-rate", sendChunksDelay);
         sendChunksCount = chunkSending->getInt("per-tick", sendChunksCount);
+        maxChunkSendCount = chunkSending->getInt("max-count", maxChunkSendCount);
     }
     EntityPhysicsTickTask::tickRate = c.getInt("physics-tick-rate", EntityPhysicsTickTask::tickRate);
     std::shared_ptr<ContainerConfigNode> protocols = c.getContainer("protocols");

@@ -1,6 +1,6 @@
 #include "Inventory.h"
 
-#include <gameocean/game/item/ItemVariant.h>
+#include <gameocean/item/ItemVariant.h>
 
 bool Inventory::addItem(ItemInstance item) {
     for (int i = 0; i < items.size(); i++) {

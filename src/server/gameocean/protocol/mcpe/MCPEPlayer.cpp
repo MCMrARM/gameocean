@@ -18,6 +18,7 @@ void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedP
 
 int MCPEPlayer::directPacket(MCPEPacket *packet) {
     RakNet::BitStream bs;
+    bs.Write((RakNet::MessageID) 0x8e);
     bs.Write((RakNet::MessageID) packet->id);
     packet->write(bs);
     return this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet->reliable ? (packet->needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
@@ -45,7 +46,9 @@ bool MCPEPlayer::sendChunk(int x, int z) {
     pk->needsACK = true;
     batchPacketCallback(std::move(pk), [](MCPEPlayer* player, MCPEPacket* pk, int pkId) {
         MCPEFullChunkDataPacket* fpk = (MCPEFullChunkDataPacket*) pk;
+        player->chunkArrayMutex.lock();
         player->raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
+        player->chunkArrayMutex.unlock();
     });
     return true;
 }
@@ -91,10 +94,12 @@ void MCPEPlayer::setSpawned() {
 }
 
 void MCPEPlayer::receivedACK(int packetId) {
+    chunkArrayMutex.lock();
     if (raknetChunkQueue.count(packetId) > 0) {
         for (ChunkPos pos : raknetChunkQueue.at(packetId))
             MCPEPlayer::receivedChunk(pos.x, pos.z);
     }
+    chunkArrayMutex.unlock();
 }
 
 

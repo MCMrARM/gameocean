@@ -25,6 +25,7 @@ public:
     int maxPlayers = 100;
     int sendChunksCount = 4;
     int sendChunksDelay = 25; // in ms
+    int maxChunkSendCount = 96;
     World* mainWorld;
     std::set<Protocol*> enabledProtocols;
     PlayerBlockDestroyThread playerBlockDestroyThread;
