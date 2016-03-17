@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include "ItemAction.h"
 #include "../../world/BlockPos.h"
 class World;
@@ -14,14 +15,14 @@ public:
     static std::map<std::string, Handler> handlers;
 
 protected:
-    Player* player;
+    std::shared_ptr<Player> player;
     World& world;
     BlockVariant* block;
     BlockPos pos;
     BlockPos::Side side;
 
 public:
-    UseItemAction(Player* player, ItemVariant* item, World& world, BlockVariant* block, BlockPos pos,
+    UseItemAction(std::shared_ptr<Player> player, ItemVariant* item, World& world, BlockVariant* block, BlockPos pos,
                   BlockPos::Side side) : ItemAction(item), player(player), world(world), block(block), pos(pos), side(side) {
         //
     }
@@ -30,7 +31,7 @@ public:
         return block;
     }
 
-    inline Player* getPlayer() {
+    inline std::shared_ptr<Player> getPlayer() {
         return player;
     }
 

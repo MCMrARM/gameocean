@@ -26,7 +26,7 @@ int MCPEPlayer::directPacket(MCPEPacket *packet) {
 
 int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
     if (batch) {
-        batchPacketCallback(std::move(packet), [](MCPEPlayer *player, MCPEPacket *pk, int pkId) { });
+        batchPacketCallback(std::move(packet), [](MCPEPacket *pk, int pkId) { });
         return 0;
     }
 
@@ -44,11 +44,11 @@ bool MCPEPlayer::sendChunk(int x, int z) {
     std::unique_ptr<MCPEFullChunkDataPacket> pk (new MCPEFullChunkDataPacket());
     pk->chunk = chunk;
     pk->needsACK = true;
-    batchPacketCallback(std::move(pk), [](MCPEPlayer* player, MCPEPacket* pk, int pkId) {
+    batchPacketCallback(std::move(pk), [this](MCPEPacket* pk, int pkId) {
         MCPEFullChunkDataPacket* fpk = (MCPEFullChunkDataPacket*) pk;
-        player->chunkArrayMutex.lock();
-        player->raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
-        player->chunkArrayMutex.unlock();
+        chunkArrayMutex.lock();
+        raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
+        chunkArrayMutex.unlock();
     });
     return true;
 }

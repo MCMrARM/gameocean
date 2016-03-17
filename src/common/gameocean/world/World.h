@@ -177,7 +177,7 @@ public:
                 Chunk* chunk = getChunkAt(x, z, false);
                 chunk->entityMutex.lock();
                 for (auto const& pair : chunk->entities) {
-                    Entity* ent = pair.second;
+                    std::shared_ptr<Entity> ent = pair.second;
                     if (ent->getAABB().intersects(aabb))
                         callback(ent);
                 }

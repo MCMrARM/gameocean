@@ -58,19 +58,18 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
         {
             printf("* connection lost\n");
             if (players.count(packet->guid) > 0) {
-                MCPEPlayer* player = players.at(packet->guid);
+                std::shared_ptr<MCPEPlayer> player = players.at(packet->guid);
                 player->close("connection lost", false);
                 playersMutex.lock();
                 players.erase(packet->guid);
                 playersMutex.unlock();
                 server.removePlayer(player);
-                delete player;
             }
         }
             break;
         case ID_NEW_INCOMING_CONNECTION: {
             Logger::main->info("MCPE/Connection", "A new client has connected! %s", packet->systemAddress.ToString(true, ':'));
-            MCPEPlayer *player = new MCPEPlayer(this->server, *this, packet->guid, packet->systemAddress);
+            std::shared_ptr<MCPEPlayer> player (new MCPEPlayer(this->server, *this, packet->guid, packet->systemAddress));
             playersMutex.lock();
             players[packet->guid] = player;
             playersMutex.unlock();
@@ -84,7 +83,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
                 break;
             }
             playersMutex.lock();
-            MCPEPlayer* p = players.at(packet->guid);
+            std::shared_ptr<MCPEPlayer> p = players.at(packet->guid);
             playersMutex.unlock();
             p->receivedACK(msgId);
         }
@@ -99,7 +98,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
                     playersMutex.unlock();
                     return;
                 }
-                MCPEPlayer* p = players.at(packet->guid);
+                std::shared_ptr<MCPEPlayer> p = players.at(packet->guid);
                 playersMutex.unlock();
 
                 RakNet::BitStream bs(packet->data, packet->length, false);
@@ -188,7 +187,7 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
                     playersMutex.unlock();
                     return;
                 }
-                MCPEPlayer* p = players.at(packet->guid);
+                std::shared_ptr<MCPEPlayer> p = players.at(packet->guid);
                 playersMutex.unlock();
                 pk->handle(*p);
                 delete pk;

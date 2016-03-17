@@ -4,6 +4,7 @@
 #include <mutex>
 #include <set>
 #include <chrono>
+#include <memory>
 #include <gameocean/utils/Vector2D.h>
 #include <gameocean/utils/Vector3D.h>
 #include <gameocean/math/AABB.h>
@@ -15,13 +16,15 @@ class Chunk;
 class Player;
 class EntityDamageEvent;
 
-class Entity {
+class Entity : public std::enable_shared_from_this<Entity> {
 
 protected:
     unsigned int typeId = 0;
     World* world;
     EntityId id;
     Chunk* chunk = nullptr;
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> spawnedTime;
 
     bool closed = false;
 
@@ -65,13 +68,20 @@ public:
 
     Entity(World& world) : world(&world) {
         id = Entity::currentId++;
+        spawnedTime = std::chrono::high_resolution_clock::now();
         prevPhysicsTick = std::chrono::high_resolution_clock::now();
     };
-    virtual ~Entity() {};
+    virtual ~Entity() { close(); };
 
+    /**
+     * This is rather an internal function. To delete this entity please just use the delete operator.
+     */
     virtual void close();
 
     virtual const char* getTypeName() { return "Entity"; };
+    virtual bool isLiving() { return true; };
+
+    float getExistenceTime();
 
     inline EntityId getId() { return id; };
     inline World& getWorld() {
@@ -152,7 +162,7 @@ public:
         close();
     };
 
-    std::vector<Entity*> getNearbyEntities(float range);
+    std::vector<std::shared_ptr<Entity>> getNearbyEntities(float range);
 
     virtual void update();
 

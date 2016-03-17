@@ -21,7 +21,7 @@ public:
             sendUsage(sender);
             return;
         }
-        Player* player = server.findPlayer(args[1]);
+        std::shared_ptr<Player> player = server.findPlayer(args[1]);
         if (player == nullptr) {
             sender.sendMessage("Specified player could't be found!");
             return;

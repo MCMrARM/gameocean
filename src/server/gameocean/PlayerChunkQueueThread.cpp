@@ -12,8 +12,8 @@ void PlayerChunkQueueThread::run() {
         if (shouldStop)
             break;
 
-        std::vector<Player*> players = server.getPlayers();
-        for (Player* player : players) {
+        std::vector<std::shared_ptr<Player>> players = server.getPlayers();
+        for (auto& player : players) {
             player->updateChunkQueue();
             player->sendQueuedChunks();
         }

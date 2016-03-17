@@ -33,7 +33,7 @@ protected:
 
     std::map<int, std::vector<ChunkPos>> raknetChunkQueue;
 
-    typedef std::function<void(MCPEPlayer*, MCPEPacket*, int)> QueuedPacketCallback;
+    typedef std::function<void(MCPEPacket*, int)> QueuedPacketCallback;
 
     struct QueuedPacket {
         MCPEPacket* pk;

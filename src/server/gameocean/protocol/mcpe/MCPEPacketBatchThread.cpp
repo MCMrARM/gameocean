@@ -12,9 +12,9 @@ void MCPEPacketBatchThread::run() {
         if (stopping)
             return;
 
-        std::map<RakNet::RakNetGUID, MCPEPlayer*> players = protocol.getPlayers();
-        for (auto p : players) {
-            MCPEPlayer* player = p.second;
+        std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players = protocol.getPlayers();
+        for (auto& p : players) {
+            std::shared_ptr<MCPEPlayer>& player = p.second;
             player->packetQueueMutex.lock();
             if (player->packetQueue.size() > 0) {
                 if (player->packetQueue.size() == 1 &&
@@ -24,7 +24,7 @@ void MCPEPacketBatchThread::run() {
                     auto p = player->packetQueue.back();
                     MCPEPacket* pk = p.pk;
                     int ret = player->directPacket(pk);
-                    p.callback(player, pk, ret);
+                    p.callback(pk, ret);
                     delete pk;
                     player->packetQueue.clear();
                     player->packetQueueMutex.unlock();
@@ -98,7 +98,7 @@ void MCPEPacketBatchThread::run() {
 
                     int i = protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE, 0, player->address, false);
                     for (MCPEPlayer::QueuedPacket& p : packetQueue) {
-                        p.callback(player, p.pk, i);
+                        p.callback(p.pk, i);
                         delete p.pk;
                     }
                 }

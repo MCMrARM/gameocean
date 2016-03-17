@@ -173,7 +173,7 @@ void MCPEInteractPacket::handle(MCPEPlayer& player) {
             return;
         player.lastAttack = n;
 
-        for (Entity* ent : player.getNearbyEntities(6.f)) {
+        for (std::shared_ptr<Entity> ent : player.getNearbyEntities(6.f)) {
             if (ent->getId() == target) {
                 player.attack(*ent);
                 return;
@@ -202,13 +202,13 @@ void MCPEUseItemPacket::handle(MCPEPlayer& player) {
 
     BlockVariant* variant = nullptr;
     if (side == 0xff) {
-        UseItemAction action(&player, item.getItem(), player.getWorld(), nullptr, {x, y, z}, (BlockPos::Side) side);
+        UseItemAction action(std::static_pointer_cast<Player>(player.shared_from_this()), item.getItem(), player.getWorld(), nullptr, {x, y, z}, (BlockPos::Side) side);
         if (!item.isEmpty())
             item.getItem()->use(action);
         return;
     }
 
-    UseItemAction action(&player, item.getItem(), player.getWorld(),
+    UseItemAction action(std::static_pointer_cast<Player>(player.shared_from_this()), item.getItem(), player.getWorld(),
                          player.getWorld().getBlock({x, y, z}).getBlockVariant(), {x, y, z}, (BlockPos::Side) side);
     if (!item.isEmpty())
         item.getItem()->use(action);
@@ -332,6 +332,13 @@ void MCPEEntityEventPacket::handle(MCPEPlayer& player) {
         ItemVariant* item = player.inventory.getHeldItem().getItem();
         if (item != nullptr && item->isFood) {
             player.restoreHunger(item->restoreFoodPoints, item->restoreFoodSaturation);
+            int slot = player.inventory.getHeldSlot();
+            ItemInstance instance = player.inventory.getItem(slot);
+            instance.count--;
+            if (instance.count <= 0) {
+                instance.setEmpty();
+            }
+            player.inventory.setItem(slot, instance);
         }
     }
 }

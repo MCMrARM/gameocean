@@ -52,7 +52,8 @@ int World::getTime() {
 }
 
 void World::dropItem(Vector3D pos, ItemInstance item) {
-    new ItemEntity(*this, pos, item);
+    std::shared_ptr<ItemEntity> ent (new ItemEntity(*this, item));
+    ent->setPos(pos.x, pos.y, pos.z);
 }
 
 #ifdef SERVER

@@ -5,15 +5,15 @@
 class Projectile : public Entity {
 
 protected:
-    Entity* thrownBy;
+    std::shared_ptr<Entity> thrownBy;
 
 public:
-    Projectile(World& world, Entity* thrownBy) : Entity(world), thrownBy(thrownBy) {
+    Projectile(World& world, std::shared_ptr<Entity> thrownBy) : Entity(world), thrownBy(thrownBy) {
         gravity = 0.03f;
         drag = 0.01f;
     }
 
-    inline Entity* getThrownBy() {
+    inline std::shared_ptr<Entity> getThrownBy() {
         return thrownBy;
     }
 

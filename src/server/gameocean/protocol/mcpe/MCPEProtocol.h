@@ -3,6 +3,7 @@
 #include <map>
 #include "../Protocol.h"
 #include "MCPEPacketBatchThread.h"
+#include "MCPEPlayer.h"
 #include <RakNet/RakNetTypes.h>
 
 namespace RakNet {
@@ -18,7 +19,7 @@ class MCPEProtocol : public Protocol {
 
 protected:
     RakNet::RakPeerInterface* peer;
-    std::map<RakNet::RakNetGUID, MCPEPlayer*> players;
+    std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players;
     std::mutex playersMutex;
     MCPEPacketBatchThread batchThread;
 
@@ -40,9 +41,9 @@ public:
     virtual void loop();
     virtual void processPacket(RakNet::Packet* packet);
 
-    std::map<RakNet::RakNetGUID, MCPEPlayer*> getPlayers() {
+    std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> getPlayers() {
         playersMutex.lock();
-        std::map<RakNet::RakNetGUID, MCPEPlayer*> ret (players);
+        std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> ret (players);
         playersMutex.unlock();
         return ret;
     };

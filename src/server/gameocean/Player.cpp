@@ -524,9 +524,9 @@ void Player::setPluginData(Plugin* plugin, void* data) {
 }
 
 void Player::tickPhysics() {
-    world->getNearbyEntities(getAABB().expand(1.f, 0.5f, 1.f), [this](Entity* ent) {
+    world->getNearbyEntities(getAABB().expand(1.f, 0.5f, 1.f), [this](std::shared_ptr<Entity> ent) {
         if (ent->getTypeName() == ItemEntity::TYPE_NAME) {
-            inventory.addItem(((ItemEntity*) ent)->getItem());
+            inventory.addItem(((ItemEntity*) &*ent)->getItem());
             ent->kill();
         }
     });

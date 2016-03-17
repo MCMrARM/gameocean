@@ -130,12 +130,12 @@ void Server::loadConfiguation() {
     }
 }
 
-Player* Server::findPlayer(std::string like) {
-    Player* rp = nullptr;
+std::shared_ptr<Player> Server::findPlayer(std::string like) {
+    std::shared_ptr<Player> rp;
     int m = 0;
 
     playersMutex.lock();
-    for (Player* p : players) {
+    for (auto& p : players) {
         std::string n = p->getName();
         if (n == like) {
             return p;
@@ -156,7 +156,7 @@ void Server::broadcastMessage(std::string msg) {
     Logger::main->info("Chat", "%s", msg.c_str());
 
     playersMutex.lock();
-    for (Player* p : players) {
+    for (auto& p : players) {
         p->sendMessage(msg);
     }
     playersMutex.unlock();

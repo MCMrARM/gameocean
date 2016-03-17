@@ -12,7 +12,7 @@ void Plugin::disable() {
 #ifdef SERVER
 #include <gameocean/command/Command.h>
 void Plugin::unregisterPermissions() {
-    for (Player* p : server->getPlayers()) {
+    for (std::shared_ptr<Player> p : server->getPlayers()) {
         p->removePermissions(permissions, false);
     }
     for (Permission* perm : permissions) {

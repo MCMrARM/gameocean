@@ -21,10 +21,10 @@ void Entity::close() {
     closed = true;
 
     despawnFromAll();
+    generalMutex.unlock();
     if (chunk != nullptr) {
         chunk->removeEntity(this);
     }
-    generalMutex.unlock();
 }
 
 void Entity::setWorld(World& world, float x, float y, float z) {
@@ -38,12 +38,13 @@ void Entity::setWorld(World& world, float x, float y, float z) {
     int newChunkZ = ((int) z) >> 4;
     if (chunk == nullptr) {
         chunk = world.getChunkAt(newChunkX, newChunkZ);
-        chunk->addEntity(this);
+        chunk->addEntity(shared_from_this());
         updateViewers();
     } else {
+        std::shared_ptr<Entity> ptr (shared_from_this());
         chunk->removeEntity(this);
         chunk = world.getChunkAt(newChunkX, newChunkZ, true);
-        chunk->addEntity(this);
+        chunk->addEntity(ptr);
         updateViewers();
     }
 #ifdef SERVER
@@ -65,12 +66,13 @@ void Entity::setPos(float x, float y, float z) {
     int newChunkZ = ((int) z) >> 4;
     if (chunk == nullptr) {
         chunk = world->getChunkAt(newChunkX, newChunkZ);
-        chunk->addEntity(this);
+        chunk->addEntity(shared_from_this());
         updateViewers();
     } else if (newChunkX != chunk->pos.x || newChunkZ != chunk->pos.z) {
+        std::shared_ptr<Entity> ptr (shared_from_this());
         chunk->removeEntity(this);
         chunk = world->getChunkAt(newChunkX, newChunkZ, true);
-        chunk->addEntity(this);
+        chunk->addEntity(ptr);
         updateViewers();
     }
 #ifdef SERVER
@@ -81,6 +83,11 @@ void Entity::setPos(float x, float y, float z) {
 
     updateOnGround();
     generalMutex.unlock();
+}
+
+float Entity::getExistenceTime() {
+    std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration_cast<std::chrono::duration<float, std::ratio<1>>>(now - spawnedTime).count();
 }
 
 void Entity::updateOnGround() {
@@ -305,25 +312,22 @@ void Entity::damageFall(float distance) {
     }
 }
 
-std::vector<Entity*> Entity::getNearbyEntities(float range) {
+std::vector<std::shared_ptr<Entity>> Entity::getNearbyEntities(float range) {
     Vector3D myPos = getPos();
     World& world = getWorld();
-    std::vector<Entity*> ret;
-    float minX = myPos.x - range;
-    float minY = myPos.y - range;
-    float minZ = myPos.z - range;
-    float maxX = myPos.x + range;
-    float maxY = myPos.y + range;
-    float maxZ = myPos.z + range;
+    std::vector<std::shared_ptr<Entity>> ret;
+    AABB aabb = {myPos.x, myPos.y, myPos.z, myPos.x, myPos.y, myPos.z};
+    aabb.expand(range, range, range);
     for (int chunkX = (((int) myPos.x - (int) ceil(range)) >> 4); chunkX <= (((int) myPos.x + (int) ceil(range)) >> 4); chunkX++) {
         for (int chunkZ = (((int) myPos.z - (int) ceil(range)) >> 4); chunkZ <= (((int) myPos.z + (int) ceil(range)) >> 4); chunkZ++) {
             if (world.isChunkLoaded(chunkX, chunkZ)) {
                 Chunk* chunk = world.getChunkAt(chunkX, chunkZ, false);
                 chunk->entityMutex.lock();
                 for (auto const& e : chunk->entities) {
-                    Entity* ent = e.second;
-                    Vector3D pos = ent->getPos();
-                    if (pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY && pos.z >= minZ && pos.z <= maxZ)
+                    std::shared_ptr<Entity> ent = e.second;
+                    if (&*ent == this)
+                        continue;
+                    if (aabb.intersects(ent->getAABB()))
                         ret.push_back(ent);
                 }
                 chunk->entityMutex.unlock();

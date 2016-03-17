@@ -15,7 +15,7 @@ class Protocol;
 class Server {
 
 protected:
-    std::vector<Player*> players;
+    std::vector<std::shared_ptr<Player>> players;
     std::mutex playersMutex;
 
     bool stopping = false;
@@ -35,24 +35,24 @@ public:
 
     void start();
 
-    std::vector<Player*> getPlayers() {
+    std::vector<std::shared_ptr<Player>> getPlayers() {
         playersMutex.lock();
-        std::vector<Player*> playersCopy (players);
+        std::vector<std::shared_ptr<Player>> playersCopy (players);
         playersMutex.unlock();
         return playersCopy;
     }
 
-    void addPlayer(Player* player) {
+    void addPlayer(std::shared_ptr<Player> player) {
         playersMutex.lock();
         players.push_back(player);
         playersMutex.unlock();
     }
-    void removePlayer(Player* player) {
+    void removePlayer(std::shared_ptr<Player> player) {
         playersMutex.lock();
         players.erase(std::remove(players.begin(), players.end(), player), players.end());
         playersMutex.unlock();
     }
-    Player* findPlayer(std::string like);
+    std::shared_ptr<Player> findPlayer(std::string like);
     void broadcastMessage(std::string msg);
 
     inline bool isStopping() { return stopping; };

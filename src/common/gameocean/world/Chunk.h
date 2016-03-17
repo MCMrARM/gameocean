@@ -23,7 +23,7 @@ public:
     static Chunk* empty;
 
     ChunkPos pos;
-    std::map<EntityId, Entity*> entities;
+    std::map<EntityId, std::shared_ptr<Entity>> entities;
     std::set<std::shared_ptr<Tile>> tiles;
     std::set<Player*> usedBy;
     std::recursive_mutex mutex;
@@ -52,7 +52,7 @@ public:
         memset(biomeColors, 0, sizeof(biomeColors));
     };
 
-    void addEntity(Entity* entity) {
+    void addEntity(std::shared_ptr<Entity> entity) {
         entityMutex.lock();
         entities[entity->getId()] = entity;
         entityMutex.unlock();

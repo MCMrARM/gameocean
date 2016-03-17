@@ -13,15 +13,12 @@ void EntityPhysicsTickTask::run() {
 
         for (auto const& it : world.getChunks()) {
             Chunk* chunk = it.second;
-            std::unique_lock<std::recursive_mutex> lock (chunk->entityMutex);
-            auto it2 = chunk->entities.begin();
+            chunk->entityMutex.lock();
+            auto entities = chunk->entities;
+            chunk->entityMutex.unlock();
 
-            while (true) {
-                if (it2 == chunk->entities.end())
-                    break;
-                Entity* entity = it2->second;
-                it2++;
-                entity->tickPhysics();
+            for (auto& entity : entities) {
+                entity.second->tickPhysics();
             }
         }
     }
