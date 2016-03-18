@@ -24,6 +24,9 @@ public:
     float toolBreakMultiplier = 1.0f;
     float attackDamage = 1.f;
     float damageReduction = 0.f;
+    int maxDamage = 0;
+    int itemDamageBlockBreak = 0;
+    int itemDamageAttack = 0;
     bool isFood = false;
     float restoreFoodPoints = 0.f;
     float restoreFoodSaturation = 0.f;
@@ -44,6 +47,9 @@ public:
         this->toolBreakMultiplier = item.toolBreakMultiplier;
         this->attackDamage = item.attackDamage;
         this->damageReduction = item.damageReduction;
+        this->maxDamage = item.maxDamage;
+        this->itemDamageBlockBreak = item.itemDamageBlockBreak;
+        this->itemDamageAttack = item.itemDamageAttack;
         this->isFood = item.isFood;
         this->restoreFoodPoints = item.restoreFoodPoints;
         this->restoreFoodSaturation = item.restoreFoodSaturation;

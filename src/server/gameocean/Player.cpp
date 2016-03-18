@@ -335,6 +335,13 @@ void Player::finishedMining() {
         cancelMining();
         return;
     }
+    {
+        ItemInstance itm = inventory.getItem(inventory.heldSlot);
+        if (itm.getItem() != nullptr) {
+            itm.damageItem(itm.getItem()->itemDamageBlockBreak);
+            inventory.setItem(inventory.heldSlot, itm);
+        }
+    }
     world->setBlock(miningBlockPos, 0, 0);
     miningBlock->dropItems(*world, miningBlockPos, inventory.getHeldItem().getItem());
     addFoodExhaustion(0.025f);
@@ -412,6 +419,13 @@ void Player::attack(Entity& entity) {
     if (attackEvent.isCancelled())
         return;
 
+    {
+        ItemInstance itm = inventory.getItem(inventory.heldSlot);
+        if (itm.getItem() != nullptr) {
+            itm.damageItem(itm.getItem()->itemDamageAttack);
+            inventory.setItem(inventory.heldSlot, itm);
+        }
+    }
     addFoodExhaustion(0.3f);
     entity.damage(event);
 }

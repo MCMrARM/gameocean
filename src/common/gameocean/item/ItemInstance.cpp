@@ -28,3 +28,10 @@ void ItemInstance::setItemDamage(short data) {
     item = ItemRegister::getItemVariant(item->getId(), data);
     this->data = data;
 }
+
+void ItemInstance::damageItem(int points) {
+    setItemDamage(getItemData() + (short) points);
+    if (item != nullptr && getItemData() > item->maxDamage) {
+        setEmpty();
+    }
+}

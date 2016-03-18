@@ -28,6 +28,7 @@ public:
     inline void setItemId(int id) { setItem(id, data); };
     inline short getItemData() const { return data; };
     void setItemDamage(short damage);
+    void damageItem(int points);
 
     inline bool isEmpty() const { return (item == nullptr); };
     inline std::string& getNameOverride() { return nameOverride; };
