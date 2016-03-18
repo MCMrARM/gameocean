@@ -50,6 +50,7 @@ protected:
     float drag = 0.02f;
 
     float sizeX, sizeY;
+    float collisionInBlockAcceptance = 0.f;
     float headY = 0.f;
 
     void knockBack(float x, float z, float force);
