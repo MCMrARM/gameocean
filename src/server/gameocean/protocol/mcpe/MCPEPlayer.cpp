@@ -12,7 +12,7 @@
 
 void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback) {
     packetQueueMutex.lock();
-    packetQueue.push_back({ packet.release(), std::move(sentCallback) });
+    packetQueue.push_back({ std::move(packet), std::move(sentCallback) });
     packetQueueMutex.unlock();
 }
 
@@ -30,16 +30,14 @@ int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
         return 0;
     }
 
-    MCPEPacket* pk = packet.release();
-    int ret = directPacket(pk);
-    delete pk;
+    int ret = directPacket(&*packet);
     return ret;
 }
 
 bool MCPEPlayer::sendChunk(int x, int z) {
     if (!Player::sendChunk(x, z)) return false;
-    Chunk* chunk = this->world->getChunkAt(x, z, true);
-    if (chunk == nullptr) return false;
+    ChunkPtr chunk = this->world->getChunkAt(x, z, true);
+    if (!chunk) return false;
 
     std::unique_ptr<MCPEFullChunkDataPacket> pk (new MCPEFullChunkDataPacket());
     pk->chunk = chunk;
@@ -56,8 +54,9 @@ bool MCPEPlayer::sendChunk(int x, int z) {
 void MCPEPlayer::receivedChunk(int x, int z) {
     Player::receivedChunk(x, z);
 
-    Chunk* chunk = world->getChunkAt({x, z}, false);
-    if (chunk != nullptr) {
+    ChunkPtr chunk = world->getChunkAt({x, z}, false);
+    if (!chunk) {
+        std::unique_lock<std::mutex> lock (chunk->tilesMutex);
         for (std::shared_ptr<Tile> tile : chunk->tiles) {
             std::unique_ptr<MCPETileEntityDataPacket> pk (new MCPETileEntityDataPacket());
             pk->tile = tile;

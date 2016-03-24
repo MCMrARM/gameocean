@@ -2,9 +2,8 @@
 
 #include "Chunk.h"
 
-Chunk* ThreadedWorldProvider::requestChunk(ChunkPos pos) {
-
-    Chunk* ret = new Chunk(pos);
+ChunkPtr ThreadedWorldProvider::requestChunk(ChunkPos pos) {
+    Chunk* ret = new Chunk(world, pos);
     ret->ready = false;
 
     queueLock.lock();

@@ -9,6 +9,7 @@
 #include <gameocean/item/ItemInstance.h>
 #include <gameocean/Player.h>
 #include <gameocean/utils/BinaryStream.h>
+#include <gameocean/world/ChunkPtr.h>
 #include "MCPEEntityMetadata.h"
 #include "BinaryRakStream.h"
 
@@ -166,10 +167,12 @@ public:
         return nullptr;
     };
 
-    virtual void read(RakNet::BitStream& stream) { };
-    virtual void write(RakNet::BitStream& stream) { };
+    virtual ~MCPEPacket() {}
 
-    virtual void handle(MCPEPlayer& player) { };
+    virtual void read(RakNet::BitStream& stream) { }
+    virtual void write(RakNet::BitStream& stream) { }
+
+    virtual void handle(MCPEPlayer& player) { }
 };
 
 class MCPELoginPacket : public MCPEPacket {
@@ -1029,7 +1032,7 @@ public:
         id = MCPE_FULL_CHUNK_DATA_PACKET;
     };
 
-    Chunk* chunk;
+    ChunkPtr chunk;
 
     virtual void write(RakNet::BitStream& stream);
 };

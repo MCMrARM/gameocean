@@ -22,7 +22,7 @@ void Entity::close() {
 
     despawnFromAll();
     generalMutex.unlock();
-    if (chunk != nullptr) {
+    if (chunk) {
         chunk->removeEntity(this);
     }
 }
@@ -36,7 +36,7 @@ void Entity::setWorld(World& world, float x, float y, float z) {
 
     int newChunkX = ((int) x) >> 4;
     int newChunkZ = ((int) z) >> 4;
-    if (chunk == nullptr) {
+    if (!chunk) {
         chunk = world.getChunkAt(newChunkX, newChunkZ);
         chunk->addEntity(shared_from_this());
         updateViewers();
@@ -64,7 +64,7 @@ void Entity::setPos(float x, float y, float z) {
 
     int newChunkX = ((int) x) >> 4;
     int newChunkZ = ((int) z) >> 4;
-    if (chunk == nullptr) {
+    if (!chunk) {
         chunk = world->getChunkAt(newChunkX, newChunkZ);
         chunk->addEntity(shared_from_this());
         updateViewers();
@@ -322,7 +322,7 @@ std::vector<std::shared_ptr<Entity>> Entity::getNearbyEntities(float range) {
     for (int chunkX = (((int) myPos.x - (int) ceil(range)) >> 4); chunkX <= (((int) myPos.x + (int) ceil(range)) >> 4); chunkX++) {
         for (int chunkZ = (((int) myPos.z - (int) ceil(range)) >> 4); chunkZ <= (((int) myPos.z + (int) ceil(range)) >> 4); chunkZ++) {
             if (world.isChunkLoaded(chunkX, chunkZ)) {
-                Chunk* chunk = world.getChunkAt(chunkX, chunkZ, false);
+                ChunkPtr chunk = world.getChunkAt(chunkX, chunkZ, false);
                 chunk->entityMutex.lock();
                 for (auto const& e : chunk->entities) {
                     std::shared_ptr<Entity> ent = e.second;

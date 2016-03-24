@@ -62,7 +62,7 @@ void JSONItemLoader::parseStream(std::istream& data) {
             parseItemVariant(item, val);
             ItemRegister::registerItemVariant(item);
 
-            for (Json::ValueIterator it = variants.begin(); it != variants.end(); it++) {
+            for (auto it = variants.begin(); it != variants.end(); it++) {
                 int varId = it->get("id", id).asInt();
                 int varData = it->get("data", -1).asInt();
                 std::string varNameId = it->get("name_id", nameId).asString();
@@ -76,7 +76,7 @@ void JSONItemLoader::parseStream(std::istream& data) {
             parseBlockVariant(item, val);
             ItemRegister::registerBlockVariant(item);
 
-            for (Json::ValueIterator it = variants.begin(); it != variants.end(); it++) {
+            for (auto it = variants.begin(); it != variants.end(); it++) {
                 int varId = it->get("id", id).asInt();
                 int varData = it->get("data", -1).asInt();
                 std::string varNameId = it->get("name_id", nameId).asString();
@@ -116,7 +116,7 @@ void JSONItemLoader::parseItemVariant(ItemVariant* item, const Json::Value& val)
     }
     {
         const Json::Value& multiplierAffects = val["multiplier_affects"];
-        for (Json::ValueIterator it = multiplierAffects.begin(); it != multiplierAffects.end(); it++) {
+        for (auto it = multiplierAffects.begin(); it != multiplierAffects.end(); it++) {
             item->toolAffects.insert(BlockGroup::get(it->asString()));
         }
         item->toolBreakMultiplier = val.get("destroy_multiplier", item->toolBreakMultiplier).asFloat();
@@ -228,7 +228,7 @@ void JSONItemLoader::parseModel(const Json::Value& val) {
     Model* model = Model::getModel(nameId);
 
     const Json::Value& aabbs = val["aabbs"];
-    for (Json::ValueIterator it = aabbs.begin(); it != aabbs.end(); it++) {
+    for (auto it = aabbs.begin(); it != aabbs.end(); it++) {
         if (it->isArray() && it->size() == 6) {
             model->aabbs.push_back({(*it)[0].asFloat(), (*it)[1].asFloat(), (*it)[2].asFloat(),
                                     (*it)[3].asFloat(), (*it)[4].asFloat(), (*it)[5].asFloat()});

@@ -9,7 +9,6 @@
 #include <RakNet/RakNetTypes.h>
 #include <gameocean/world/ChunkPos.h>
 
-class MCPEPacket;
 class MCPEPacketBatchThread;
 class Chunk;
 
@@ -36,7 +35,7 @@ protected:
     typedef std::function<void(MCPEPacket*, int)> QueuedPacketCallback;
 
     struct QueuedPacket {
-        MCPEPacket* pk;
+        std::unique_ptr<MCPEPacket> pk;
         QueuedPacketCallback callback;
     };
 
@@ -69,11 +68,6 @@ public:
     MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {
         for (int i = 0; i < 9; i++)
             hotbarSlots[i] = i;
-    };
-    virtual ~MCPEPlayer() {
-        for (QueuedPacket& pk : packetQueue) {
-            delete pk.pk;
-        }
     };
 
     virtual void close(std::string reason, bool sendToPlayer);

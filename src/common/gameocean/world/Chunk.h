@@ -16,18 +16,41 @@
 #include <gameocean/utils/NibbleArray.h>
 
 class Tile;
+class World;
+class ChunkPtr;
 
+/**
+ * This is the basic Chunk class. You should avoid using it, if possible.
+ *
+ * If you need to store a reference to a chunk, please use a ChunkPtr. If you are given a reference, you can use the
+ * ChunkPtr constructor to get this type of pointer.
+ */
 class Chunk {
 
-public:
-    static Chunk* empty;
+protected:
+    friend class ChunkPtr;
+    friend class World;
 
-    ChunkPos pos;
+    std::mutex refMutex;
+    std::atomic<bool> isDestroying;
+    /** When this chunk is detached from World; this will cause this Chunk to be delete'd as soon as all references are lost. */
+    std::atomic<bool> markedDead;
+    std::atomic<int> refCount;
+
+    /** When ref count goes to 0, destroy this chunk */
+    void destroy();
+
+    bool shouldDestroy();
+
+public:
+    World& world;
+    const ChunkPos pos;
     std::map<EntityId, std::shared_ptr<Entity>> entities;
     std::set<std::shared_ptr<Tile>> tiles;
     std::set<Player*> usedBy;
     std::recursive_mutex mutex;
     std::recursive_mutex entityMutex;
+    std::mutex tilesMutex;
 
     byte blockId [16 * 16 * 128];
     NibbleArray<16 * 16 * 128 / 2> blockMeta;
@@ -38,10 +61,10 @@ public:
 
     std::atomic<bool> ready;
 
-    Chunk(ChunkPos pos) : pos(pos), ready(false) { };
-    Chunk(int x, int z) : pos(x, z), ready(false) { };
-    Chunk(ChunkPos pos, bool empty) : pos(pos), ready(empty) { if (empty) clear(); };
-    Chunk(int x, int z, bool empty) : pos(x, z), ready(empty) { if (empty) clear(); };
+    Chunk(World& world, ChunkPos pos) : world(world), pos(pos), ready(false), refCount(0), isDestroying(false), markedDead(false) { };
+    Chunk(World& world, int x, int z) : world(world), pos(x, z), ready(false), refCount(0), isDestroying(false), markedDead(false) { };
+    Chunk(World& world, ChunkPos pos, bool empty) : world(world), pos(pos), ready(empty), refCount(0), isDestroying(false), markedDead(false) { if (empty) clear(); };
+    Chunk(World& world, int x, int z, bool empty) : world(world), pos(x, z), ready(empty), refCount(0), isDestroying(false), markedDead(false) { if (empty) clear(); };
 
     void clear() {
         memset(blockId, 0, sizeof(blockId));

@@ -8,11 +8,11 @@
 #include <gameocean/utils/Vector2D.h>
 #include <gameocean/utils/Vector3D.h>
 #include <gameocean/math/AABB.h>
+#include <gameocean/world/ChunkPtr.h>
 
 typedef long long EntityId;
 
 class World;
-class Chunk;
 class Player;
 class EntityDamageEvent;
 
@@ -22,7 +22,7 @@ protected:
     unsigned int typeId = 0;
     World* world;
     EntityId id;
-    Chunk* chunk = nullptr;
+    ChunkPtr chunk;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> spawnedTime;
 
@@ -89,7 +89,7 @@ public:
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return *world;
     };
-    inline Chunk* getChunk() {
+    inline ChunkPtr getChunk() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return chunk;
     };

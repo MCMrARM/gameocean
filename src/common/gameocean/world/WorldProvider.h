@@ -4,8 +4,8 @@
 #include <condition_variable>
 #include "ChunkPos.h"
 #include <gameocean/utils/Thread.h>
+#include <gameocean/world/ChunkPtr.h>
 class World;
-class Chunk;
 
 class WorldProvider {
 
@@ -15,7 +15,7 @@ protected:
 public:
     WorldProvider(World& world) : world(world) {};
 
-    virtual Chunk* requestChunk(ChunkPos pos) = 0;
+    virtual ChunkPtr requestChunk(ChunkPos pos) = 0;
 
 };
 
@@ -35,7 +35,7 @@ protected:
 public:
     ThreadedWorldProvider(World& world) : WorldProvider(world) {};
 
-    virtual Chunk* requestChunk(ChunkPos pos);
+    virtual ChunkPtr requestChunk(ChunkPos pos);
 
     virtual void stop() { shouldStop = true; queueNotify.notify_all(); };
 

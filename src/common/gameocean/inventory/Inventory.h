@@ -12,16 +12,16 @@ public:
     std::mutex mutex;
 
     Inventory(int numSlots) : numSlots(numSlots) {
-        items.resize(numSlots);
-    };
+        items.resize((size_t) numSlots);
+    }
 
-    inline int getNumSlots() { return numSlots; };
+    inline int getNumSlots() const { return numSlots; }
 
     virtual void setItem(int slot, ItemInstance item) {
         mutex.lock();
         items[slot] = item;
         mutex.unlock();
-    };
+    }
     bool addItem(ItemInstance item);
     bool removeItem(ItemInstance item);
     bool findItem(ItemInstance const& item, bool exact);
@@ -34,7 +34,13 @@ public:
         ItemInstance ret = items[slot];
         mutex.unlock();
         return ret;
-    };
+    }
+
+    void clear() {
+        mutex.lock();
+        std::fill(items.begin(), items.end(), ItemInstance ());
+        mutex.unlock();
+    }
 
 };
 

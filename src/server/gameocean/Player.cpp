@@ -83,10 +83,16 @@ void Player::broadcastHeldItem() {
 
 bool Player::sendChunk(int x, int z) {
     ChunkPos pos (x, z);
-    Chunk* chunk = world->getChunkAt(pos, true);
-    if (chunk == nullptr || !chunk->ready)
+    ChunkPtr chunk = world->getChunkAt(pos, true);
+    if (!chunk)
         return false;
     chunkArrayMutex.lock();
+    if (!chunk->ready) {
+        toSendChunks[pos] = chunk;
+        chunkArrayMutex.unlock();
+        return false;
+    }
+    toSendChunks.erase(pos);
     sentChunks[pos] = chunk;
     chunkArrayMutex.unlock();
     return true;
@@ -96,13 +102,11 @@ void Player::receivedChunk(int x, int z) {
     chunkArrayMutex.lock();
     ChunkPos pos (x, z);
     if (sentChunks.count(pos) > 0) {
-        receivedChunks[pos] = world->getChunkAt(pos);
+        ChunkPtr chunk = sentChunks[pos];
+        receivedChunks[pos] = chunk;
+        chunk->setUsedBy(this, true);
     }
     chunkArrayMutex.unlock();
-
-    Chunk* chunk = world->getChunkAt(pos, false);
-    if (chunk != nullptr)
-        chunk->setUsedBy(this, true);
 }
 
 void Player::setSpawned() {
@@ -111,8 +115,8 @@ void Player::setSpawned() {
 
     spawned = true;
     chunkArrayMutex.lock();
-    for (auto entry : sentChunks) {
-        Chunk* c = entry.second;
+    for (auto const& entry : sentChunks) {
+        ChunkPtr c = entry.second;
         std::lock_guard<std::recursive_mutex> guard (c->entityMutex);
         for (auto e : c->entities) {
             e.second->spawnTo(this);
@@ -148,7 +152,7 @@ void Player::setWorld(World& world, float x, float y, float z) {
 }
 
 void Player::setPos(float x, float y, float z) {
-    Chunk* oldChunk = chunk;
+    ChunkPtr oldChunk = chunk;
     Entity::setPos(x, y, z);
 
     if (oldChunk != chunk) {
@@ -209,7 +213,7 @@ bool Player::isUnderFluid() {
 }
 
 void Player::sendQueuedChunks() {
-    if (chunk == nullptr)
+    if (!chunk)
         return;
 
     chunkArrayMutex.lock();
@@ -233,7 +237,7 @@ void Player::sendQueuedChunks() {
 }
 
 void Player::updateChunkQueue() {
-    if (chunk == nullptr)
+    if (!chunk)
         return;
 
     if (!shouldUpdateChunkQueue) {
@@ -244,8 +248,9 @@ void Player::updateChunkQueue() {
     chunkArrayMutex.lock();
     sendChunksQueue.clear();
 
-    std::unordered_map<ChunkPos, Chunk*> remSentChunks = sentChunks;
-    std::unordered_map<ChunkPos, Chunk*> remReceivedChunks = receivedChunks;
+    std::unordered_map<ChunkPos, ChunkPtr> remToSendChunks = toSendChunks;
+    std::unordered_map<ChunkPos, ChunkPtr> remSentChunks = sentChunks;
+    std::unordered_map<ChunkPos, ChunkPtr> remReceivedChunks = receivedChunks;
 
     int dir = 0;
     int len = 0;
@@ -258,6 +263,7 @@ void Player::updateChunkQueue() {
         }
         remSentChunks.erase(currentPos);
         remReceivedChunks.erase(currentPos);
+        remToSendChunks.erase(currentPos);
 
         if (dir == 0) {
             x++;
@@ -283,6 +289,10 @@ void Player::updateChunkQueue() {
     }
     for (auto entry : remReceivedChunks) {
         receivedChunks.erase(entry.first);
+        entry.second->setUsedBy(this, false);
+    }
+    for (auto entry : remToSendChunks) {
+        toSendChunks.erase(entry.first);
         entry.second->setUsedBy(this, false);
     }
 
@@ -476,7 +486,7 @@ void Player::kill() {
     z = event.getRespawnPos().z;
     world = event.getWorld();
     chunk->removeEntity(this);
-    chunk = nullptr;
+    chunk = ChunkPtr();
 
     sendDeathStatus();
     chunkArrayMutex.lock();

@@ -33,7 +33,7 @@ public:
         //
     }
 
-    virtual std::string getId() = 0;
+    virtual const char* getId() = 0;
 
     inline World& getWorld() {
         return world;

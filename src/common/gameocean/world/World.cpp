@@ -14,22 +14,22 @@ World::World(std::string name) : name(name), physicsTickTask(*this), updateTickT
     updateTickTask.start();
 }
 
-Chunk* World::getChunkAt(ChunkPos pos, bool create) {
+ChunkPtr World::getChunkAt(ChunkPos pos, bool create) {
     chunkMutex.lock();
     if (chunks.count(pos) > 0) {
         Chunk* c = chunks.at(pos);
         chunkMutex.unlock();
         return c;
     }
-    Chunk* ret = nullptr;
+    ChunkPtr ret;
     if (provider != nullptr) {
         ret = provider->requestChunk(pos);
     }
-    if (ret == nullptr && create) {
-        ret = new Chunk(pos, true); // create an empty chunk
+    if (!ret && create) {
+        ret = new Chunk(*this, pos, true); // create an empty chunk
     }
-    if (ret != nullptr)
-        chunks[pos] = ret;
+    if (ret)
+        chunks[pos] = &*ret;
     chunkMutex.unlock();
     return ret;
 }

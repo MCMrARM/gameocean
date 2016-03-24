@@ -56,11 +56,11 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream& stream) {
 
     DynamicMemoryBinaryStream binaryStream;
     binaryStream << (int) 0;
-    chunk->mutex.lock();
+    chunk->tilesMutex.lock();
     for (std::shared_ptr<Tile> tile : chunk->tiles) {
         MCPETileEntityDataPacket::writeTile(binaryStream, *tile);
     }
-    chunk->mutex.unlock();
+    chunk->tilesMutex.unlock();
 
     int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) +
                    sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors) +

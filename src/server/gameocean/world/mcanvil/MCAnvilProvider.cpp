@@ -52,14 +52,12 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
     if (regions.count(r) <= 0)
         loadRegion(r);
 
-    Chunk* c = nullptr;
+    ChunkPtr c;
     if (world.isChunkLoaded(pos)) {
         c = world.getChunkAt(pos, false);
     }
-    if (c == nullptr) {
-        c = new Chunk(pos);
-        world.setChunk(c);
-    }
+    if (!c)
+        return;
 
     if (regions.count(r) <= 0) { // the region may not exist
         c->clear();
@@ -199,7 +197,7 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
 */
 
     if (tag.val.count("TileEntities") > 0) {
-        c->mutex.lock();
+        c->tilesMutex.lock();
         NBTList& tileEntities = (NBTList&) *tag.val["TileEntities"];
         for (std::unique_ptr<NBTTag>& e : tileEntities.val) {
             NBTCompound& tileEntity = (NBTCompound&) *e;
@@ -211,7 +209,7 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
             if (tile)
                 c->tiles.insert(tile);
         }
-        c->mutex.unlock();
+        c->tilesMutex.unlock();
     }
     c->ready = true;
 }

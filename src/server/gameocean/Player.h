@@ -59,8 +59,9 @@ protected:
 
     std::atomic<bool> shouldUpdateChunkQueue;
     std::recursive_mutex chunkArrayMutex;
-    std::unordered_map<ChunkPos, Chunk*> sentChunks;
-    std::unordered_map<ChunkPos, Chunk*> receivedChunks;
+    std::unordered_map<ChunkPos, ChunkPtr> toSendChunks;
+    std::unordered_map<ChunkPos, ChunkPtr> sentChunks;
+    std::unordered_map<ChunkPos, ChunkPtr> receivedChunks;
     std::vector<ChunkPos> sendChunksQueue;
 
     std::set<Entity*> spawnedEntities;

@@ -5,6 +5,7 @@
 #include <memory>
 #include "Chunk.h"
 #include "ChunkPos.h"
+#include "ChunkPtr.h"
 #include "BlockPos.h"
 #include "WorldBlock.h"
 #include "WorldProvider.h"
@@ -13,27 +14,43 @@
 #include "../model/Model.h"
 #include "EntityPhysicsTickTask.h"
 #include "EntityUpdateTickTask.h"
+#include "WorldListener.h"
 
 class WorldProvider;
+class WorldListener;
 class Player;
 class Tile;
 
 class World {
+
+public:
+    enum class ChunkUnloadPolicy {
+        AS_SOON_AS_POSSIBLE, NEVER
+    };
 
 private:
     std::string name;
     std::recursive_mutex chunkMutex;
     std::unordered_map<ChunkPos, Chunk*> chunks;
     std::set<Player*> players;
+    std::set<WorldListener*> listeners;
+    std::vector<ChunkPtr> spawnTerrain;
     WorldProvider* provider;
     int startTime;
     long long startTimeMS;
     bool timeStopped = false;
     EntityPhysicsTickTask physicsTickTask;
     EntityUpdateTickTask updateTickTask;
+    ChunkUnloadPolicy unloadPolicy = ChunkUnloadPolicy::AS_SOON_AS_POSSIBLE;
 
 public:
     World(std::string name);
+
+    ~World() {
+        for (WorldListener* listener : listeners) {
+            listener->onWorldDestroy(*this);
+        }
+    }
 
     BlockPos spawn;
 
@@ -41,11 +58,20 @@ public:
 
     inline void setWorldProvider(WorldProvider* provider) {
         this->provider = provider;
-    };
+    }
+
+    inline void setChunkUnloadPolicy(ChunkUnloadPolicy policy) {
+        std::unique_lock<std::recursive_mutex> lock (chunkMutex);
+        unloadPolicy = policy;
+    }
+    inline ChunkUnloadPolicy getChunkUnloadPolicy() {
+        std::unique_lock<std::recursive_mutex> lock (chunkMutex);
+        return unloadPolicy;
+    }
 
     void setBlock(int x, int y, int z, BlockId id, byte data) {
-        Chunk* c = getChunkAt(x >> 4, z >> 4, false);
-        if (c == nullptr)
+        ChunkPtr c = getChunkAt(x >> 4, z >> 4, false);
+        if (!c)
             return;
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         c->setBlock(x & 0xf, y, z & 0xf, id, data);
@@ -58,8 +84,8 @@ public:
     };
 
     WorldBlock getBlock(int x, int y, int z) {
-        Chunk* c = getChunkAt(x >> 4, z >> 4, false);
-        if (c == nullptr)
+        ChunkPtr c = getChunkAt(x >> 4, z >> 4, false);
+        if (!c)
             return { 0, 0 };
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         return c->getBlock(x & 0xf, y, z & 0xf);
@@ -69,8 +95,8 @@ public:
     };
 
     inline std::shared_ptr<Tile> getTile(int x, int y, int z) {
-        Chunk* c = getChunkAt(x >> 4, z >> 4, false);
-        if (c == nullptr)
+        ChunkPtr c = getChunkAt(x >> 4, z >> 4, false);
+        if (!c)
             return nullptr;
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         return c->getTile(x, y, z);
@@ -79,14 +105,14 @@ public:
         return getTile(pos.x, pos.y, pos.z);
     };
 
-    Chunk* getChunkAt(ChunkPos pos, bool create);
-    inline Chunk* getChunkAt(ChunkPos pos) {
+    ChunkPtr getChunkAt(ChunkPos pos, bool create);
+    inline ChunkPtr getChunkAt(ChunkPos pos) {
         return getChunkAt(pos, false);
     };
-    inline Chunk* getChunkAt(int x, int z, bool create) {
+    inline ChunkPtr getChunkAt(int x, int z, bool create) {
         return getChunkAt(ChunkPos(x, z), create);
     };
-    inline Chunk* getChunkAt(int x, int z) {
+    inline ChunkPtr getChunkAt(int x, int z) {
         return getChunkAt(x, z, false);
     };
 
@@ -98,17 +124,34 @@ public:
         return isChunkLoaded(ChunkPos(x, z));
     };
 
+    /**
+     * @deprecated
+     * Please use getChunkPtrs instead if possible.
+     */
     inline std::unordered_map<ChunkPos, Chunk*> getChunks() {
         std::lock_guard<std::recursive_mutex> guard (chunkMutex);
         return chunks;
     };
+    inline std::vector<ChunkPtr> getChunkPtrs() {
+        std::lock_guard<std::recursive_mutex> guard (chunkMutex);
+        std::vector<ChunkPtr> ptrs;
+        ptrs.reserve(chunks.size());
+        for (auto chunk : chunks) {
+            if (!chunk.second->isDestroying)
+                ptrs.push_back(ChunkPtr(chunk.second));
+        }
+        return ptrs;
+    }
 
     void loadSpawnTerrain() {
+        std::lock_guard<std::recursive_mutex> guard (chunkMutex);
+        if (spawnTerrain.size() > 0)
+            return;
         int spawnChunkX = spawn.x >> 4;
         int spawnChunkZ = spawn.z >> 4;
-        for (int x = spawnChunkX - 1; x <= spawnChunkX + 1; x++) {
-            for (int z = spawnChunkZ - 1; z <= spawnChunkZ + 1; z++) {
-                getChunkAt(spawnChunkX, spawnChunkZ, true);
+        for (int x = spawnChunkX - 1; x <= spawnChunkX -1; x++) {
+            for (int z = spawnChunkZ - 1; z <= spawnChunkZ -1; z++) {
+                spawnTerrain.push_back(getChunkAt(spawnChunkX, spawnChunkZ, true));
             }
         }
     };
@@ -116,13 +159,47 @@ public:
     void setChunk(Chunk* chunk) {
         chunkMutex.lock();
         if (isChunkLoaded(chunk->pos)) {
-            Chunk* old = getChunkAt(chunk->pos);
-            if (old != nullptr)
-                delete old;
+            removeChunk(chunks[chunk->pos]);
         }
         chunks[chunk->pos] = chunk;
         chunkMutex.unlock();
+
+        for (WorldListener* listener : listeners) {
+            listener->onChunkAdded(*this, *chunk);
+        }
     };
+
+    void markChunkLoaded(Chunk* chunk) {
+        if (chunk == nullptr || &*getChunkAt(chunk->pos, false) != chunk)
+            return;
+        for (WorldListener* listener : listeners) {
+            listener->onChunkLoaded(*this, *chunk);
+        }
+    };
+
+    bool removeChunk(Chunk* chunk) {
+        chunkMutex.lock();
+        if (chunk == nullptr || !isChunkLoaded(chunk->pos) || chunks[chunk->pos] != chunk) {
+            chunkMutex.unlock();
+            return false;
+        }
+        chunk->markedDead = true;
+        chunks.erase(chunk->pos);
+        chunkMutex.unlock();
+        for (WorldListener* listener : listeners) {
+            listener->onChunkUnloaded(*this, *chunk);
+        }
+        return true;
+    };
+
+    void notifyChunkDead(Chunk* chunk) {
+        chunkMutex.lock();
+        if (unloadPolicy == ChunkUnloadPolicy::AS_SOON_AS_POSSIBLE) {
+            removeChunk(chunk);
+            delete chunk;
+        }
+        chunkMutex.unlock();
+    }
 
     void addPlayer(Player* player) {
         chunkMutex.lock();
@@ -174,7 +251,9 @@ public:
         int maxZ = (int) std::ceil(aabb.maxZ) >> 4;
         for (int x = minX; x <= maxX; x++) {
             for (int z = minZ; z <= maxZ; z++) {
-                Chunk* chunk = getChunkAt(x, z, false);
+                ChunkPtr chunk = getChunkAt(x, z, false);
+                if (!chunk)
+                    continue;
                 chunk->entityMutex.lock();
                 for (auto const& pair : chunk->entities) {
                     std::shared_ptr<Entity> ent = pair.second;

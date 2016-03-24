@@ -11,8 +11,7 @@ void EntityUpdateTickTask::run() {
         if (shouldStop)
             break;
 
-        for (auto const& it : world.getChunks()) {
-            Chunk* chunk = it.second;
+        for (auto& chunk : world.getChunkPtrs()) {
             chunk->entityMutex.lock();
             auto entities = chunk->entities;
             chunk->entityMutex.unlock();

@@ -21,16 +21,13 @@ void MCPEPacketBatchThread::run() {
                         player->packetQueue.back().pk->id != MCPE_FULL_CHUNK_DATA_PACKET &&
                         player->packetQueue.back().pk->id != MCPE_UPDATE_BLOCK_PACKET &&
                         player->packetQueue.back().pk->id != MCPE_PLAYER_LIST_PACKET) {
-                    auto p = player->packetQueue.back();
-                    MCPEPacket* pk = p.pk;
-                    int ret = player->directPacket(pk);
-                    p.callback(pk, ret);
-                    delete pk;
+                    auto pk = std::move(player->packetQueue.back());
+                    int ret = player->directPacket(pk.pk.get());
+                    pk.callback(pk.pk.get(), ret);
                     player->packetQueue.clear();
                     player->packetQueueMutex.unlock();
                 } else {
-                    std::deque<MCPEPlayer::QueuedPacket> packetQueue (player->packetQueue);
-                    player->packetQueue.clear();
+                    std::deque<MCPEPlayer::QueuedPacket> packetQueue = std::move(player->packetQueue);
                     player->packetQueueMutex.unlock();
 
                     RakNet::BitStream bs;
@@ -56,7 +53,7 @@ void MCPEPacketBatchThread::run() {
                     bool needsACK = false;
                     auto it = packetQueue.begin();
                     while (it != packetQueue.end()) {
-                        MCPEPacket* pk = it->pk;
+                        MCPEPacket* pk = it->pk.get();
                         if (pk->needsACK)
                             needsACK = true;
                         RakNet::BitStream pbs;
@@ -97,9 +94,8 @@ void MCPEPacketBatchThread::run() {
                     bs.SetWriteOffset(o);
 
                     int i = protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE, 0, player->address, false);
-                    for (MCPEPlayer::QueuedPacket& p : packetQueue) {
-                        p.callback(p.pk, i);
-                        delete p.pk;
+                    for (MCPEPlayer::QueuedPacket& pk : packetQueue) {
+                        pk.callback(pk.pk.get(), i);
                     }
                 }
             } else {

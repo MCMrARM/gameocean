@@ -1,3 +1,3 @@
 #include "Chest.h"
 
-std::string Chest::name = "Chest";
+const char* Chest::name = "Chest";
