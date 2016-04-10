@@ -9,6 +9,7 @@
 #include <gameocean/utils/BinaryStream.h>
 #include <gameocean/utils/CompressedBinaryStream.h>
 #include <gameocean/world/Chunk.h>
+#include <gameocean/world/ChunkPtr.h>
 #include <gameocean/world/World.h>
 #include <gameocean/world/tile/Tile.h>
 #include "../../utils/NBT.h"
@@ -211,5 +212,5 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
         }
         c->tilesMutex.unlock();
     }
-    c->ready = true;
+    c->setLoaded();
 }

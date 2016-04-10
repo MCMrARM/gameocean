@@ -75,6 +75,8 @@ public:
         memset(biomeColors, 0, sizeof(biomeColors));
     };
 
+    void setLoaded();
+
     void addEntity(std::shared_ptr<Entity> entity) {
         entityMutex.lock();
         entities[entity->getId()] = entity;

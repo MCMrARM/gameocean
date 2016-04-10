@@ -56,6 +56,13 @@ public:
 
     inline std::string getName() { return name; };
 
+    inline void addListener(WorldListener* listener) {
+        listeners.insert(listener);
+    }
+    inline void removeListener(WorldListener* listener) {
+        listeners.erase(listener);
+    }
+
     inline void setWorldProvider(WorldProvider* provider) {
         this->provider = provider;
     }

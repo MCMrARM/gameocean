@@ -28,3 +28,8 @@ bool Chunk::shouldDestroy() {
         return true;
     return false;
 }
+
+void Chunk::setLoaded() {
+    ready = true;
+    world.markChunkLoaded(this);
+}
