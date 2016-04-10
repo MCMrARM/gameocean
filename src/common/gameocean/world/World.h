@@ -31,6 +31,7 @@ public:
 private:
     std::string name;
     std::recursive_mutex chunkMutex;
+    std::recursive_mutex miscMutex;
     std::unordered_map<ChunkPos, Chunk*> chunks;
     std::set<Player*> players;
     std::set<WorldListener*> listeners;
@@ -68,11 +69,11 @@ public:
     }
 
     inline void setChunkUnloadPolicy(ChunkUnloadPolicy policy) {
-        std::unique_lock<std::recursive_mutex> lock (chunkMutex);
+        std::unique_lock<std::recursive_mutex> lock (miscMutex);
         unloadPolicy = policy;
     }
     inline ChunkUnloadPolicy getChunkUnloadPolicy() {
-        std::unique_lock<std::recursive_mutex> lock (chunkMutex);
+        std::unique_lock<std::recursive_mutex> lock (miscMutex);
         return unloadPolicy;
     }
 

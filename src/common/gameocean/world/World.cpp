@@ -35,6 +35,7 @@ ChunkPtr World::getChunkAt(ChunkPos pos, bool create) {
 }
 
 void World::setTime(int time, bool stopped) {
+    std::lock_guard<std::recursive_mutex> lock (miscMutex);
     this->startTime = time;
     this->timeStopped = stopped;
     if (!stopped)
