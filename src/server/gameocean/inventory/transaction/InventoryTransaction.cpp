@@ -11,8 +11,28 @@ bool InventoryTransaction::isFinished() {
         return true;
     if (isInInventoryTransfer())
         return false;
-    if (isContainerTransfer())
-        return true;
+    if (isContainerTransfer()) {
+        int totalPlayerDiff = 0;
+        int totalContainerDiff = 0;
+        ItemInstance* i = &elements[0].toItem;
+        if (i->isEmpty()) {
+            i = &elements[0].fromItem;
+            if (i->isEmpty())
+                return false;
+        }
+        for (Element e : elements) {
+            if (!e.toItem.isSameType(*i) && !e.toItem.isEmpty())
+                return true;
+            if (!e.fromItem.isSameType(e.toItem) && !e.fromItem.isEmpty() && !e.toItem.isEmpty())
+                return true;
+            if (&e.inventory == &owner.inventory) {
+                totalPlayerDiff += e.getDiff();
+            } else {
+                totalContainerDiff += e.getDiff();
+            }
+        }
+        return (totalPlayerDiff == -totalContainerDiff);
+    }
     return false;
 }
 
@@ -111,6 +131,8 @@ void InventoryTransaction::execute() {
 }
 
 void InventoryTransaction::revert() {
+    if (elements.size() == 0)
+        return;
     bool hasPlayerInventory = false;
     bool hasArmorInventory = false;
     bool hasSecondInventory = false;
