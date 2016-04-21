@@ -1,0 +1,67 @@
+{
+  "type": "block",
+  "name_id": "wood_slab",
+  "id": 158,
+  "model": "slab_bottom",
+  "hardness": 2,
+  "resistance": 15,
+  "flammable": true,
+  "stack_size": 64,
+  "group": "wood",
+  "variants": [
+    {
+      "name_id": "oak_wood_slab",
+      "data": 0
+    },
+    {
+      "name_id": "spruce_wood_slab",
+      "data": 1
+    },
+    {
+      "name_id": "birch_wood_slab",
+      "data": 2
+    },
+    {
+      "name_id": "jungle_wood_slab",
+      "data": 3
+    },
+    {
+      "name_id": "acacia_wood_slab",
+      "data": 4
+    },
+    {
+      "name_id": "dark_oak_wood_slab",
+      "data": 5
+    },
+    {
+      "name_id": "oak_wood_slab_top",
+      "data": 8,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "spruce_wood_slab_top",
+      "data": 9,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "birch_wood_slab_top",
+      "data": 10,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "jungle_wood_slab_top",
+      "data": 11,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "acacia_wood_slab_top",
+      "data": 12,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "dark_oak_wood_slab_top",
+      "data": 13,
+      "model": "slab_top"
+    }
+  ]
+}

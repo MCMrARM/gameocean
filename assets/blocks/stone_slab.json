@@ -1,0 +1,87 @@
+{
+  "type": "block",
+  "name_id": "stone_slab",
+  "id": 44,
+  "model": "slab_bottom",
+  "hardness": 2,
+  "resistance": 30,
+  "flammable": false,
+  "stack_size": 64,
+  "group": "rock",
+  "needs_tool": true,
+  "variants": [
+    {
+      "name_id": "stone_slab",
+      "data": 0
+    },
+    {
+      "name_id": "sandstone_slab",
+      "data": 1
+    },/*
+    This slab is broken and should not be used.
+    {
+      "name_id": "wood_slab",
+      "data": 2
+    },*/
+    {
+      "name_id": "cobble_slab",
+      "data": 3
+    },
+    {
+      "name_id": "brick_slab",
+      "data": 4
+    },
+    {
+      "name_id": "stone_brick_slab",
+      "data": 5
+    },
+    {
+      "name_id": "stone_slab2",
+      "data": 6
+    },
+    {
+      "name_id": "quartz_slab",
+      "data": 7
+    },
+    {
+      "name_id": "stone_slab_top",
+      "data": 8,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "sandstone_slab_top",
+      "data": 9,
+      "model": "slab_top"
+    },/*
+    {
+      "name_id": "wood_slab_top",
+      "data": 10,
+      "model": "slab_top"
+    },*/
+    {
+      "name_id": "cobble_slab_top",
+      "data": 11,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "brick_slab_top",
+      "data": 12,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "stone_brick_slab_top",
+      "data": 13,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "stone_slab2_top",
+      "data": 14,
+      "model": "slab_top"
+    },
+    {
+      "name_id": "quartz_slab_top",
+      "data": 15,
+      "model": "slab_top"
+    }
+  ]
+}

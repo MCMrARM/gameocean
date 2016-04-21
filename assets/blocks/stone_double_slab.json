@@ -1,0 +1,89 @@
+{
+  "type": "block",
+  "name_id": "stone_double_slab",
+  "id": 43,
+  "model": "default",
+  "hardness": 2,
+  "resistance": 30,
+  "flammable": false,
+  "stack_size": 64,
+  "group": "rock",
+  "needs_tool": true,
+  "variants": [
+    {
+      "name_id": "stone_double_slab",
+      "data": 0,
+      "drops": [
+        {
+          "name_id": "stone_slab",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name_id": "sandstone_double_slab",
+      "data": 1,
+      "drops": [
+        {
+          "name_id": "sandstone_slab",
+          "count": 2
+        }
+      ]
+    },/*
+    This slab is broken and should not be used.
+    {
+      "name_id": "wood_double_slab",
+      "data": 2
+    },*/
+    {
+      "name_id": "cobble_double_slab",
+      "data": 3,
+      "drops": [
+        {
+          "name_id": "cobble_slab",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name_id": "brick_double_slab",
+      "data": 4,
+      "drops": [
+        {
+          "name_id": "brick_slab",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name_id": "stone_brick_double_slab",
+      "data": 5,
+      "drops": [
+        {
+          "name_id": "stone_brick_slab",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name_id": "stone_double_slab2",
+      "data": 6,
+      "drops": [
+        {
+          "name_id": "stone_slab",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name_id": "quartz_double_slab",
+      "data": 7,
+      "drops": [
+        {
+          "name_id": "quartz_slab",
+          "count": 2
+        }
+      ]
+    }
+  ]
+}

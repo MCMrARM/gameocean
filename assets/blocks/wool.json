@@ -1,0 +1,77 @@
+{
+  "type": "block",
+  "name_id": "wool",
+  "id": 35,
+  "model": "default",
+  "hardness": 0.8,
+  "resistance": 4,
+  "flammable": true,
+  "stack_size": 64,
+  "group": "wool",
+  "variants": [
+    {
+      "name_id": "white_wool",
+      "data": 0
+    },
+    {
+      "name_id": "orange_wool",
+      "data": 1
+    },
+    {
+      "name_id": "magenta_wool",
+      "data": 2
+    },
+    {
+      "name_id": "light_blue_wool",
+      "data": 3
+    },
+    {
+      "name_id": "yellow_wool",
+      "data": 4
+    },
+    {
+      "name_id": "lime_wool",
+      "data": 5
+    },
+    {
+      "name_id": "pink_wool",
+      "data": 6
+    },
+    {
+      "name_id": "gray_wool",
+      "data": 7
+    },
+    {
+      "name_id": "light_gray_wool",
+      "data": 8
+    },
+    {
+      "name_id": "cyan_wool",
+      "data": 9
+    },
+    {
+      "name_id": "purple_wool",
+      "data": 10
+    },
+    {
+      "name_id": "blue_wool",
+      "data": 11
+    },
+    {
+      "name_id": "brown_wool",
+      "data": 12
+    },
+    {
+      "name_id": "green_wool",
+      "data": 13
+    },
+    {
+      "name_id": "red_wool",
+      "data": 14
+    },
+    {
+      "name_id": "black_wool",
+      "data": 15
+    }
+  ]
+}

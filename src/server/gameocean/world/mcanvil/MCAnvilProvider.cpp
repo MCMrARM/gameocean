@@ -25,7 +25,6 @@ MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {
     s->swapEndian = true;
 
     std::unique_ptr<NBTTag> ptag = NBTTag::getTag(*s);
-    ptag->print();
     NBTCompound& tag = (NBTCompound&) *((NBTCompound&) *ptag).val["Data"];
     bool isTimeStopped = false;
     if (tag.val.count("GameRules") > 0) {

@@ -46,6 +46,16 @@ void JSONItemLoader::parseAssetFile(std::string filePath) {
 void JSONItemLoader::parseStream(std::istream& data) {
     Json::Value val;
     data >> val;
+    if (val.isArray()) {
+        for (Json::Value& c : val) {
+            process(c);
+        }
+    } else if (val.isObject()) {
+        process(val);
+    }
+}
+
+void JSONItemLoader::process(Json::Value const& val) {
     std::string type = val.get("type", "unknown").asString();
     if (type == "item" || type == "block") {
         int id = val.get("id", 0).asInt();
@@ -59,7 +69,7 @@ void JSONItemLoader::parseStream(std::istream& data) {
 
         if (type == "item") {
             ItemVariant* item = new ItemVariant(id, -1, nameId);
-            parseItemVariant(item, val);
+            processItemVariant(item, val);
             ItemRegister::registerItemVariant(item);
 
             for (auto it = variants.begin(); it != variants.end(); it++) {
@@ -68,12 +78,12 @@ void JSONItemLoader::parseStream(std::istream& data) {
                 std::string varNameId = it->get("name_id", nameId).asString();
                 ItemVariant* variant = new ItemVariant(varId, (short) varData, varNameId);
                 variant->copyItemProperties(*item);
-                parseItemVariant(variant, *it);
+                processItemVariant(variant, *it);
                 ItemRegister::registerItemVariant(variant);
             }
         } else if (type == "block") {
             BlockVariant* item = new BlockVariant(id, -1, nameId);
-            parseBlockVariant(item, val);
+            processBlockVariant(item, val);
             ItemRegister::registerBlockVariant(item);
 
             for (auto it = variants.begin(); it != variants.end(); it++) {
@@ -83,18 +93,18 @@ void JSONItemLoader::parseStream(std::istream& data) {
                 BlockVariant* variant = new BlockVariant(varId, (short) varData, varNameId);
                 variant->copyItemProperties(*item);
                 variant->copyBlockProperties(*item);
-                parseBlockVariant(variant, *it);
+                processBlockVariant(variant, *it);
                 ItemRegister::registerBlockVariant(variant);
             }
         }
     } else if (type == "model") {
-        parseModel(val);
+        processModel(val);
     } else {
         Logger::main->error("JSON/Parse", "Invalid data. Type '%s' is invalid.", type.c_str());
     }
 }
 
-void JSONItemLoader::parseItemVariant(ItemVariant* item, const Json::Value& val) {
+void JSONItemLoader::processItemVariant(ItemVariant* item, const Json::Value& val) {
     /*
     std::string base = val.get("base", "").asString();
     if (base.length() > 0) {
@@ -142,19 +152,19 @@ void JSONItemLoader::parseItemVariant(ItemVariant* item, const Json::Value& val)
     {
         const Json::Value& recipe = val["recipe"];
         if (!recipe.empty()) {
-            parseItemRecipe(item, recipe);
+            processItemRecipe(item, recipe);
         }
     }
     {
         const Json::Value& recipes = val["recipes"];
         for (const Json::Value& recipe : recipes) {
-            parseItemRecipe(item, recipe);
+            processItemRecipe(item, recipe);
         }
     }
 }
 
-void JSONItemLoader::parseBlockVariant(BlockVariant* item, const Json::Value& val) {
-    parseItemVariant(item, val);
+void JSONItemLoader::processBlockVariant(BlockVariant* item, const Json::Value& val) {
+    processItemVariant(item, val);
 
     /*
     std::string base = val.get("base", "").asString();
@@ -218,7 +228,7 @@ void JSONItemLoader::parseBlockVariant(BlockVariant* item, const Json::Value& va
     }
 }
 
-void JSONItemLoader::parseModel(const Json::Value& val) {
+void JSONItemLoader::processModel(const Json::Value& val) {
     std::string nameId = val.get("name_id", "").asString();
     if (nameId.length() <= 0) {
         Logger::main->error("JSON/Model", "Cannot create model: has no name id");
@@ -236,7 +246,7 @@ void JSONItemLoader::parseModel(const Json::Value& val) {
     }
 }
 
-void JSONItemLoader::parseItemRecipe(ItemVariant* item, const Json::Value& val) {
+void JSONItemLoader::processItemRecipe(ItemVariant* item, const Json::Value& val) {
     std::string type = val.get("type", "shaped").asString();
 
     int outCount = val.get("count", 1).asInt();

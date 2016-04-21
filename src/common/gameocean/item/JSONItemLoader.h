@@ -33,10 +33,10 @@ private:
 
     std::vector<JSONRecipe> recipes;
 
-    void parseModel(const Json::Value& val);
-    void parseItemVariant(ItemVariant* item, const Json::Value& val);
-    void parseBlockVariant(BlockVariant* item, const Json::Value& val);
-    void parseItemRecipe(ItemVariant* item, const Json::Value& val);
+    void processModel(const Json::Value& val);
+    void processItemVariant(ItemVariant* item, const Json::Value& val);
+    void processBlockVariant(BlockVariant* item, const Json::Value& val);
+    void processItemRecipe(ItemVariant* item, const Json::Value& val);
 
     JSONItemDef getRecipeItem(const Json::Value& val);
 
@@ -46,6 +46,7 @@ public:
     void parseAssetFile(std::string filePath);
     void parseDataFile(std::string filePath);
     void parseStream(std::istream& data);
+    void process(Json::Value const& val);
 
     void registerRecipes();
 
