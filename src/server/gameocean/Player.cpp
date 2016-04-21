@@ -199,16 +199,18 @@ bool Player::tryMove(float x, float y, float z) {
 }
 
 bool Player::isInFluid() {
-    generalMutex.lock();
+    std::lock_guard<std::recursive_mutex> lock (generalMutex);
+    if (y < 0.f)
+        return false;
     BlockVariant* v = world->getBlock((int) (x + 0.5f), (int) (y + 0.5f), (int) (z + 0.5f)).getBlockVariant();
-    generalMutex.unlock();
     return (v != nullptr && v->fluid);
 }
 
 bool Player::isUnderFluid() {
-    generalMutex.lock();
+    std::lock_guard<std::recursive_mutex> lock (generalMutex);
+    if (y < 0.f)
+        return false;
     BlockVariant* v = world->getBlock((int) (x + 0.5f), (int) (aabb.maxY), (int) (z + 0.5f)).getBlockVariant();
-    generalMutex.unlock();
     return (v != nullptr && v->fluid);
 }
 

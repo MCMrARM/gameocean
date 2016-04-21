@@ -34,7 +34,7 @@ unsigned int MemoryBinaryStream::read(byte *data, unsigned int size) {
 }
 
 DynamicMemoryBinaryStream::DynamicMemoryBinaryStream(int size) : MemoryBinaryStream(new byte[size], size) {
-    //
+    allowRealloc = true;
 }
 
 void DynamicMemoryBinaryStream::resize(unsigned int minimalSize) {

@@ -25,9 +25,15 @@ MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {
     s->swapEndian = true;
 
     std::unique_ptr<NBTTag> ptag = NBTTag::getTag(*s);
+    ptag->print();
     NBTCompound& tag = (NBTCompound&) *((NBTCompound&) *ptag).val["Data"];
-    NBTCompound& rules = (NBTCompound&) *tag.val["GameRules"];
-    world.setTime(((NBTInt&) *tag.val["Time"]).val, ((NBTString&) *rules.val["doDaylightCycle"]).val == "true");
+    bool isTimeStopped = false;
+    if (tag.val.count("GameRules") > 0) {
+        NBTCompound& rules = (NBTCompound&) *tag.val["GameRules"];
+        if (rules.val.count("doDaylightCycle") > 0)
+            isTimeStopped = (((NBTString&) *rules.val["doDaylightCycle"]).val == "false");
+    }
+    world.setTime(((NBTInt&) *tag.val["Time"]).val, isTimeStopped);
 
     world.spawn = { ((NBTInt&) *tag.val["SpawnX"]).val, ((NBTInt&) *tag.val["SpawnY"]).val + 2, ((NBTInt&) *tag.val["SpawnZ"]).val };
 }

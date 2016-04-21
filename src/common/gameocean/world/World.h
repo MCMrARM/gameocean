@@ -232,8 +232,8 @@ public:
     void getBlockBoxes(AABB aabb, T callback) {
         int minX = (int) std::floor(aabb.minX);
         int maxX = (int) std::ceil(aabb.maxX);
-        int minY = (int) std::floor(aabb.minY);
-        int maxY = (int) std::ceil(aabb.maxY);
+        int minY = std::max((int) std::floor(aabb.minY), 0);
+        int maxY = std::max((int) std::ceil(aabb.maxY), 0);
         int minZ = (int) std::floor(aabb.minZ);
         int maxZ = (int) std::ceil(aabb.maxZ);
         for (int x = minX; x <= maxX; x++) {
