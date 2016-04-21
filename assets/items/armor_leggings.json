@@ -1,0 +1,45 @@
+{
+  "type": "item",
+  "name_id": "leggings",
+  "is_base": true,
+  "is_armor": true,
+  "armor_slot": 2,
+  "stack_size": 1,
+  "variants": [
+    {
+      "name_id": "leather_pants",
+      "id": 300,
+      "texture": "leather_pants",
+      "max_damage": 76,
+      "damage_reduction": 0.08
+    },
+    {
+      "name_id": "chain_leggings",
+      "id": 304,
+      "texture": "chain_leggings",
+      "max_damage": 226,
+      "damage_reduction": 0.16
+    },
+    {
+      "name_id": "iron_leggings",
+      "id": 308,
+      "texture": "iron_leggings",
+      "max_damage": 226,
+      "damage_reduction": 0.2
+    },
+    {
+      "name_id": "diamond_leggings",
+      "id": 312,
+      "texture": "diamond_leggings",
+      "max_damage": 496,
+      "damage_reduction": 0.24
+    },
+    {
+      "name_id": "gold_leggings",
+      "id": 316,
+      "texture": "gold_leggings",
+      "max_damage": 106,
+      "damage_reduction": 0.12
+    }
+  ]
+}

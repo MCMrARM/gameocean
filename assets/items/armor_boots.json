@@ -1,0 +1,45 @@
+{
+  "type": "item",
+  "name_id": "boots",
+  "is_base": true,
+  "is_armor": true,
+  "armor_slot": 3,
+  "stack_size": 1,
+  "variants": [
+    {
+      "name_id": "leather_boots",
+      "id": 301,
+      "texture": "leather_boots",
+      "max_damage": 66,
+      "damage_reduction": 0.04
+    },
+    {
+      "name_id": "chain_boots",
+      "id": 305,
+      "texture": "chain_boots",
+      "max_damage": 196,
+      "damage_reduction": 0.04
+    },
+    {
+      "name_id": "iron_boots",
+      "id": 309,
+      "texture": "iron_boots",
+      "max_damage": 196,
+      "damage_reduction": 0.08
+    },
+    {
+      "name_id": "diamond_boots",
+      "id": 313,
+      "texture": "diamond_boots",
+      "max_damage": 430,
+      "damage_reduction": 0.12
+    },
+    {
+      "name_id": "gold_boots",
+      "id": 317,
+      "texture": "gold_boots",
+      "max_damage": 92,
+      "damage_reduction": 0.04
+    }
+  ]
+}

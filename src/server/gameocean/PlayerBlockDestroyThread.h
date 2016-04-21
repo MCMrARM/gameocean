@@ -17,6 +17,7 @@ public:
     PlayerBlockDestroyThread(Server& server) : server(server) { };
 
     void notifyChange() {
+        std::unique_lock<std::mutex> lock(notifyMutex);
         notify.notify_one();
     };
 

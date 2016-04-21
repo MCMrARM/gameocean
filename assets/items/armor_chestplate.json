@@ -3,7 +3,7 @@
   "name_id": "chestplate",
   "is_base": true,
   "is_armor": true,
-  "armor_slot": 0,
+  "armor_slot": 1,
   "stack_size": 1,
   "variants": [
     {
