@@ -12,11 +12,27 @@
   "variants": [
     {
       "name_id": "stone_slab",
-      "data": 0
+      "data": 0,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "stone_slab_top",
+          "down": "stone_slab",
+          "full": "stone_double_slab"
+        }
+      }
     },
     {
       "name_id": "sandstone_slab",
-      "data": 1
+      "data": 1,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "sandstone_slab_top",
+          "down": "sandstone_slab",
+          "full": "sandstone_double_slab"
+        }
+      }
     },/*
     This slab is broken and should not be used.
     {
@@ -25,23 +41,63 @@
     },*/
     {
       "name_id": "cobble_slab",
-      "data": 3
+      "data": 3,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "cobble_slab_top",
+          "down": "cobble_slab",
+          "full": "cobble_double_slab"
+        }
+      }
     },
     {
       "name_id": "brick_slab",
-      "data": 4
+      "data": 4,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "brick_slab_top",
+          "down": "brick_slab",
+          "full": "brick_double_slab"
+        }
+      }
     },
     {
       "name_id": "stone_brick_slab",
-      "data": 5
+      "data": 5,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "stone_brick_slab_top",
+          "down": "stone_brick_slab",
+          "full": "stone_brick_double_slab"
+        }
+      }
     },
     {
       "name_id": "stone_slab2",
-      "data": 6
+      "data": 6,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "stone_slab2_top",
+          "down": "stone_slab2",
+          "full": "stone_double_slab2"
+        }
+      }
     },
     {
       "name_id": "quartz_slab",
-      "data": 7
+      "data": 7,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "quartz_slab_top",
+          "down": "quartz_slab",
+          "full": "quartz_double_slab"
+        }
+      }
     },
     {
       "name_id": "stone_slab_top",

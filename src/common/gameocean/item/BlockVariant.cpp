@@ -27,7 +27,7 @@ bool BlockVariant::use(UseItemAction& action) {
 
 bool BlockVariant::useOn(UseItemAction& action) {
     if (useOnAction != nullptr) {
-        return (*useOnAction)(action);
+        return (*useOnAction)(action, useOnActionData.get());
     }
     return false;
 }

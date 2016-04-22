@@ -13,7 +13,7 @@ std::string ItemVariant::getName() {
 
 bool ItemVariant::use(UseItemAction& action) {
     if (useAction != nullptr) {
-        if ((*useAction)(action))
+        if ((*useAction)(action, useActionData.get()))
             return true;
     }
     if (action.isUsedOnAir())

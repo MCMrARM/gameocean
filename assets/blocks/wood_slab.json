@@ -11,57 +11,135 @@
   "variants": [
     {
       "name_id": "oak_wood_slab",
-      "data": 0
+      "data": 0,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "oak_wood_slab_top",
+          "down": "oak_wood_slab",
+          "full": "oak_wood_double_slab"
+        }
+      }
     },
     {
       "name_id": "spruce_wood_slab",
-      "data": 1
+      "data": 1,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "spruce_wood_slab_top",
+          "down": "spruce_wood_slab",
+          "full": "spruce_wood_double_slab"
+        }
+      }
     },
     {
       "name_id": "birch_wood_slab",
-      "data": 2
+      "data": 2,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "birch_wood_slab_top",
+          "down": "birch_wood_slab",
+          "full": "birch_wood_double_slab"
+        }
+      }
     },
     {
       "name_id": "jungle_wood_slab",
-      "data": 3
+      "data": 3,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "jungle_wood_slab_top",
+          "down": "jungle_wood_slab",
+          "full": "jungle_wood_double_slab"
+        }
+      }
     },
     {
       "name_id": "acacia_wood_slab",
-      "data": 4
+      "data": 4,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "acacia_wood_slab_top",
+          "down": "acacia_wood_slab",
+          "full": "acacia_wood_double_slab"
+        }
+      }
     },
     {
       "name_id": "dark_oak_wood_slab",
-      "data": 5
+      "data": 5,
+      "actions": {
+        "use": {
+          "name": "place_half",
+          "up": "dark_oak_wood_slab_top",
+          "down": "dark_oak_wood_slab",
+          "full": "dark_oak_wood_double_slab"
+        }
+      }
     },
     {
       "name_id": "oak_wood_slab_top",
       "data": 8,
-      "model": "slab_top"
+      "model": "slab_top",
+      "drops": [
+        {
+          "name_id": "oak_wood_slab"
+        }
+      ]
     },
     {
       "name_id": "spruce_wood_slab_top",
       "data": 9,
-      "model": "slab_top"
+      "model": "slab_top",
+      "drops": [
+        {
+          "name_id": "spruce_wood_slab"
+        }
+      ]
     },
     {
       "name_id": "birch_wood_slab_top",
       "data": 10,
-      "model": "slab_top"
+      "model": "slab_top",
+      "drops": [
+        {
+          "name_id": "birch_wood_slab"
+        }
+      ]
     },
     {
       "name_id": "jungle_wood_slab_top",
       "data": 11,
-      "model": "slab_top"
+      "model": "slab_top",
+      "drops": [
+        {
+          "name_id": "jungle_wood_slab"
+        }
+      ]
     },
     {
       "name_id": "acacia_wood_slab_top",
       "data": 12,
-      "model": "slab_top"
+      "model": "slab_top",
+      "drops": [
+        {
+          "name_id": "acacia_wood_slab"
+        }
+      ]
     },
     {
       "name_id": "dark_oak_wood_slab_top",
       "data": 13,
-      "model": "slab_top"
+      "model": "slab_top",
+      "drops": [
+        {
+          "name_id": "dark_oak_wood_slab"
+        }
+      ]
     }
   ]
 }

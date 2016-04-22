@@ -90,6 +90,12 @@ public:
     inline void setBlock(BlockPos pos, BlockId id, byte data) {
         setBlock(pos.x, pos.y, pos.z, id, data);
     };
+    inline void setBlock(int x, int y, int z, BlockVariant* variant) {
+        setBlock(x, y, z, (BlockId) variant->getId(), (byte) variant->getVariantDataId());
+    };
+    inline void setBlock(BlockPos pos, BlockVariant* variant) {
+        setBlock(pos.x, pos.y, pos.z, variant);
+    };
 
     WorldBlock getBlock(int x, int y, int z) {
         ChunkPtr c = getChunkAt(x >> 4, z >> 4, false);

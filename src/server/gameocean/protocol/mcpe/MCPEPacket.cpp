@@ -202,14 +202,15 @@ void MCPEUseItemPacket::handle(MCPEPlayer& player) {
 
     BlockVariant* variant = nullptr;
     if (side == 0xff) {
-        UseItemAction action(std::static_pointer_cast<Player>(player.shared_from_this()), item.getItem(), player.getWorld(), nullptr, {x, y, z}, (BlockPos::Side) side);
+        UseItemAction action(std::static_pointer_cast<Player>(player.shared_from_this()), item.getItem(), player.getWorld(),
+                             nullptr, {x, y, z}, (BlockPos::Side) side, {fx, fy, fz});
         if (!item.isEmpty())
             item.getItem()->use(action);
         return;
     }
 
     UseItemAction action(std::static_pointer_cast<Player>(player.shared_from_this()), item.getItem(), player.getWorld(),
-                         player.getWorld().getBlock({x, y, z}).getBlockVariant(), {x, y, z}, (BlockPos::Side) side);
+                         player.getWorld().getBlock({x, y, z}).getBlockVariant(), {x, y, z}, (BlockPos::Side) side, {fx, fy, fz});
     if (!item.isEmpty())
         item.getItem()->use(action);
     else if (action.getTargetBlockVariant() != nullptr)

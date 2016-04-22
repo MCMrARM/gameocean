@@ -3,8 +3,10 @@
 #include <string>
 #include <map>
 #include <set>
+#include <memory>
 #include <gameocean/common.h>
-#include <gameocean/item/action/UseItemAction.h>
+#include "action/UseItemAction.h"
+#include "action/ActionHandlerData.h"
 
 class ItemGroup;
 class BlockGroup;
@@ -32,6 +34,7 @@ public:
     float restoreFoodSaturation = 0.f;
 
     UseItemAction::Handler useAction = nullptr;
+    std::unique_ptr<ActionHandlerData> useActionData;
 
     ItemVariant(int id, short variantDataId, std::string stringId);
     inline int getId() { return id; };

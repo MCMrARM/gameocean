@@ -1,12 +1,12 @@
 #include <gameocean/item/recipes/Recipe.h>
 #include "JSONItemLoader.h"
 
-#include "json/json.h"
 #include "ItemVariant.h"
 #include "BlockVariant.h"
 #include "ItemRegister.h"
 #include "ItemGroup.h"
 #include "BlockGroup.h"
+#include "action/ActionHandlerData.h"
 #include "../model/Model.h"
 #include "../utils/ResourceManager.h"
 #include "recipes/Recipe.h"
@@ -104,6 +104,23 @@ void JSONItemLoader::process(Json::Value const& val) {
     }
 }
 
+template <typename T>
+void JSONItemLoader::processAction(bool (*&handler)(T&, ActionHandlerData*), std::unique_ptr<ActionHandlerData>& handlerData, const Json::Value& data) {
+    if (data.isString()) {
+        std::string action = data.asString();
+        if (action.length() > 0 && T::handlers.count(action) > 0)
+            handler = T::handlers[action];
+    } else if (data.isObject()) {
+        std::string action = data.get("name", "").asString();
+        if (action.length() > 0 && T::handlers.count(action) > 0) {
+            handler = T::handlers[action];
+            if (T::processHandlers.count(action) > 0) {
+                actionCallbacksToCall.push_back({ T::processHandlers[action], handlerData, data });
+            }
+        }
+    }
+}
+
 void JSONItemLoader::processItemVariant(ItemVariant* item, const Json::Value& val) {
     /*
     std::string base = val.get("base", "").asString();
@@ -144,9 +161,7 @@ void JSONItemLoader::processItemVariant(ItemVariant* item, const Json::Value& va
     {
         const Json::Value& actions = val["actions"];
         if (!actions.empty()) {
-            std::string useAction = actions.get("use", "").asString();
-            if (useAction.length() > 0 && UseItemAction::handlers.count(useAction) > 0)
-                item->useAction = UseItemAction::handlers[useAction];
+            processAction<UseItemAction>(item->useAction, item->useActionData, actions.get("use", ""));
         }
     }
     {
@@ -193,12 +208,8 @@ void JSONItemLoader::processBlockVariant(BlockVariant* item, const Json::Value& 
     {
         const Json::Value& actions = val["actions"];
         if (!actions.empty()) {
-            std::string useOnAction = actions.get("use_on", "").asString();
-            if (useOnAction.length() > 0 && UseItemAction::handlers.count(useOnAction) > 0)
-                item->useOnAction = UseItemAction::handlers[useOnAction];
-            std::string destroyAction = actions.get("destroy", "").asString();
-            if (destroyAction.length() > 0 && DestroyBlockAction::handlers.count(destroyAction) > 0)
-                item->destroyAction = DestroyBlockAction::handlers[destroyAction];
+            processAction<UseItemAction>(item->useOnAction, item->useOnActionData, actions.get("use_on", ""));
+            processAction<DestroyBlockAction>(item->destroyAction, item->destroyActionData, actions.get("destroy", ""));
         }
     }
     {
@@ -334,4 +345,11 @@ ItemInstance JSONItemLoader::JSONItemDef::getItemInstance() const {
     if (v == nullptr)
         return ItemInstance ();
     return ItemInstance (v, (byte) count, v->getVariantDataId());
+}
+
+void JSONItemLoader::callActionLoadCallbacks() {
+    for (auto const& e : actionCallbacksToCall) {
+        e.storePtr = std::move(e.handler(e.value));
+    }
+    actionCallbacksToCall.clear();
 }

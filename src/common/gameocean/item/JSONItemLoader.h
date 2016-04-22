@@ -2,9 +2,14 @@
 
 #include <istream>
 #include <vector>
+#include <memory>
 #include <string>
 #include "ItemInstance.h"
+#include "json/json.h"
+#include "action/ItemAction.h"
+#include "ItemVariant.h"
 
+class ActionHandlerData;
 class ItemVariant;
 class BlockVariant;
 namespace Json {
@@ -30,8 +35,17 @@ private:
         std::vector<JSONItemDef> input;
         int shapedSizeX, shapedSizeY;
     };
+    struct ActionProcessCallEntry {
+        ItemAction::ProcessDataHandler handler;
+        std::unique_ptr<ActionHandlerData>& storePtr;
+        Json::Value value;
+    };
 
     std::vector<JSONRecipe> recipes;
+    std::vector<ActionProcessCallEntry> actionCallbacksToCall;
+
+    template <typename T>
+    void processAction(bool (*&handler)(T&, ActionHandlerData*), std::unique_ptr<ActionHandlerData>& handlerData, const Json::Value& data);
 
     void processModel(const Json::Value& val);
     void processItemVariant(ItemVariant* item, const Json::Value& val);
@@ -49,6 +63,7 @@ public:
     void process(Json::Value const& val);
 
     void registerRecipes();
+    void callActionLoadCallbacks();
 
 };
 

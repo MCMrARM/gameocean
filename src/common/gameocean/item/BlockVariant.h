@@ -24,7 +24,9 @@ public:
     std::vector<ItemDrop> drops;
 
     UseItemAction::Handler useOnAction = nullptr;
+    std::unique_ptr<ActionHandlerData> useOnActionData;
     DestroyBlockAction::Handler destroyAction = nullptr;
+    std::unique_ptr<ActionHandlerData> destroyActionData;
 
     BlockVariant(int id, short variantDataId, std::string stringId);
 

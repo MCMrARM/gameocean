@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ItemAction.h"
 #include "../../world/BlockPos.h"
 
 class BlockVariant;

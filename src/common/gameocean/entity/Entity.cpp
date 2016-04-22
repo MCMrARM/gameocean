@@ -155,7 +155,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
                 baabb.minZ > aabb.maxZ - acceptance || baabb.maxZ < aabb.minZ + acceptance)
                 return;
-            if (aabb.maxX < baabb.minX + acceptance) {
+            if (aabb.maxX - acceptance < baabb.minX) {
                 float x2 = baabb.minX - aabb.maxX;
                 if (x2 < x)
                     x = x2;
@@ -166,7 +166,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
                 baabb.minZ > aabb.maxZ - acceptance || baabb.maxZ < aabb.minZ + acceptance)
                 return;
-            if (aabb.minX > baabb.maxX - acceptance) {
+            if (aabb.minX + acceptance > baabb.maxX) {
                 float x2 = baabb.maxX - aabb.minX;
                 if (x2 > x)
                     x = x2;
@@ -181,7 +181,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
                 baabb.minX > aabb.maxX - acceptance || baabb.maxX < aabb.minX + acceptance)
                 return;
-            if (aabb.maxZ < baabb.minZ + acceptance) {
+            if (aabb.maxZ - acceptance < baabb.minX) {
                 float z2 = baabb.minZ - aabb.maxZ;
                 if (z2 < z)
                     z = z2;
@@ -192,7 +192,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
                 baabb.minX > aabb.maxX - acceptance || baabb.maxX < aabb.minX + acceptance)
                 return;
-            if (aabb.minZ > baabb.maxZ - acceptance) {
+            if (aabb.minZ + acceptance > baabb.maxZ) {
                 float z2 = baabb.maxZ - aabb.minZ;
                 if (z2 > z)
                     z = z2;

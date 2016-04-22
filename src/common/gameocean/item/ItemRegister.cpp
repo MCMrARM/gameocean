@@ -16,6 +16,7 @@ void ItemRegister::registerAssetItems() {
     loader.parseAssetDirectory("items");
     loader.parseAssetDirectory("blocks");
     loader.registerRecipes();
+    loader.callActionLoadCallbacks();
 }
 
 void ItemRegister::registerItemVariant(ItemVariant* variant) {
@@ -84,6 +85,8 @@ ItemVariant* ItemRegister::findItem(std::string id) {
     int ml = -1;
     ItemVariant* ret = nullptr;
     for (auto const& e : ItemRegister::items) {
+        if (e.second->getId() < 0)
+            continue;
         int i = StringUtils::compare(e.first, id);
         if (i > m || (i == m && e.first.length() < ml)) {
             ret = e.second;
