@@ -125,23 +125,23 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     AABB expanded = aabb;
     expanded.add(0, y, 0);
     if (y > 0) {
-        world->getBlockBoxes(expanded, [&y, expanded, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&y, expanded, aabb, acceptance](AABB const& baabb) {
             if (baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance ||
                 baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
             if (expanded.maxY - acceptance > baabb.minY && expanded.minY < baabb.minY) {
-                float y2 = baabb.minY - expanded.maxY;
+                float y2 = baabb.minY - aabb.maxY;
                 if (y2 < y)
                     y = y2;
             }
         });
     } else if (y < 0) {
-        world->getBlockBoxes(expanded, [&y, expanded, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&y, expanded, aabb, acceptance](AABB const& baabb) {
             if (baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance ||
                 baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
             if (expanded.minY + acceptance < baabb.maxY && expanded.maxY > baabb.maxY) {
-                float y2 = baabb.maxY - expanded.minY;
+                float y2 = baabb.maxY - aabb.minY;
                 if (y2 > y)
                     y = y2;
             }
@@ -177,23 +177,23 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     expanded = aabb;
     expanded.add(0, 0, z);
     if (z > 0) {
-        world->getBlockBoxes(expanded, [&z, expanded, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&z, expanded, aabb, acceptance](AABB const& baabb) {
             if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
                 baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance)
                 return;
             if (expanded.maxZ - acceptance > baabb.minZ && expanded.minZ < baabb.minZ) {
-                float z2 = baabb.minZ - expanded.maxZ;
+                float z2 = baabb.minZ - aabb.maxZ;
                 if (z2 < z)
                     z = z2;
             }
         });
     } else if (z < 0) {
-        world->getBlockBoxes(expanded, [&z, expanded, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&z, expanded, aabb, acceptance](AABB const& baabb) {
             if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
                 baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance)
                 return;
             if (expanded.minZ + acceptance < baabb.maxZ && expanded.maxZ > baabb.maxZ) {
-                float z2 = baabb.maxZ - expanded.minZ;
+                float z2 = baabb.maxZ - aabb.minZ;
                 if (z2 > z)
                     z = z2;
             }
