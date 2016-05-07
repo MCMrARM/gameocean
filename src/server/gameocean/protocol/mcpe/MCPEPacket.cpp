@@ -101,9 +101,12 @@ void MCPELoginPacket::handle(MCPEPlayer& player) {
     pk2->gamemode = MCPEStartGamePacket::GameMode::SURVIVAL;
     player.writePacket(std::move(pk2));
 
-    std::unique_ptr<MCPECraftingDataPacket> pk3(new MCPECraftingDataPacket());
-    pk3->recipes = Recipe::recipes;
+    std::unique_ptr<MCPEAdventureSettingsPacket> pk3(new MCPEAdventureSettingsPacket());
     player.writePacket(std::move(pk3));
+
+    std::unique_ptr<MCPECraftingDataPacket> pk4(new MCPECraftingDataPacket());
+    pk4->recipes = Recipe::recipes;
+    player.writePacket(std::move(pk4));
 
     player.sendWorldTime(player.getWorld().getTime(), player.getWorld().isTimeStopped());
 }

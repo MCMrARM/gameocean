@@ -157,7 +157,6 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
                 return;
             if (expanded.maxX - acceptance > baabb.minX && expanded.minX < baabb.minX) {
                 float x2 = baabb.minX - aabb.maxX;
-                std::cout << "B" << x << " " << x2 << " " << baabb.minX << " " << expanded.maxX << "\n";
                 if (x2 < x)
                     x = x2;
             }
@@ -169,7 +168,6 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
                 return;
             if (expanded.minX + acceptance < baabb.maxX && expanded.maxX > baabb.maxX) {
                 float x2 = baabb.maxX - aabb.minX;
-                std::cout << x << " " << x2 << " " << baabb.maxX << " " << expanded.minX << "\n";
                 if (x2 > x)
                     x = x2;
             }

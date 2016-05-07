@@ -332,6 +332,10 @@ public:
     long long eid = 0;
     int spawnX, spawnY, spawnZ;
     float x, y, z;
+    bool isLoadedInCreative = true;
+    byte dayCycleStopTime = 0;
+    bool isEduMode = false;
+    RakNet::RakString levelId;
 
     virtual void write(RakNet::BitStream& stream) {
         stream.Write(seed);
@@ -345,7 +349,10 @@ public:
         stream.Write(x);
         stream.Write(y);
         stream.Write(z);
-        stream.Write((byte) 0); // todo: what is this?
+        writeBool(stream, isLoadedInCreative);
+        stream.Write(dayCycleStopTime);
+        writeBool(stream, isEduMode);
+        stream.Write(levelId);
     };
 };
 
@@ -1008,6 +1015,41 @@ public:
     };
 
     virtual void handle(MCPEPlayer& player);
+};
+
+class MCPEAdventureSettingsPacket : public MCPEPacket {
+public:
+    MCPEAdventureSettingsPacket() {
+        id = MCPE_ADVENTURE_SETTINGS_PACKET;
+        flags.asInt = 0;
+    };
+
+    struct Flags {
+        bool worldInmutable : 1;
+        bool noPvP : 1;
+        bool noPvM : 1;
+        bool noMvP : 1;
+        bool staticTime : 1;
+        bool nametagsVisible : 1;
+        bool autoJump : 1;
+        bool allowFly : 1;
+        bool noclip : 1;
+        int filler : 23;
+    };
+    union FlagsUnion {
+        Flags flags;
+        int asInt;
+    };
+
+    FlagsUnion flags;
+    int userPermissions = 2;
+    int globalPermissions = 2;
+
+    virtual void write(RakNet::BitStream& stream) {
+        stream.Write(flags.asInt);
+        stream.Write(userPermissions);
+        stream.Write(globalPermissions);
+    }
 };
 
 class Tile;
