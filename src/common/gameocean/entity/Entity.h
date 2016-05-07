@@ -5,8 +5,8 @@
 #include <set>
 #include <chrono>
 #include <memory>
-#include <gameocean/utils/Vector2D.h>
-#include <gameocean/utils/Vector3D.h>
+#include <gameocean/math/Vector2D.h>
+#include <gameocean/math/Vector3D.h>
 #include <gameocean/math/AABB.h>
 #include <gameocean/world/ChunkPtr.h>
 

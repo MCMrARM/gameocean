@@ -195,7 +195,7 @@ bool Player::tryMove(float x, float y, float z) {
         addFoodExhaustion(isSprinting ? 0.8f : 0.2f);
     generalMutex.unlock();
 
-    return (x == event.getPos().x && y == event.getPos().y && z == event.getPos().z);
+    return (std::fabs(x - event.getPos().x) < 0.01 && std::fabs(y - event.getPos().y) < 0.01 && std::fabs(z - event.getPos().z) < 0.01);
 }
 
 bool Player::isInFluid() {

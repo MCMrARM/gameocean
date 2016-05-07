@@ -4,17 +4,17 @@ project(gameocean)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-find_package(OpenGL REQUIRED)
+#find_package(OpenGL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(PNG REQUIRED)
 find_package(Threads REQUIRED)
-find_package(GLEW REQUIRED)
+#find_package(GLEW REQUIRED)
 find_package(PkgConfig REQUIRED)
 
 #SET(CMAKE_CXX_COMPILER "g++-4.8")
 #SET(CMAKE_C_COMPILER "gcc-4.8")
 
-pkg_search_module(GLFW REQUIRED glfw3)
+#pkg_search_module(GLFW REQUIRED glfw3)
 
 #set(SOURCE_FILES ../clion/opengl.h)
 include_directories(${ZLIB_INCLUDE_DIRS})

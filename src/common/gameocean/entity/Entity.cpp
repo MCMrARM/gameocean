@@ -125,23 +125,23 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     AABB expanded = aabb;
     expanded.add(0, y, 0);
     if (y > 0) {
-        world->getBlockBoxes(expanded, [&y, aabb, acceptance](AABB const& baabb) {
-            if (baabb.minX > aabb.maxX - acceptance || baabb.maxX < aabb.minX + acceptance ||
-                baabb.minZ > aabb.maxZ - acceptance || baabb.maxZ < aabb.minZ + acceptance)
+        world->getBlockBoxes(expanded, [&y, expanded, acceptance](AABB const& baabb) {
+            if (baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance ||
+                baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
-            if (aabb.maxY <= baabb.minY + acceptance) {
-                float y2 = baabb.minY - aabb.maxY;
+            if (expanded.maxY - acceptance > baabb.minY && expanded.minY < baabb.minY) {
+                float y2 = baabb.minY - expanded.maxY;
                 if (y2 < y)
                     y = y2;
             }
         });
     } else if (y < 0) {
-        world->getBlockBoxes(expanded, [&y, aabb, acceptance](AABB const& baabb) {
-            if (baabb.minX > aabb.maxX - acceptance || baabb.maxX < aabb.minX + acceptance ||
-                baabb.minZ > aabb.maxZ - acceptance || baabb.maxZ < aabb.minZ + acceptance)
+        world->getBlockBoxes(expanded, [&y, expanded, acceptance](AABB const& baabb) {
+            if (baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance ||
+                baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
-            if (aabb.minY >= baabb.maxY - acceptance) {
-                float y2 = baabb.maxY - aabb.minY;
+            if (expanded.minY + acceptance < baabb.maxY && expanded.maxY > baabb.maxY) {
+                float y2 = baabb.maxY - expanded.minY;
                 if (y2 > y)
                     y = y2;
             }
@@ -151,23 +151,25 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     expanded = aabb;
     expanded.add(x, 0, 0);
     if (x > 0) {
-        world->getBlockBoxes(expanded, [&x, aabb, acceptance](AABB const& baabb) {
-            if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
-                baabb.minZ > aabb.maxZ - acceptance || baabb.maxZ < aabb.minZ + acceptance)
+        world->getBlockBoxes(expanded, [&x, expanded, aabb, acceptance](AABB const& baabb) {
+            if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
+                baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
-            if (aabb.maxX - acceptance < baabb.minX) {
+            if (expanded.maxX - acceptance > baabb.minX && expanded.minX < baabb.minX) {
                 float x2 = baabb.minX - aabb.maxX;
+                std::cout << "B" << x << " " << x2 << " " << baabb.minX << " " << expanded.maxX << "\n";
                 if (x2 < x)
                     x = x2;
             }
         });
     } else if (x < 0) {
-        world->getBlockBoxes(expanded, [&x, aabb, acceptance](AABB const& baabb) {
-            if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
-                baabb.minZ > aabb.maxZ - acceptance || baabb.maxZ < aabb.minZ + acceptance)
+        world->getBlockBoxes(expanded, [&x, expanded, aabb, acceptance](AABB const& baabb) {
+            if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
+                baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
-            if (aabb.minX + acceptance > baabb.maxX) {
+            if (expanded.minX + acceptance < baabb.maxX && expanded.maxX > baabb.maxX) {
                 float x2 = baabb.maxX - aabb.minX;
+                std::cout << x << " " << x2 << " " << baabb.maxX << " " << expanded.minX << "\n";
                 if (x2 > x)
                     x = x2;
             }
@@ -177,23 +179,23 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     expanded = aabb;
     expanded.add(0, 0, z);
     if (z > 0) {
-        world->getBlockBoxes(expanded, [&z, aabb, acceptance](AABB const& baabb) {
-            if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
-                baabb.minX > aabb.maxX - acceptance || baabb.maxX < aabb.minX + acceptance)
+        world->getBlockBoxes(expanded, [&z, expanded, acceptance](AABB const& baabb) {
+            if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
+                baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance)
                 return;
-            if (aabb.maxZ - acceptance < baabb.minX) {
-                float z2 = baabb.minZ - aabb.maxZ;
+            if (expanded.maxZ - acceptance > baabb.minZ && expanded.minZ < baabb.minZ) {
+                float z2 = baabb.minZ - expanded.maxZ;
                 if (z2 < z)
                     z = z2;
             }
         });
     } else if (z < 0) {
-        world->getBlockBoxes(expanded, [&z, aabb, acceptance](AABB const& baabb) {
-            if (baabb.minY > aabb.maxY - acceptance || baabb.maxY < aabb.minY + acceptance ||
-                baabb.minX > aabb.maxX - acceptance || baabb.maxX < aabb.minX + acceptance)
+        world->getBlockBoxes(expanded, [&z, expanded, acceptance](AABB const& baabb) {
+            if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
+                baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance)
                 return;
-            if (aabb.minZ + acceptance > baabb.maxZ) {
-                float z2 = baabb.maxZ - aabb.minZ;
+            if (expanded.minZ + acceptance < baabb.maxZ && expanded.maxZ > baabb.maxZ) {
+                float z2 = baabb.maxZ - expanded.minZ;
                 if (z2 > z)
                     z = z2;
             }

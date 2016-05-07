@@ -5,7 +5,7 @@
 #include "PlayerEvent.h"
 #include <gameocean/plugin/event/CallbackList.h>
 #include <gameocean/utils/Cancellable.h>
-#include <gameocean/utils/Vector3D.h>
+#include <gameocean/math/Vector3D.h>
 
 class World;
 
