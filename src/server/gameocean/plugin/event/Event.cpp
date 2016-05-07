@@ -5,6 +5,8 @@
 #include "player/PlayerDamageEvent.h"
 #include "player/PlayerAttackEvent.h"
 #include "player/PlayerDeathEvent.h"
+#include "player/PlayerBlockPlaceEvent.h"
+#include "player/PlayerBlockDestroyEvent.h"
 
 CallbackList<ChatEvent> ChatEvent::callbacks;
 CallbackList<PlayerJoinEvent> PlayerJoinEvent::callbacks;
@@ -13,3 +15,5 @@ CallbackList<PlayerMoveEvent> PlayerMoveEvent::callbacks;
 CallbackList<PlayerDamageEvent> PlayerDamageEvent::callbacks;
 CallbackList<PlayerAttackEvent> PlayerAttackEvent::callbacks;
 CallbackList<PlayerDeathEvent> PlayerDeathEvent::callbacks;
+CallbackList<PlayerBlockPlaceEvent> PlayerBlockPlaceEvent::callbacks;
+CallbackList<PlayerBlockDestroyEvent> PlayerBlockDestroyEvent::callbacks;

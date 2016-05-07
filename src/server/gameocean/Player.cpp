@@ -13,6 +13,7 @@
 #include "plugin/event/player/PlayerAttackEvent.h"
 #include "plugin/event/player/PlayerDamageEvent.h"
 #include "plugin/event/player/PlayerDeathEvent.h"
+#include "plugin/event/player/PlayerBlockDestroyEvent.h"
 #include <gameocean/entity/ItemEntity.h>
 #include "permission/Permission.h"
 
@@ -348,6 +349,10 @@ void Player::finishedMining() {
         cancelMining();
         return;
     }
+    PlayerBlockDestroyEvent event (*this, getWorld(), miningBlock, miningBlockPos);
+    Event::broadcast(event);
+    if (event.isCancelled())
+        return;
     {
         ItemInstance itm = inventory.getItem(inventory.heldSlot);
         if (itm.getItem() != nullptr) {

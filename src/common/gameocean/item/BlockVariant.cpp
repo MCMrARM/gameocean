@@ -3,6 +3,7 @@
 
 #ifdef SERVER
 #include <gameocean/Player.h>
+#include <gameocean/plugin/event/player/PlayerBlockPlaceEvent.h>
 #include "../world/World.h"
 #endif
 
@@ -16,11 +17,17 @@ bool BlockVariant::use(UseItemAction& action) {
 #ifdef SERVER
     if (action.isUsedOnAir())
         return false;
+    PlayerBlockPlaceEvent event (*action.getPlayer(), action.getWorld(), this, action.getTargetBlockPos(),
+                                 action.getTargetBlockSide());
+    Event::broadcast(event);
+    if (event.isCancelled())
+        return false;
     BlockPos pos = action.getTargetBlockPos().side(action.getTargetBlockSide());
     BlockVariant* variant = action.getWorld().getBlock(pos).getBlockVariant();
     if (variant == nullptr || variant->replaceable) {
         action.getWorld().setBlock(pos, (BlockId) id, (byte) variantDataId);
         action.getPlayer()->inventory.removeItem(ItemInstance(id, 1, variantDataId));
+        return true;
     }
 #endif
 }
