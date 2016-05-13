@@ -3,6 +3,7 @@
 #include <iostream>
 #include <unordered_map>
 #include <vector>
+#include <set>
 #include "CommandSender.h"
 #include "../Player.h"
 #include "../permission/Permission.h"
@@ -13,7 +14,12 @@ class Plugin;
 class Command {
 
 public:
+    /**
+     * This map links all command names to their respective Command instance. This map includes all command aliases.
+     */
     static std::unordered_map<std::string, Command*> commands;
+
+    static std::set<Command*> commandSet;
 
     /**
      * This function registers a command.

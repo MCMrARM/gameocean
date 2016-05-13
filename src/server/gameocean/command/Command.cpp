@@ -10,8 +10,10 @@
 #include <gameocean/utils/StringUtils.h>
 
 std::unordered_map<std::string, Command*> Command::commands;
+std::set<Command*> Command::commandSet;
 
 void Command::registerCommand(Command* command) {
+    commandSet.insert(command);
     commands[command->getName()] = command;
     for (std::string str : command->getAlternativeNames()) {
         if (commands.count(str) <= 0) {
@@ -21,7 +23,8 @@ void Command::registerCommand(Command* command) {
 }
 
 void Command::unregisterCommand(Command* command) {
-    Command::commands.erase(command->getName());
+    commands.erase(command->getName());
+    commandSet.erase(command);
 }
 
 void Command::registerDefaultCommands(Server& server) {

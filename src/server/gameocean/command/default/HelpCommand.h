@@ -34,7 +34,7 @@ public:
         if (Command::commands.size() == 0)
             return;
 
-        int pages = (Command::commands.size() - 1) / COMMANDS_PER_PAGE + 1;
+        int pages = (int) (Command::commandSet.size() - 1) / COMMANDS_PER_PAGE + 1;
         if (page < 0 || page >= pages) {
             page = 0;
         }
@@ -44,14 +44,11 @@ public:
             sender.sendMessage(msg.str());
         }
         int start = page * COMMANDS_PER_PAGE;
-        auto it = Command::commands.begin();
-        for (int i = 0; i < start; i++)
-            it++;
+        auto it = Command::commandSet.begin();
+        std::advance(it, start);
 
-        for (int i = 0; it != Command::commands.end() && i < COMMANDS_PER_PAGE; it++, i++) {
-            Command* cmd = it->second;
-            if (cmd == nullptr)
-                return;
+        for (int i = 0; it != Command::commandSet.end() && i < COMMANDS_PER_PAGE; it++, i++) {
+            Command* cmd = *it;
             sender.sendMessage(cmd->getName() + ": " + cmd->getDescription());
         }
     };
