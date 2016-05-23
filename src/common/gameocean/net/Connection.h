@@ -4,6 +4,7 @@
 #include <exception>
 class Socket;
 class Packet;
+class Protocol;
 class ConnectionHandler;
 class ClientConnectionHandler;
 class ServerConnectionHandler;
@@ -31,15 +32,21 @@ public:
 
 class Connection {
 
+protected:
+    bool accepted;
+    Protocol& protocol;
+
 public:
-    Socket* socket;
     ConnectionHandler* handler;
 
-    bool accepted = false;
-    bool client = true;
+    const bool client;
 
-    Connection(Socket& socket, bool client);
-    Connection(std::string ip, unsigned short port);
+    Connection(Protocol& protocol, bool client) : protocol(protocol), client(client) {
+        //
+    }
+    Connection(Protocol& protocol) : Connection(protocol, true) {
+        //
+    }
 
     enum class DisconnectReason {
         // login
@@ -50,18 +57,27 @@ public:
         TIMEOUT, CLOSED, UNKNOWN
     };
 
-    void close();
-    void kick(std::string reason);
+    virtual void close() = 0;
+    virtual void kick(std::string reason) = 0;
 
     void setHandler(ConnectionHandler& handler);
+    virtual void setAccepted(bool accepted) {
+        this->accepted = accepted;
+    }
+
+    virtual void send(Packet& packet) = 0;
+
+    inline bool isAccepted() {
+        return accepted;
+    }
 
     ConnectionHandler& getHandler();
     ClientConnectionHandler& getClientHandler();
     ServerConnectionHandler& getServerHandler();
 
-    void handlePacket(Packet* packet);
-    void handlePacket();
-    void loop();
+    virtual void handlePacket(Packet* packet);
+    virtual bool readAndHandlePacket() = 0;
+    virtual void loop();
 
 };
 

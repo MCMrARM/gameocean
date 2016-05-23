@@ -20,12 +20,16 @@ protected:
 
 public:
     Socket() {};
+    Socket(int fd);
     ~Socket();
 
-    bool connect(std::string ip, unsigned short port, Socket::Protocol protocol, AddressVersion version);
-    bool connect(std::string ip, unsigned short port, Socket::Protocol protocol);
+    bool connect(std::string ip, unsigned short port, Protocol protocol, AddressVersion version);
+    bool connect(std::string ip, unsigned short port, Protocol protocol);
 
     void close();
+
+    std::string getPeerName();
+    int getPeerPort();
 
     FileBinaryStream& getStream();
 

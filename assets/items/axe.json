@@ -1,0 +1,52 @@
+{
+  "type": "item",
+  "name_id": "axe",
+  "is_base": true,
+  "tool_group": "axe",
+  "multiplier_affects": ["wood", "plants"],
+  "item_damage_block_break": 1,
+  "item_damage_attack": 2,
+  "stack_size": 1,
+  "variants": [
+    {
+      "name_id": "wooden_axe",
+      "id": 271,
+      "destroy_multiplier": 2,
+      "texture": "wooden_axe",
+      "max_uses": 60,
+      "attack_damage": 3
+    },
+    {
+      "name_id": "stone_axe",
+      "id": 275,
+      "destroy_multiplier": 4,
+      "texture": "stone_axe",
+      "max_uses": 132,
+      "attack_damage": 4
+    },
+    {
+      "name_id": "iron_axe",
+      "id": 258,
+      "destroy_multiplier": 6,
+      "texture": "iron_axe",
+      "max_uses": 251,
+      "attack_damage": 5
+    },
+    {
+      "name_id": "diamond_axe",
+      "id": 279,
+      "destroy_multiplier": 8,
+      "texture": "diamond_axe",
+      "max_uses": 1562,
+      "attack_damage": 6
+    },
+    {
+      "name_id": "gold_axe",
+      "id": 286,
+      "destroy_multiplier": 12,
+      "texture": "gold_axe",
+      "max_uses": 33,
+      "attack_damage": 3
+    }
+  ]
+}

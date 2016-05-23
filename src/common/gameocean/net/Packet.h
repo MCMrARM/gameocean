@@ -34,14 +34,6 @@ public:
     virtual void handleClient(Connection &connection) {};
     virtual void handleServer(Connection &connection) {};
 
-    template<typename T> static void registerPacket(int id, Packet::Type type);
-    static void registerCommonPackets();
-
-    static Packet* getPacket(int id, bool client);
-    static Packet* getPacket(BinaryStream &stream, bool client);
-    static void sendPacket(BinaryStream &stream, const Packet &packet);
-    static void sendPacket(Connection &connection, const Packet &packet);
-
 };
 
 class UnknownPacket : public Packet {

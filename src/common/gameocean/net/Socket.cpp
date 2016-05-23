@@ -11,8 +11,13 @@ Socket::~Socket() {
     this->close();
 }
 
-bool Socket::connect(std::string ip, unsigned short port, Socket::Protocol protocol, AddressVersion version) {
-    int family = (version == AddressVersion::IPv6 ? AF_INET6 : AF_INET);
+Socket::Socket(int fd) {
+    this->fd = fd;
+    this->stream.setFileDescriptor(fd);
+}
+
+bool Socket::connect(std::string ip, unsigned short port, Protocol protocol, AddressVersion version) {
+    sa_family_t family = (sa_family_t) (version == AddressVersion::IPv6 ? AF_INET6 : AF_INET);
     fd = socket(family, protocol == Protocol::TCP ? SOCK_STREAM : SOCK_DGRAM, 0);
     if (fd < 0) {
         Logger::main->error("Socket", "Unable to open socket");
@@ -20,6 +25,7 @@ bool Socket::connect(std::string ip, unsigned short port, Socket::Protocol proto
     }
 
     sockaddr_in addr;
+    memset((void*) &addr, 0, sizeof(addr));
     addr.sin_addr.s_addr = inet_addr(ip.c_str());
     addr.sin_family = family;
     addr.sin_port = htons(port);
@@ -34,7 +40,7 @@ bool Socket::connect(std::string ip, unsigned short port, Socket::Protocol proto
     return true;
 }
 
-bool Socket::connect(std::string ip, unsigned short port, Socket::Protocol protocol) {
+bool Socket::connect(std::string ip, unsigned short port, Protocol protocol) {
     AddressVersion version = AddressVersion::IPv4;
     if (ip.find("::") != std::string::npos) {
         version = AddressVersion::IPv6;
@@ -50,4 +56,21 @@ void Socket::close() {
 
 FileBinaryStream& Socket::getStream() {
     return this->stream;
+}
+
+std::string Socket::getPeerName() {
+    sockaddr_in clientAddr;
+    socklen_t clientAddrLen = sizeof(clientAddr);
+    int res = getpeername(fd, (sockaddr *) &clientAddr, &clientAddrLen);
+    if (res < 0)
+        return std::string();
+    return std::string(inet_ntoa(clientAddr.sin_addr));
+}
+int Socket::getPeerPort() {
+    sockaddr_in clientAddr;
+    socklen_t clientAddrLen = sizeof(clientAddr);
+    int res = getpeername(fd, (sockaddr *) &clientAddr, &clientAddrLen);
+    if (res < 0)
+        return -1;
+    return htons(clientAddr.sin_port);
 }
