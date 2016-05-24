@@ -36,21 +36,21 @@ public:
     void start();
 
     std::vector<std::shared_ptr<Player>> getPlayers() {
-        playersMutex.lock();
-        std::vector<std::shared_ptr<Player>> playersCopy (players);
-        playersMutex.unlock();
-        return playersCopy;
+        std::lock_guard<std::mutex> lock (playersMutex);
+        return players;
+    }
+    size_t getPlayerCount() {
+        std::lock_guard<std::mutex> lock (playersMutex);
+        return players.size();
     }
 
     void addPlayer(std::shared_ptr<Player> player) {
-        playersMutex.lock();
+        std::lock_guard<std::mutex> lock (playersMutex);
         players.push_back(player);
-        playersMutex.unlock();
     }
     void removePlayer(std::shared_ptr<Player> player) {
-        playersMutex.lock();
+        std::lock_guard<std::mutex> lock (playersMutex);
         players.erase(std::remove(players.begin(), players.end(), player), players.end());
-        playersMutex.unlock();
     }
     std::shared_ptr<Player> findPlayer(std::string like);
     void broadcastMessage(std::string msg);

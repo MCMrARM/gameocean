@@ -3,7 +3,6 @@
 #include <map>
 #include <vector>
 #include <memory>
-#include <RakNet/BitStream.h>
 #include <gameocean/common.h>
 #include <gameocean/utils/UUID.h>
 #include <gameocean/item/ItemInstance.h>
@@ -11,7 +10,6 @@
 #include <gameocean/utils/BinaryStream.h>
 #include <gameocean/world/ChunkPtr.h>
 #include "MCPEEntityMetadata.h"
-#include "BinaryRakStream.h"
 
 enum MCPEMessages {
     MCPE_LOGIN_PACKET = 0x8f,
@@ -87,64 +85,60 @@ private:
     static std::map<int, CreatePacket*> packets;
 
 protected:
-    bool readBool(RakNet::BitStream& stream) {
+    bool readBool(BinaryStream& stream) {
         byte r;
-        stream.Read(r);
+        stream >> r;
         return r;
     }
-    void writeBool(RakNet::BitStream& stream, bool b) {
-        byte v = b ? 1 : 0;
-        stream.Write(v);
+    void writeBool(BinaryStream& stream, bool b) {
+        byte v = (byte) (b ? 1 : 0);
+        stream << v;
     }
-    UUID readUUID(RakNet::BitStream& stream) {
+    UUID readUUID(BinaryStream& stream) {
         long long p1, p2;
-        stream.Read(p1);
-        stream.Read(p2);
+        stream >> p1 >> p2;
         return UUID { p1, p2 };
     }
-    void writeUUID(RakNet::BitStream& stream, UUID& uuid) {
-        stream.Write(uuid.part1);
-        stream.Write(uuid.part2);
+    void writeUUID(BinaryStream& stream, UUID const& uuid) {
+        stream << uuid.part1 << uuid.part2;
     }
-    void writeUUID(BinaryStream& stream, UUID& uuid) {
-        stream << uuid.part1;
-        stream << uuid.part2;
-    }
-    ItemInstance readItemInstance(RakNet::BitStream& stream) {
+    ItemInstance readItemInstance(BinaryStream& stream) {
         short id;
-        stream.Read(id);
+        stream >> id;
         if (id == 0)
             return ItemInstance ();
 
         byte count;
         short damage;
-        stream.Read(count);
-        stream.Read(damage);
+        stream >> count >> damage;
 
         short nbtLen;
-        stream.Read(nbtLen);
+        stream >> nbtLen;
         if (nbtLen > 0) {
             byte n [nbtLen];
-            stream.Read((char*) n, nbtLen);
+            stream.read(n, (unsigned int) nbtLen);
         }
 
         return ItemInstance (id, count, damage);
-    }
-    void writeItemInstance(RakNet::BitStream& stream, ItemInstance const& i) {
-        stream.Write((short) i.getItemId());
-        if (i.getItemId() == 0)
-            return;
-        stream.Write(i.count);
-        stream.Write(i.getItemData());
-        stream.Write((short) 0); // no nbt data
     }
     void writeItemInstance(BinaryStream& stream, ItemInstance const& i) {
         stream << (short) i.getItemId();
         if (i.getItemId() == 0)
             return;
-        stream << (char) i.count;
-        stream << i.getItemData();
+        stream << i.count << i.getItemData();
         stream << (short) 0; // no nbt data
+    }
+    std::string readString(BinaryStream& stream) {
+        unsigned int len;
+        stream >> len;
+        std::string str;
+        str.resize(len);
+        stream.read((byte*) &str[0], len);
+        return str;
+    }
+    void writeString(BinaryStream& stream, std::string const& str) {
+        stream << (unsigned int) str.size();
+        stream.write((byte*) &str[0], (unsigned int) str.size());
     }
 
 public:
@@ -169,8 +163,8 @@ public:
 
     virtual ~MCPEPacket() {}
 
-    virtual void read(RakNet::BitStream& stream) { }
-    virtual void write(RakNet::BitStream& stream) { }
+    virtual void read(BinaryStream& stream) { }
+    virtual void write(BinaryStream& stream) { }
 
     virtual void handle(MCPEPlayer& player) { }
 };
@@ -181,30 +175,28 @@ public:
         id = MCPE_LOGIN_PACKET;
     };
 
-    RakNet::RakString username;
+    std::string username;
     int protocol1, protocol2;
     long long clientId;
     UUID clientUUID;
-    RakNet::RakString serverAddress;
-    RakNet::RakString clientSecret;
-    RakNet::RakString skinModel;
+    std::string serverAddress;
+    std::string clientSecret;
+    std::string skinModel;
     std::string skin;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(username);
-        stream.Read(protocol1);
-        stream.Read(protocol2);
-        stream.Read(clientId);
+    virtual void read(BinaryStream& stream) {
+        username = readString(stream);
+        stream >> protocol1 >> protocol2 >> clientId;
         clientUUID = readUUID(stream);
-        stream.Read(serverAddress);
-        stream.Read(clientSecret);
-        stream.Read(skinModel);
-        short skinLen;
-        stream.Read(skinLen);
+        serverAddress = readString(stream);
+        clientSecret = readString(stream);
+        skinModel = readString(stream);
+        unsigned short skinLen;
+        stream >> skinLen;
         if (skinLen <= 0)
             return;
         skin.resize(skinLen);
-        stream.Read(&skin[0], skinLen);
+        stream.read((byte*) &skin[0], skinLen);
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -222,8 +214,8 @@ public:
 
     Status status;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write((int) status);
+    virtual void write(BinaryStream& stream) {
+        stream << (int) status;
     };
 };
 
@@ -234,10 +226,10 @@ public:
         priority = true;
     };
 
-    RakNet::RakString message;
+    std::string message;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(message);
+    virtual void write(BinaryStream& stream) {
+        message = readString(stream);
     };
 };
 
@@ -252,41 +244,39 @@ public:
     };
 
     MessageType type = MessageType::RAW;
-    RakNet::RakString source;
-    RakNet::RakString message;
-    std::vector<RakNet::RakString> parameters;
+    std::string source;
+    std::string message;
+    std::vector<std::string> parameters;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read((byte&) type);
+    virtual void read(BinaryStream& stream) {
+        stream >> (byte&) type;
 
         if (type == MessageType::POPUP || type == MessageType::CHAT)
-            stream.Read(source);
-        stream.Read(message);
+            source = readString(stream);
+        message = readString(stream);
         if (type == MessageType::TRANSLATION) {
             byte count;
-            stream.Read(count);
+            stream >> count;
             parameters.clear();
             parameters.resize(count);
 
-            RakNet::RakString p;
             for (int i = 0; i < count; i++) {
-                stream.Read(p);
-                parameters.push_back(p);
+                parameters.push_back(readString(stream));
             }
         }
     };
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write((byte) type);
+    virtual void write(BinaryStream& stream) {
+        stream << (byte) type;
 
         if (type == MessageType::POPUP || type == MessageType::CHAT)
-            stream.Write(source);
-        stream.Write(message);
+            writeString(stream, source);
+        writeString(stream, message);
         if (type == MessageType::TRANSLATION) {
             byte count = (byte) parameters.size();
-            stream.Write(count);
-            for (RakNet::RakString p : parameters) {
-                stream.Write(p);
+            stream << count;
+            for (std::string p : parameters) {
+                writeString(stream, p);
             }
         }
     };
@@ -303,8 +293,8 @@ public:
     int time;
     bool started;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(time);
+    virtual void write(BinaryStream& stream) {
+        stream << time;
         writeBool(stream, started);
     };
 };
@@ -335,24 +325,24 @@ public:
     bool isLoadedInCreative = true;
     byte dayCycleStopTime = 0;
     bool isEduMode = false;
-    RakNet::RakString levelId;
+    std::string levelId;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(seed);
-        stream.Write((byte) dimension);
-        stream.Write((int) generator);
-        stream.Write((int) gamemode);
-        stream.Write(eid);
-        stream.Write(spawnX);
-        stream.Write(spawnY);
-        stream.Write(spawnZ);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
+    virtual void write(BinaryStream& stream) {
+        stream << seed;
+        stream << (byte) dimension;
+        stream << (int) generator;
+        stream << (int) gamemode;
+        stream << eid;
+        stream << spawnX;
+        stream << spawnY;
+        stream << spawnZ;
+        stream << x;
+        stream << y;
+        stream << z;
         writeBool(stream, isLoadedInCreative);
-        stream.Write(dayCycleStopTime);
+        stream << dayCycleStopTime;
         writeBool(stream, isEduMode);
-        stream.Write(levelId);
+        writeString(stream, levelId);
     };
 };
 
@@ -363,7 +353,7 @@ public:
     };
 
     UUID uuid;
-    RakNet::RakString username;
+    std::string username;
     long long eid = 0;
     float x, y, z;
     float speedX = 0.f;
@@ -372,22 +362,22 @@ public:
     float yaw, headYaw, pitch;
     ItemInstance item;
 
-    virtual void write(RakNet::BitStream& stream) {
+    virtual void write(BinaryStream& stream) {
         writeUUID(stream, uuid);
-        stream.Write(username);
-        stream.Write(eid);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
-        stream.Write(speedX);
-        stream.Write(speedY);
-        stream.Write(speedZ);
-        stream.Write(yaw);
-        stream.Write(headYaw);
-        stream.Write(pitch);
+        username = readString(stream);
+        stream << eid;
+        stream << x;
+        stream << y;
+        stream << z;
+        stream << speedX;
+        stream << speedY;
+        stream << speedZ;
+        stream << yaw;
+        stream << headYaw;
+        stream << pitch;
         writeItemInstance(stream, item);
 
-        stream.Write((byte) 127); // no meta
+        stream << (byte) 127; // no meta
     };
 };
 
@@ -400,8 +390,8 @@ public:
     long long eid = 0;
     UUID uuid;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
         writeUUID(stream, uuid);
     };
 };
@@ -414,8 +404,8 @@ public:
 
     long long eid = 0;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
     };
 };
 
@@ -432,20 +422,19 @@ public:
     float yaw, pitch;
     MCPEEntityMetadata metadata;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
-        stream.Write(typeId);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
-        stream.Write(motionX);
-        stream.Write(motionY);
-        stream.Write(motionZ);
-        stream.Write(yaw);
-        stream.Write(pitch);
-        BinaryRakStream binStream (stream);
-        metadata.write(binStream);
-        stream.Write((short) 0); // links
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
+        stream << typeId;
+        stream << x;
+        stream << y;
+        stream << z;
+        stream << motionX;
+        stream << motionY;
+        stream << motionZ;
+        stream << yaw;
+        stream << pitch;
+        metadata.write(stream);
+        stream << (short) 0; // links
     };
 };
 
@@ -460,15 +449,15 @@ public:
     float x, y, z;
     float motionX, motionY, motionZ;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
         writeItemInstance(stream, item);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
-        stream.Write(motionX);
-        stream.Write(motionY);
-        stream.Write(motionZ);
+        stream << x;
+        stream << y;
+        stream << z;
+        stream << motionX;
+        stream << motionY;
+        stream << motionZ;
     };
 };
 
@@ -486,16 +475,16 @@ public:
 
     std::vector<MoveEntry> entries;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write((int) entries.size());
+    virtual void write(BinaryStream& stream) {
+        stream << (unsigned int) entries.size();
         for (MoveEntry e : entries) {
-            stream.Write(e.eid);
-            stream.Write(e.x);
-            stream.Write(e.y);
-            stream.Write(e.z);
-            stream.Write(e.yaw);
-            stream.Write(e.headYaw);
-            stream.Write(e.pitch);
+            stream << e.eid;
+            stream << e.x;
+            stream << e.y;
+            stream << e.z;
+            stream << e.yaw;
+            stream << e.headYaw;
+            stream << e.pitch;
         }
     };
 };
@@ -516,27 +505,27 @@ public:
     Mode mode;
     bool onGround;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
-        stream.Write(yaw);
-        stream.Write(headYaw);
-        stream.Write(pitch);
-        stream.Write((byte) mode);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
+        stream << x;
+        stream << y;
+        stream << z;
+        stream << yaw;
+        stream << headYaw;
+        stream << pitch;
+        stream << (byte) mode;
         writeBool(stream, onGround);
     };
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(eid);
-        stream.Read(x);
-        stream.Read(y);
-        stream.Read(z);
-        stream.Read(yaw);
-        stream.Read(headYaw);
-        stream.Read(pitch);
-        stream.Read((byte&) mode);
+    virtual void read(BinaryStream& stream) {
+        stream >> eid;
+        stream >> x;
+        stream >> y;
+        stream >> z;
+        stream >> yaw;
+        stream >> headYaw;
+        stream >> pitch;
+        stream >> (byte&) mode;
         onGround = readBool(stream);
     };
 
@@ -553,11 +542,11 @@ public:
     int x, z;
     byte y;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(eid);
-        stream.Read(x);
-        stream.Read(z);
-        stream.Read(y);
+    virtual void read(BinaryStream& stream) {
+        stream >> eid;
+        stream >> x;
+        stream >> z;
+        stream >> y;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -584,14 +573,14 @@ public:
     };
     std::vector<Entry> entries;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write((int) entries.size());
+    virtual void write(BinaryStream& stream) {
+        stream << (int) entries.size();
         for (Entry const& entry : entries) {
-            stream.Write(entry.x);
-            stream.Write(entry.z);
-            stream.Write(entry.y);
-            stream.Write(entry.blockId);
-            stream.Write((byte) ((entry.flags << 4) | (int) entry.blockMeta));
+            stream << entry.x;
+            stream << entry.z;
+            stream << entry.y;
+            stream << entry.blockId;
+            stream << (byte) ((entry.flags << 4) | (int) entry.blockMeta);
         }
     };
 
@@ -624,14 +613,14 @@ public:
     long long eid;
     Event event;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
-        stream.Write((byte) event);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
+        stream << (byte) event;
     };
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(eid);
-        stream.Read((byte&) event);
+    virtual void read(BinaryStream& stream) {
+        stream >> eid;
+        stream >> (byte&) event;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -651,20 +640,20 @@ public:
     struct Entry {
         float minValue, maxValue;
         float value;
-        RakNet::RakString attribute;
+        std::string attribute;
     };
 
     long long eid;
     std::vector<Entry> entries;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
-        stream.Write((short) entries.size());
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
+        stream << (short) entries.size();
         for (Entry const& e : entries) {
-            stream.Write(e.minValue);
-            stream.Write(e.maxValue);
-            stream.Write(e.value);
-            stream.Write(e.attribute);
+            stream << e.minValue;
+            stream << e.maxValue;
+            stream << e.value;
+            stream << e.attribute;
         }
     };
 };
@@ -679,18 +668,18 @@ public:
     ItemInstance item;
     byte slot, hotbarSlot;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
         writeItemInstance(stream, item);
-        stream.Write(slot);
-        stream.Write(hotbarSlot);
+        stream << slot;
+        stream << hotbarSlot;
     };
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(eid);
+    virtual void read(BinaryStream& stream) {
+        stream >> eid;
         item = readItemInstance(stream);
-        stream.Read(slot);
-        stream.Read(hotbarSlot);
+        stream >> slot;
+        stream >> hotbarSlot;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -705,14 +694,14 @@ public:
     long long eid;
     ItemInstance slots[4];
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
         for (int i = 0; i < 4; i++)
             writeItemInstance(stream, slots[i]);
     };
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(eid);
+    virtual void read(BinaryStream& stream) {
+        stream >> eid;
         for (int i = 0; i < 4; i++)
             slots[i] = readItemInstance(stream);
     };
@@ -727,14 +716,14 @@ public:
     byte actionId;
     long long target;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(actionId);
-        stream.Read(target);
+    virtual void read(BinaryStream& stream) {
+        stream >> actionId;
+        stream >> target;
     };
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(actionId);
-        stream.Write(target);
+    virtual void write(BinaryStream& stream) {
+        stream << actionId;
+        stream << target;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -752,17 +741,17 @@ public:
     float posX, posY, posZ;
     ItemInstance item;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(x);
-        stream.Read(y);
-        stream.Read(z);
-        stream.Read(side);
-        stream.Read(fx);
-        stream.Read(fy);
-        stream.Read(fz);
-        stream.Read(posX);
-        stream.Read(posY);
-        stream.Read(posZ);
+    virtual void read(BinaryStream& stream) {
+        stream >> x;
+        stream >> y;
+        stream >> z;
+        stream >> side;
+        stream >> fx;
+        stream >> fy;
+        stream >> fz;
+        stream >> posX;
+        stream >> posY;
+        stream >> posZ;
         item = readItemInstance(stream);
     };
 
@@ -782,13 +771,11 @@ public:
 
     std::vector<Entry> entries;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write((int) entries.size());
+    virtual void write(BinaryStream& stream) {
+        stream << (unsigned int) entries.size();
         for (Entry e : entries) {
-            stream.Write(e.eid);
-            stream.Write(e.x);
-            stream.Write(e.y);
-            stream.Write(e.z);
+            stream << e.eid;
+            stream << e.x << e.y << e.z;
         }
     };
 };
@@ -819,22 +806,18 @@ public:
     int x, y, z;
     int side;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(eid);
-        stream.Read((int&) action);
-        stream.Read(x);
-        stream.Read(y);
-        stream.Read(z);
-        stream.Read(side);
+    virtual void read(BinaryStream& stream) {
+        stream >> eid;
+        stream >> (int&) action;
+        stream >> x >> y >> z;
+        stream >> side;
     };
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(eid);
-        stream.Write((int) action);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
-        stream.Write(side);
+    virtual void write(BinaryStream& stream) {
+        stream << eid;
+        stream << (int) action;
+        stream << x << y << z;
+        stream << side;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -848,8 +831,8 @@ public:
 
     int health;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(health);
+    virtual void write(BinaryStream& stream) {
+        stream << health;
     };
 };
 
@@ -861,10 +844,8 @@ public:
 
     float x, y, z;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
+    virtual void write(BinaryStream& stream) {
+        stream << x << y << z;
     };
 };
 
@@ -878,13 +859,11 @@ public:
     short slots;
     int x, y, z;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(window);
-        stream.Write(type);
-        stream.Write(slots);
-        stream.Write(x);
-        stream.Write(y);
-        stream.Write(z);
+    virtual void write(BinaryStream& stream) {
+        stream << window;
+        stream << type;
+        stream << slots;
+        stream << x << y << z;
     };
 };
 
@@ -896,12 +875,12 @@ public:
 
     byte window;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(window);
+    virtual void read(BinaryStream& stream) {
+        stream >> window;
     };
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(window);
+    virtual void write(BinaryStream& stream) {
+        stream << window;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -917,17 +896,17 @@ public:
     short slot, hotbar;
     ItemInstance item;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(window);
-        stream.Write(slot);
-        stream.Write(hotbar);
+    virtual void write(BinaryStream& stream) {
+        stream << window;
+        stream << slot;
+        stream << hotbar;
         writeItemInstance(stream, item);
     };
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(window);
-        stream.Read(slot);
-        stream.Read(hotbar);
+    virtual void read(BinaryStream& stream) {
+        stream >> window;
+        stream >> slot;
+        stream >> hotbar;
         item = readItemInstance(stream);
     };
 
@@ -944,31 +923,31 @@ public:
     std::vector<ItemInstance> items;
     std::vector<int> hotbar;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(window);
-        stream.Write((short) items.size());
+    virtual void write(BinaryStream& stream) {
+        stream << window;
+        stream << (short) items.size();
         for (ItemInstance& i : items) {
             writeItemInstance(stream, i);
         }
-        stream.Write((short) hotbar.size());
+        stream << (short) hotbar.size();
         for (int i : hotbar) {
-            stream.Write(i);
+            stream << i;
         }
     };
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(window);
+    virtual void read(BinaryStream& stream) {
+        stream >> window;
         unsigned short itemCount;
-        stream.Read(itemCount);
+        stream >> itemCount;
         items.resize(itemCount);
         for (ItemInstance& i : items) {
             i = readItemInstance(stream);
         }
         unsigned short hotbarCount;
-        stream.Read(hotbarCount);
+        stream >> hotbarCount;
         hotbar.resize(hotbarCount);
         for (int& i : hotbar) {
-            stream.Read(i);
+            stream >> i;
         }
     };
 };
@@ -984,7 +963,7 @@ public:
     std::map<int, Recipe*> recipes;
     bool clearRecipes = true;
 
-    virtual void write(RakNet::BitStream& stream);
+    virtual void write(BinaryStream& stream);
 };
 
 class MCPECraftingEventPacket : public MCPEPacket {
@@ -999,16 +978,16 @@ public:
     std::vector<ItemInstance> input;
     std::vector<ItemInstance> output;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(window);
-        stream.Read(type);
-        stream.Read(uuid);
+    virtual void read(BinaryStream& stream) {
+        stream >> window;
+        stream >> type;
+        uuid = readUUID(stream);
         int count;
-        stream.Read(count);
+        stream >> count;
         for (int i = 0; i < count; i++) {
             input.push_back(readItemInstance(stream));
         }
-        stream.Read(count);
+        stream >> count;
         for (int i = 0; i < count; i++) {
             output.push_back(readItemInstance(stream));
         }
@@ -1045,10 +1024,10 @@ public:
     int userPermissions = 2;
     int globalPermissions = 2;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(flags.asInt);
-        stream.Write(userPermissions);
-        stream.Write(globalPermissions);
+    virtual void write(BinaryStream& stream) {
+        stream << flags.asInt;
+        stream << userPermissions;
+        stream << globalPermissions;
     }
 };
 
@@ -1062,7 +1041,7 @@ public:
 
     std::shared_ptr<Tile> tile;
 
-    virtual void write(RakNet::BitStream& stream);
+    virtual void write(BinaryStream& stream);
 
     static void writeTile(BinaryStream& stream, Tile& tile);
 };
@@ -1076,7 +1055,7 @@ public:
 
     ChunkPtr chunk;
 
-    virtual void write(RakNet::BitStream& stream);
+    virtual void write(BinaryStream& stream);
 };
 
 
@@ -1092,8 +1071,8 @@ public:
     struct AddEntry {
         UUID uuid;
         long long eid;
-        RakNet::RakString name;
-        RakNet::RakString skinModel;
+        std::string name;
+        std::string skinModel;
         std::string skin;
     };
     struct RemoveEntry {
@@ -1103,20 +1082,20 @@ public:
     std::vector<AddEntry> addEntries;
     std::vector<RemoveEntry> removeEntries;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write((unsigned char) type);
+    virtual void write(BinaryStream& stream) {
+        stream << (unsigned char) type;
         if (type == Type::ADD) {
-            stream.Write((int) addEntries.size());
+            stream << (unsigned int) addEntries.size();
             for (AddEntry e : addEntries) {
                 writeUUID(stream, e.uuid);
-                stream.Write(e.eid);
-                stream.Write(e.name);
-                stream.Write(e.skinModel);
-                stream.Write((short) e.skin.size());
-                stream.Write(e.skin.c_str(), (int) e.skin.size());
+                stream << e.eid;
+                stream << e.name;
+                stream << e.skinModel;
+                stream << (short) e.skin.size();
+                stream.write((byte*) e.skin.c_str(), (unsigned int) e.skin.size());
             }
         } else {
-            stream.Write((int) removeEntries.size());
+            stream << (unsigned int) removeEntries.size();
             for (RemoveEntry e : removeEntries) {
                 writeUUID(stream, e.uuid);
             }
@@ -1132,8 +1111,8 @@ public:
 
     int radius;
 
-    virtual void read(RakNet::BitStream& stream) {
-        stream.Read(radius);
+    virtual void read(BinaryStream& stream) {
+        stream >> radius;
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -1147,7 +1126,7 @@ public:
 
     int radius;
 
-    virtual void write(RakNet::BitStream& stream) {
-        stream.Write(radius);
+    virtual void write(BinaryStream& stream) {
+        stream << radius;
     };
 };

@@ -30,7 +30,7 @@ unsigned int MemoryBinaryStream::read(byte *data, unsigned int size) {
 
     memcpy(data, &this->data[pos], size);
     pos += size;
-    return pos;
+    return size;
 }
 
 DynamicMemoryBinaryStream::DynamicMemoryBinaryStream(int size) : MemoryBinaryStream(new byte[size], size) {

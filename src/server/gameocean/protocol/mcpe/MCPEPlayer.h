@@ -6,7 +6,6 @@
 #include "../../Player.h"
 #include "MCPEProtocol.h"
 #include "MCPEPacket.h"
-#include <RakNet/RakNetTypes.h>
 #include <gameocean/world/ChunkPos.h>
 
 class MCPEPacketBatchThread;
@@ -26,9 +25,8 @@ protected:
     int hotbarSlots[9];
     int hotbarSlot = 0;
 
-    MCPEProtocol& protocol;
-    RakNet::RakNetGUID guid;
-    RakNet::SystemAddress address;
+    MCPEProtocol &protocol;
+    Connection &connection;
 
     std::map<int, std::vector<ChunkPos>> raknetChunkQueue;
 
@@ -65,14 +63,14 @@ protected:
     virtual void sendDeathStatus();
 
 public:
-    MCPEPlayer(Server& server, MCPEProtocol& protocol, RakNet::RakNetGUID guid, RakNet::SystemAddress address) : Player(server), protocol(protocol), guid(guid), address(address) {
+    MCPEPlayer(Server& server, MCPEProtocol& protocol, Connection& connection) : Player(server), protocol(protocol), connection(connection) {
         for (int i = 0; i < 9; i++)
             hotbarSlots[i] = i;
     };
 
     virtual void close(std::string reason, bool sendToPlayer);
 
-    inline RakNet::SystemAddress& getAddress() { return address; };
+    inline Connection &getConnection() { return connection; };
 
     int directPacket(MCPEPacket* packet);
     int writePacket(std::unique_ptr<MCPEPacket> packet, bool batch);

@@ -23,15 +23,14 @@ namespace DefaultProtocol {
         this->socket->close();
     }
 
-    void SimpleTCPConnection::kick(std::string reason) {
-        if (client) {
-            this->getClientHandler().disconnected(DisconnectReason::KICKED, reason);
-        } else {
+    void SimpleTCPConnection::close(DisconnectReason reason, std::string str) {
+        if (!client) {
             DisconnectedPacket pk;
-            pk.reason = DisconnectReason::KICKED;
-            pk.textReason = reason;
+            pk.reason = reason;
+            pk.textReason = str;
             send(pk);
         }
+        Connection::close(reason, str);
     }
 
     void SimpleTCPConnection::send(Packet &packet) {

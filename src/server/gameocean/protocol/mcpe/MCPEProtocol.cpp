@@ -5,46 +5,15 @@
 #include <sstream>
 #include <chrono>
 #include <iostream>
-#include <RakNet/RakPeerInterface.h>
-#include <RakNet/MessageIdentifiers.h>
-#include <RakNet/BitStream.h>
-#include <RakNet/RakNetTypes.h>
 #include "MCPEPacket.h"
 #include "MCPEPlayer.h"
 #include "MCPEPacketBatchThread.h"
 
-void MCPEProtocol::start() {
-    peer = RakNet::RakPeerInterface::GetInstance();
-    std::string s = "MCPE;A Test Server;34;0.12.1;0;20";
-    peer->SetOfflinePingResponse(s.c_str(), s.length() + 1);
-    RakNet::SocketDescriptor sd(port, 0);
-    peer->Startup(server.maxPlayers + 1, &sd, 1);
-    peer->SetMaximumIncomingConnections(server.maxPlayers + 1);
+const char *MCPEProtocol::CURRENT_VERSION_STRING = "0.14.2";
 
+MCPEProtocol::MCPEProtocol() : server(*this) {
     MCPEPacket::registerPackets();
-
-    batchThread.start();
-    Protocol::start();
-}
-
-void MCPEProtocol::stop() {
-    batchThread.stop();
-    Protocol::stop();
-}
-
-void MCPEProtocol::loop() {
-    RakNet::Packet* packet;
-    while (true) {
-        if (shouldStop)
-            break;
-
-        for (packet = peer->Receive(); packet; peer->DeallocatePacket(packet), packet = peer->Receive()) {
-            processPacket(packet);
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
-}
+}/*
 
 void MCPEProtocol::processPacket(RakNet::Packet *packet) {
     switch (packet->data[0])
@@ -198,3 +167,4 @@ void MCPEProtocol::processPacket(RakNet::Packet *packet) {
     }
 }
 
+*/

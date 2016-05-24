@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../Protocol.h"
-#include "SimpleTCPProtocolServer.h"
+#include "gameocean/net/protocol/SimpleTCPProtocolServer.h"
+#include "SimpleTCPConnection.h"
 
 namespace DefaultProtocol {
 
     class SimpleTCPProtocol : public Protocol {
 
     private:
-        SimpleTCPProtocolServer server;
+        SimpleTCPProtocolServer<SimpleTCPConnection> server;
 
     public:
         SimpleTCPProtocol();

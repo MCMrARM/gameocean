@@ -1,59 +1,37 @@
 #pragma once
 
 #include <map>
-#include "../Protocol.h"
-#include "MCPEPacketBatchThread.h"
-#include "MCPEPlayer.h"
-#include <RakNet/RakNetTypes.h>
-
-namespace RakNet {
-    class Packet;
-    class RakPeerInterface;
-    class BitStream;
-};
+#include "../raknet/RakNetProtocol.h"
+#include "MCPEProtocolServer.h"
 
 class MCPEPacket;
 class MCPEPlayer;
 
-class MCPEProtocol : public Protocol {
+class MCPEProtocol : public RakNetProtocol {
 
 protected:
-    RakNet::RakPeerInterface* peer;
-    std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players;
+    MCPEProtocolServer server;
+    //std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players;
     std::mutex playersMutex;
-    MCPEPacketBatchThread batchThread;
 
 public:
-    MCPEProtocol(Server& server) : Protocol(server), batchThread(*this) {
-        port = 19132;
-    };
+    MCPEProtocol();
 
     virtual std::string getName() { return "MCPE"; };
 
-    static const int CURRENT_VERSION = 45;
-    int packetBatchDelay = 50; // in ms
+    static const int CURRENT_VERSION = 60;
+    static const char *CURRENT_VERSION_STRING;
 
-    inline RakNet::RakPeerInterface* getPeer() { return peer; };
+    virtual ProtocolServer& getServer() {
+        return server;
+    }
 
-    virtual void start();
-    virtual void stop();
-
-    virtual void loop();
-    virtual void processPacket(RakNet::Packet* packet);
-
+/*
     std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> getPlayers() {
         playersMutex.lock();
         std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> ret (players);
         playersMutex.unlock();
         return ret;
-    };
-
-    virtual void setOption(std::string key, std::string value) {
-        if (key == "batch-rate") {
-            packetBatchDelay = StringUtils::asInt(value, packetBatchDelay);
-        } else {
-            Protocol::setOption(key, value);
-        }
-    };
+    };*/
 
 };

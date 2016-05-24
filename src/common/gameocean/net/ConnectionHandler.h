@@ -23,7 +23,10 @@ public:
     virtual ClientAcceptanceStatus acceptClient(Connection& connection) {
         ClientAcceptanceStatus status;
         return status;
-    };
+    }
+
+    virtual void connected(Connection& connection) { };
+    virtual void disconnected(Connection& connection, Connection::DisconnectReason reason, std::string textReason) { }
 
 };
 
@@ -36,8 +39,8 @@ public:
 
     ClientConnectionHandler(Connection& connection) : connection(connection) {};
 
-    virtual void connected() { };
-    virtual void disconnected(Connection::DisconnectReason reason, std::string textReason) { };
+    virtual void connected() { }
+    virtual void disconnected(Connection::DisconnectReason reason, std::string textReason) { }
 
 
 };

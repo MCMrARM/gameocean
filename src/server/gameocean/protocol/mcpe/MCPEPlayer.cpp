@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <string>
-#include <RakNet/RakPeerInterface.h>
 #include "MCPEPacket.h"
 #include <gameocean/world/World.h>
 #include <gameocean/world/Chunk.h>
@@ -16,12 +15,13 @@ void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedP
     packetQueueMutex.unlock();
 }
 
-int MCPEPlayer::directPacket(MCPEPacket *packet) {
-    RakNet::BitStream bs;
-    bs.Write((RakNet::MessageID) 0x8e);
-    bs.Write((RakNet::MessageID) packet->id);
-    packet->write(bs);
-    return this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet->reliable ? (packet->needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
+int MCPEPlayer::directPacket(MCPEPacket *packet) {/*
+ * TODO:
+    MemoryBinaryStream bs;
+    bs << (byte) 0x8e;
+    bs << (byte) packet->id;
+    packet->write(bs);*/
+    return 0;//this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet->reliable ? (packet->needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
 }
 
 int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {

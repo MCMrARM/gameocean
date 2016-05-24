@@ -2,16 +2,16 @@
 
 #include <gameocean/utils/Thread.h>
 
-class MCPEProtocol;
+class MCPEProtocolServer;
 class MCPEPacketBatchThread : public Thread {
 
 protected:
     bool stopping = false;
 
 public:
-    MCPEProtocol& protocol;
+    MCPEProtocolServer& protocol;
 
-    MCPEPacketBatchThread(MCPEProtocol& protocol) : protocol(protocol) { };
+    MCPEPacketBatchThread(MCPEProtocolServer& protocol) : protocol(protocol) { };
 
     virtual void run();
     virtual void stop() { stopping = true; };

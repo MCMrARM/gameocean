@@ -2,6 +2,7 @@
 
 #include <string>
 #include <exception>
+#include "ConnectionReceiveThread.h"
 class Socket;
 class Packet;
 class Protocol;
@@ -34,6 +35,7 @@ class Connection {
 
 protected:
     bool accepted;
+    bool closed = false;
     Protocol& protocol;
 
 public:
@@ -47,6 +49,8 @@ public:
     Connection(Protocol& protocol) : Connection(protocol, true) {
         //
     }
+    virtual ~Connection() {
+    }
 
     enum class DisconnectReason {
         // login
@@ -58,7 +62,8 @@ public:
     };
 
     virtual void close() = 0;
-    virtual void kick(std::string reason) = 0;
+    virtual void close(DisconnectReason reason, std::string msg = "");
+    virtual void kick(std::string reason);
 
     void setHandler(ConnectionHandler& handler);
     virtual void setAccepted(bool accepted) {

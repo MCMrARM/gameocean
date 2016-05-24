@@ -29,7 +29,9 @@ bool ServerSocket::listen(std::string ip, unsigned short port, Socket::Protocol 
         Logger::main->error("ServerSocket", "Failed to bind socket");
         return false;
     }
-    ::listen(fd, 25);
+    if (protocol == Socket::Protocol::TCP)
+        ::listen(fd, 25);
+    return true;
 }
 
 Socket *ServerSocket::accept() {
@@ -44,6 +46,21 @@ Socket *ServerSocket::accept() {
     }
     Logger::main->trace("ServerSocket", "Accepted socket from: %s:%i", inet_ntoa(clientAddr.sin_addr), htons(clientAddr.sin_port));
     return new Socket(clientSocketId);
+}
+
+Datagram ServerSocket::receiveDatagram() {
+    Datagram ret;
+    ret.valid = false;
+    socklen_t clientAddrLen = sizeof(ret.addr);
+    ret.dataSize = (ssize_t) recvfrom(fd, ret.data, sizeof(ret.data), 0, (sockaddr*) &ret.addr, &clientAddrLen);
+    if (ret.dataSize > 0) {
+        ret.valid = true;
+    }
+    return ret;
+}
+
+void ServerSocket::sendDatagram(Datagram const &dg) {
+    sendto(fd, dg.data, (size_t) dg.dataSize, 0, (sockaddr*) &dg.addr, sizeof(dg.addr));
 }
 
 void ServerSocket::close() {

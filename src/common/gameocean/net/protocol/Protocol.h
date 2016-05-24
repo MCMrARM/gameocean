@@ -17,9 +17,15 @@ protected:
     std::map<int, CreatePacket*> clientPackets;
     std::map<int, CreatePacket*> serverPackets;
 
-    int port;
-
-    template<typename T> void registerPacket();
+    template<typename T> void registerPacket() {
+        const int id = T::ID;
+        if (T::TYPE == Packet::Type::BOTH || T::TYPE == Packet::Type::CLIENTBOUND) {
+            clientPackets[id] = packet<T>;
+        }
+        if (T::TYPE == Packet::Type::BOTH || T::TYPE == Packet::Type::SERVERBOUND) {
+            serverPackets[id] = packet<T>;
+        }
+    }
 
 public:
     static std::map<std::string, Protocol*> protocols;

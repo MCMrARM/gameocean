@@ -87,7 +87,7 @@ ItemVariant* ItemRegister::findItem(std::string id) {
     for (auto const& e : ItemRegister::items) {
         if (e.second->getId() < 0)
             continue;
-        int i = StringUtils::compare(e.first, id);
+        int i = StringUtils::compareLowercase(e.first, id);
         if (i > m || (i == m && e.first.length() < ml)) {
             ret = e.second;
             m = i;

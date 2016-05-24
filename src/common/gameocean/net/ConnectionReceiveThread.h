@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include "../utils/Thread.h"
 
 class Connection;
@@ -7,16 +8,19 @@ class Connection;
 class ConnectionReceiveThread : public Thread {
 
 private:
-    Connection &connection;
+    std::shared_ptr<Connection> connection;
+    bool selfDestroy;
 
     virtual void run();
 
 public:
-    ConnectionReceiveThread(Connection &connection) : connection(connection) {
+    ConnectionReceiveThread(std::shared_ptr<Connection> connection, bool selfDestroy) : connection(connection), selfDestroy(selfDestroy) {
         //
     }
-
-    virtual void stop();
+    ~ConnectionReceiveThread() {
+        if (selfDestroy)
+            delete this;
+    }
 
 };
 

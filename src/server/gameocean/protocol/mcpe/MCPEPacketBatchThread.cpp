@@ -2,8 +2,7 @@
 
 #include <iostream>
 #include <zlib.h>
-#include <RakNet/RakPeerInterface.h>
-#include "MCPEProtocol.h"
+#include "MCPEProtocolServer.h"
 #include "MCPEPlayer.h"
 
 void MCPEPacketBatchThread::run() {
@@ -11,7 +10,7 @@ void MCPEPacketBatchThread::run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(protocol.packetBatchDelay));
         if (stopping)
             return;
-
+/*
         std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players = protocol.getPlayers();
         for (auto& p : players) {
             std::shared_ptr<MCPEPlayer>& player = p.second;
@@ -101,6 +100,6 @@ void MCPEPacketBatchThread::run() {
             } else {
                 player->packetQueueMutex.unlock();
             }
-        }
+        }*/
     }
 }

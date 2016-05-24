@@ -10,7 +10,6 @@
 #include <gameocean/world/tile/Chest.h>
 #include <gameocean/item/recipes/Recipe.h>
 #include "../../utils/NBT.h"
-#include "BinaryRakStream.h"
 
 std::map<int, MCPEPacket::CreatePacket*> MCPEPacket::packets;
 
@@ -32,12 +31,9 @@ void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPERequestChunkRadiusPacket>(MCPE_REQUEST_CHUNK_RADIUS_PACKET);
 }
 
-void MCPETileEntityDataPacket::write(RakNet::BitStream& stream) {
-    stream.Write(tile->getPos().x);
-    stream.Write(tile->getPos().y);
-    stream.Write(tile->getPos().z);
-    BinaryRakStream binaryStream(stream);
-    writeTile(binaryStream, *tile);
+void MCPETileEntityDataPacket::write(BinaryStream& stream) {
+    stream << tile->getPos().x << tile->getPos().y << tile->getPos().z;
+    writeTile(stream, *tile);
 }
 
 void MCPETileEntityDataPacket::writeTile(BinaryStream& stream, Tile& tile) {
@@ -49,10 +45,9 @@ void MCPETileEntityDataPacket::writeTile(BinaryStream& stream, Tile& tile) {
     NBTTag::writeTag(stream, compound, true);
 }
 
-void MCPEFullChunkDataPacket::write(RakNet::BitStream& stream) {
-    stream.Write(chunk->pos.x);
-    stream.Write(chunk->pos.z);
-    stream.Write((byte) 1); // order type
+void MCPEFullChunkDataPacket::write(BinaryStream& stream) {
+    stream << chunk->pos.x << chunk->pos.z;
+    stream << (byte) 1; // order type
 
     DynamicMemoryBinaryStream binaryStream;
     binaryStream << (int) 0;
@@ -65,14 +60,14 @@ void MCPEFullChunkDataPacket::write(RakNet::BitStream& stream) {
     int dataSize = sizeof(chunk->blockId) + sizeof(chunk->blockMeta.array) + sizeof(chunk->blockSkylight.array) +
                    sizeof(chunk->blockLight.array) + sizeof(chunk->heightmap) + sizeof(chunk->biomeColors) +
                    binaryStream.getSize();
-    stream.Write(dataSize);
-    stream.Write((char*) chunk->blockId, sizeof(chunk->blockId));
-    stream.Write((char*) chunk->blockMeta.array, sizeof(chunk->blockMeta.array));
-    stream.Write((char*) chunk->blockSkylight.array, sizeof(chunk->blockSkylight.array));
-    stream.Write((char*) chunk->blockLight.array, sizeof(chunk->blockLight.array));
-    stream.Write((char*) chunk->heightmap, sizeof(chunk->heightmap));
-    stream.Write((char*) chunk->biomeColors, sizeof(chunk->biomeColors));
-    stream.Write((char*) binaryStream.getBuffer(false), binaryStream.getSize());
+    stream << dataSize;
+    stream.write(chunk->blockId, sizeof(chunk->blockId));
+    stream.write(chunk->blockMeta.array, sizeof(chunk->blockMeta.array));
+    stream.write(chunk->blockSkylight.array, sizeof(chunk->blockSkylight.array));
+    stream.write(chunk->blockLight.array, sizeof(chunk->blockLight.array));
+    stream.write(chunk->heightmap, sizeof(chunk->heightmap));
+    stream.write((byte*) chunk->biomeColors, sizeof(chunk->biomeColors));
+    stream.write(binaryStream.getBuffer(false), binaryStream.getSize());
 }
 
 void MCPELoginPacket::handle(MCPEPlayer& player) {
@@ -252,13 +247,13 @@ void MCPEContainerSetSlotPacket::handle(MCPEPlayer& player) {
     }
 }
 
-void MCPECraftingDataPacket::write(RakNet::BitStream& stream) {
-    stream.Write((int) recipes.size());
+void MCPECraftingDataPacket::write(BinaryStream& stream) {
+    stream << (unsigned int) recipes.size();
     for (auto const& e : recipes) {
         Recipe* recipe = e.second;
         UUID uuid = {e.first, recipe->id};
         if (recipe->isShaped()) {
-            stream.Write((int) 1);
+            stream << (int) 1;
 
             DynamicMemoryBinaryStream memStream;
             memStream.swapEndian = true;
@@ -274,10 +269,10 @@ void MCPECraftingDataPacket::write(RakNet::BitStream& stream) {
             }
             writeUUID(memStream, uuid);
 
-            stream.Write(memStream.getSize());
-            stream.Write((char*) memStream.getBuffer(false), (unsigned int) memStream.getSize());
+            stream << memStream.getSize();
+            stream.write(memStream.getBuffer(false), (unsigned int) memStream.getSize());
         } else {
-            stream.Write((int) 0);
+            stream << (int) 0;
 
             DynamicMemoryBinaryStream memStream;
             memStream.swapEndian = true;
@@ -292,8 +287,8 @@ void MCPECraftingDataPacket::write(RakNet::BitStream& stream) {
             }
             writeUUID(memStream, uuid);
 
-            stream.Write(memStream.getSize());
-            stream.Write((char*) memStream.getBuffer(false), (unsigned int) memStream.getSize());
+            stream << memStream.getSize();
+            stream.write(memStream.getBuffer(false), (unsigned int) memStream.getSize());
         }
     }
     writeBool(stream, clearRecipes);

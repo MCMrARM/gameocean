@@ -39,6 +39,20 @@ void Connection::handlePacket(Packet *packet) {
 
 void Connection::loop() {
     while (true) {
-        Connection::readAndHandlePacket();
+        if (!readAndHandlePacket())
+            break;
     }
+}
+
+void Connection::close(DisconnectReason reason, std::string msg) {
+    if (client) {
+        this->getClientHandler().disconnected(reason, msg);
+    } else {
+        this->getServerHandler().disconnected(*this, reason, msg);
+    }
+    close();
+}
+
+void Connection::kick(std::string reason) {
+    close(DisconnectReason::KICKED, reason);
 }

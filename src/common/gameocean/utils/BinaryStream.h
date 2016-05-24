@@ -61,9 +61,19 @@ public:
         return *this;
     }
 
+    BinaryStream &operator<<(unsigned long long val) {
+        *this << (long long) val;
+        return *this;
+    }
+
     BinaryStream &operator<<(int val) {
         if(swapEndian) swapBytes((byte*) &val, INT_SIZE);
         this->write((byte *) &val, INT_SIZE);
+        return *this;
+    }
+
+    BinaryStream &operator<<(unsigned int val) {
+        *this << (int) val;
         return *this;
     }
 
@@ -73,8 +83,18 @@ public:
         return *this;
     }
 
+    BinaryStream &operator<<(unsigned short val) {
+        *this << (short) val;
+        return *this;
+    }
+
     BinaryStream &operator<<(char val) {
         this->write((byte *) &val, BYTE_SIZE);
+        return *this;
+    }
+
+    BinaryStream &operator<<(unsigned char val) {
+        *this << (char) val;
         return *this;
     }
 
@@ -184,12 +204,18 @@ public:
     /**
      * This function returns the current used buffer size when writing or the current buffer position when reading.
      */
-    inline int getSize() { return pos; };
+    inline int getSize() { return pos; }
 
     /**
      * This function returns the actual size of the buffer.
      */
-    inline int getBufferSize() { return size; };
+    inline int getBufferSize() { return size; }
+
+    /**
+     * This function returns the remaining buffer size (in bytes).
+     * When using a DynamicMemoryBuffer it'll return how many bytes can be still written before a buffer reallocation.
+     */
+    inline int getRemainingSize() { return size - pos; }
 
     virtual void write(const byte *data, unsigned int size);
 
@@ -234,7 +260,8 @@ public:
     };
     virtual ~FileBinaryStream();
 
-    void setFileDescriptor(int fd) { this->fd = fd; };
+    void setFileDescriptor(int fd) { this->fd = fd; }
+    inline int getFileDescriptor() { return fd; }
 
     virtual void write(const byte *data, unsigned int size);
 

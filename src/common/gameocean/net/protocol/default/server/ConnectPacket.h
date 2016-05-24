@@ -46,56 +46,37 @@ namespace DefaultProtocol {
 
         virtual void handleServer(Connection& connection) {
             if (protocolMagic != Network::PROTOCOL_MAGIC) {
-                connection.close();
+                connection.close(Connection::DisconnectReason::CLOSED);
                 return;
             }
 
             if (gameName != GameInfo::current->name) {
-                DisconnectedPacket pk;
-                pk.reason = Connection::DisconnectReason::WRONG_GAME;
-                connection.send(pk);
-                connection.close();
+                connection.close(Connection::DisconnectReason::WRONG_GAME);
                 return;
             }
 
             if (protcolVersion < Network::MIN_PROTOCOL_VERSION) {
-                DisconnectedPacket pk;
-                pk.reason = Connection::DisconnectReason::OUTDATED_CLIENT;
-                connection.send(pk);
-                connection.close();
+                connection.close(Connection::DisconnectReason::OUTDATED_CLIENT);
                 return;
             }
             if (protcolVersion > Network::PROTOCOL_VERSION) {
-                DisconnectedPacket pk;
-                pk.reason = Connection::DisconnectReason::OUTDATED_SERVER;
-                connection.send(pk);
-                connection.close();
+                connection.close(Connection::DisconnectReason::OUTDATED_SERVER);
                 return;
             }
 
             if (gameVersion < GameInfo::current->version.minNetVersion) {
-                DisconnectedPacket pk;
-                pk.reason = Connection::DisconnectReason::OUTDATED_GAME;
-                connection.send(pk);
-                connection.close();
+                connection.close(Connection::DisconnectReason::OUTDATED_GAME);
                 return;
             }
             if (gameVersion > GameInfo::current->version.netVersion) {
-                DisconnectedPacket pk;
-                pk.reason = Connection::DisconnectReason::OUTDATED_GAME_SERVER;
-                connection.send(pk);
-                connection.close();
+                connection.close(Connection::DisconnectReason::OUTDATED_GAME_SERVER);
                 return;
             }
 
             ServerConnectionHandler::ClientAcceptanceStatus status = connection.getServerHandler().acceptClient(
                     connection);
             if (!status.accepted) {
-                DisconnectedPacket pk;
-                pk.reason = Connection::DisconnectReason::KICKED;
-                pk.textReason = status.reason;
-                connection.send(pk);
-                connection.close();
+                connection.kick(status.reason);
                 return;
             }
             connection.setAccepted(true);

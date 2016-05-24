@@ -4,6 +4,9 @@ void ProtocolServer::loop() {
     while (true) {
         if (shouldStop)
             return;
-        handleConnection();
+        std::shared_ptr<Connection> connection (handleConnection());
+        if (!connection)
+            return;
+        new ConnectionReceiveThread(connection, true);
     }
 }

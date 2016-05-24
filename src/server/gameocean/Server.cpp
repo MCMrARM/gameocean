@@ -9,7 +9,7 @@
 #include <gameocean/utils/ResourceManager.h>
 #include <gameocean/GameInfo.h>
 #include <gameocean/utils/Config.h>
-#include "protocol/Protocol.h"
+#include "gameocean/net/protocol/Protocol.h"
 #include <gameocean/world/World.h>
 #include <gameocean/world/tile/Tile.h>
 #include "world/mcanvil/MCAnvilProvider.h"
@@ -17,6 +17,7 @@
 #include "PlayerChunkQueueThread.h"
 #include <gameocean/plugin/PluginManager.h>
 #include <gameocean/item/action/default/DefaultActions.h>
+#include <gameocean/protocol/mcpe/MCPEProtocol.h>
 #include "item/action/server/ServerActions.h"
 
 Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
@@ -35,7 +36,7 @@ void Server::start() {
     DefaultActions::registerActions();
     ServerActions::registerActions();
     ItemRegister::registerAssetItems();
-    Protocol::registerDefaultProtocols(*this);
+    Protocol::registerProtocol(new MCPEProtocol());
     Tile::registerTiles();
 
     this->loadConfiguation();
@@ -56,7 +57,7 @@ void Server::start() {
     pluginManager.enablePlugins();
 
     for (Protocol* protocol : enabledProtocols) {
-        protocol->start();
+        protocol->getServer().start(this);
     }
 
     timeval tv;
@@ -124,7 +125,7 @@ void Server::loadConfiguation() {
                 enabledProtocols.insert(protocol);
             }
             for (auto const& opt : std::static_pointer_cast<ContainerConfigNode>(p.second)->val) {
-                protocol->setOption(opt.first, *opt.second);
+                protocol->getServer().setOption(opt.first, *opt.second);
             }
         }
     }
@@ -141,7 +142,7 @@ std::shared_ptr<Player> Server::findPlayer(std::string like) {
             return p;
         }
 
-        int i = StringUtils::compare(like, n);
+        int i = StringUtils::compareLowercase(like, n);
         if (i > m) {
             rp = p;
             m = i;
