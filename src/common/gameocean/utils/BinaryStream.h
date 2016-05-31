@@ -204,18 +204,23 @@ public:
     /**
      * This function returns the current used buffer size when writing or the current buffer position when reading.
      */
-    inline int getSize() { return pos; }
+    inline unsigned int getSize() const { return pos; }
+
+    /**
+     * This function returns the current used buffer size when writing or the current buffer position when reading.
+     */
+    inline unsigned int getPos() const { return pos; }
 
     /**
      * This function returns the actual size of the buffer.
      */
-    inline int getBufferSize() { return size; }
+    inline unsigned int getBufferSize() const { return size; }
 
     /**
      * This function returns the remaining buffer size (in bytes).
      * When using a DynamicMemoryBuffer it'll return how many bytes can be still written before a buffer reallocation.
      */
-    inline int getRemainingSize() { return size - pos; }
+    inline unsigned int getRemainingSize() const { return size - pos; }
 
     virtual void write(const byte *data, unsigned int size);
 

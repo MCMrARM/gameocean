@@ -1,35 +1,41 @@
 #include "RakNetProtocol.h"
 #include "RakNetPacketIds.h"
 #include <unistd.h>
+#include "packet/RakNetConnectReplyPacket.h"
+#include "packet/RakNetOnlineConnectRequestPacket.h"
+#include "packet/RakNetOnlineConnectReplyPacket.h"
+#include "packet/RakNetClientHandshakePacket.h"
+#include "packet/RakNetACKPacket.h"
+#include "packet/RakNetPingPacket.h"
+#include "packet/RakNetPongPacket.h"
+
+RakNetProtocol::RakNetProtocol() {
+    registerPacket<RakNetConnectReplyPacket>();
+    registerPacket<RakNetOnlineConnectRequestPacket>();
+    registerPacket<RakNetOnlineConnectReplyPacket>();
+    registerPacket<RakNetClientHandshakePacket>();
+    registerPacket<RakNetACKPacket>();
+    registerPacket<RakNetPingPacket>();
+    registerPacket<RakNetPongPacket>();
+}
 
 Packet *RakNetProtocol::readPacket(BinaryStream &stream, bool client) {
-    byte data[1500-20-8];
-    ssize_t pkLen = read(((FileBinaryStream*) &stream)->getFileDescriptor(), data, sizeof(data));
-
-    MemoryBinaryStream pkStream(data, (unsigned int) pkLen);
     unsigned char pkId;
-    pkStream >> pkId;
+    stream >> pkId;
     Logger::main->trace("RakNetProtocol", "Received packet with id: %i", pkId);
 
     Packet* pk = getPacket(pkId, client);
     if (pk == nullptr) {
-        Logger::main->warn("RakNetProtocol", "Unknown packet received: %i, size: %i", pkId, pkLen);
+        Logger::main->warn("RakNetProtocol", "Unknown packet received: %i", pkId);
         pk = new UnknownPacket(pkId);
     }
-    pk->read(pkStream);
+    pk->read(stream);
     return pk;
 }
-void RakNetProtocol::writePacket(BinaryStream &stream, const Packet &packet) {
-    int bufLen = BinaryStream::BYTE_SIZE + packet.getPacketSize();
-
-    byte buf[bufLen];
-    MemoryBinaryStream pkStream(buf, bufLen);
-
+void RakNetProtocol::writePacket(BinaryStream &stream, Packet &packet) {
     char pkId = (char) packet.getId();
-    pkStream << pkId;
-    packet.write(pkStream);
-
-    stream.write(buf, (unsigned int) bufLen);
+    stream << pkId;
+    packet.write(stream);
 }
 
 bool RakNetProtocol::checkRakNetMagicBytes(char magic[16]) {
@@ -39,4 +45,28 @@ bool RakNetProtocol::checkRakNetMagicBytes(BinaryStream &stream) {
     char magic[16];
     stream.readFully((byte*) magic, 16);
     return checkRakNetMagicBytes(magic);
+}
+sockaddr RakNetProtocol::readRakNetAddress(BinaryStream &stream) {
+    unsigned char ver;
+    stream >> ver;
+    sockaddr ret;
+    memset(&ret, 0, sizeof(ret));
+    if (ver == 4) {
+        sockaddr_in i;
+        stream >> i.sin_addr.s_addr >> i.sin_port;
+        i.sin_port = ntohs(i.sin_port);
+        memcpy(&ret, &i, sizeof(sockaddr));
+    }
+    return ret;
+}
+void RakNetProtocol::writeRakNetAddress(BinaryStream &stream, sockaddr const &addr) {
+    if (addr.sa_family == AF_INET) {
+        stream << (char) 4;
+        sockaddr_in const &addr4 = (sockaddr_in const &) addr;
+        stream << addr4.sin_addr.s_addr << ntohs(addr4.sin_port);
+    }
+}
+long long RakNetProtocol::getTimeForPing() {
+    using namespace std::chrono;
+    return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
 }

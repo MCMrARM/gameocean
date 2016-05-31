@@ -34,7 +34,7 @@ namespace DefaultProtocol {
             stream >> protcolMagic >> protocolVersion >> gameVersion;
         };
 
-        virtual void write(BinaryStream& stream) const {
+        virtual void write(BinaryStream& stream) {
             stream << protcolMagic << protocolVersion << gameVersion;
         };
 

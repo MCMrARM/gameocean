@@ -82,7 +82,7 @@ private:
     typedef MCPEPacket* CreatePacket();
     template<typename T> static MCPEPacket* packet() { return new T(); };
 
-    static std::map<int, CreatePacket*> packets;
+    static CreatePacket *packets[256];
 
 protected:
     bool readBool(BinaryStream& stream) {
@@ -155,18 +155,18 @@ public:
     static void registerPackets();
 
     static MCPEPacket* getPacket(int id) {
-        if (packets.count(id) > 0) {
-            return packets.at(id)();
+        if (packets[id] != nullptr) {
+            return packets[id]();
         }
         return nullptr;
     };
 
     virtual ~MCPEPacket() {}
 
-    virtual void read(BinaryStream& stream) { }
-    virtual void write(BinaryStream& stream) { }
+    virtual void read(BinaryStream &stream) { }
+    virtual void write(BinaryStream &stream) { }
 
-    virtual void handle(MCPEPlayer& player) { }
+    virtual void handle(MCPEPlayer &player) { }
 };
 
 class MCPELoginPacket : public MCPEPacket {

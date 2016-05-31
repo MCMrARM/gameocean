@@ -28,7 +28,7 @@ namespace DefaultProtocol {
             stream >> (int&) reason >> textReason;
         };
 
-        virtual void write(BinaryStream& stream) const {
+        virtual void write(BinaryStream& stream) {
             stream << (int&) reason << textReason;
         };
 

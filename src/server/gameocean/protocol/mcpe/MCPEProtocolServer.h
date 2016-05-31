@@ -2,6 +2,7 @@
 
 #include "MCPEPacketBatchThread.h"
 #include "../raknet/RakNetProtocolServer.h"
+#include "MCPEConnection.h"
 
 class MCPEProtocolServer : public RakNetProtocolServer {
 
@@ -30,6 +31,10 @@ public:
         } else {
             RakNetProtocolServer::setOption(key, value);
         }
+    }
+
+    virtual std::shared_ptr<RakNetConnection> createRakNetConnection(sockaddr_in addr) {
+        return std::shared_ptr<RakNetConnection>(new MCPEConnection(*this, addr));
     }
 
 

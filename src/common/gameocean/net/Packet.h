@@ -7,6 +7,12 @@
 class Socket;
 class Connection;
 
+#define PacketDef(id, type) \
+    static const int ID = id; \
+    static const Type TYPE = type; \
+    virtual int getId() const { return ID; }; \
+    virtual Type getType() { return TYPE; };
+
 class Packet {
 
 private:
@@ -28,8 +34,8 @@ public:
     virtual Type getType() = 0;
 
     virtual unsigned int getPacketSize() const = 0;
-    virtual void read(BinaryStream& stream) = 0;
-    virtual void write(BinaryStream& stream) const = 0;
+    virtual void read(BinaryStream &stream) = 0;
+    virtual void write(BinaryStream &stream) = 0;
 
     virtual void handleClient(Connection &connection) {};
     virtual void handleServer(Connection &connection) {};
@@ -50,6 +56,6 @@ public:
     virtual unsigned int getPacketSize() const {
         return 0;
     };
-    virtual void read(BinaryStream& stream) { };
-    virtual void write(BinaryStream& stream) const { };
+    virtual void read(BinaryStream &stream) { };
+    virtual void write(BinaryStream &stream) { };
 };

@@ -10,6 +10,7 @@
 
 class MCPEPacketBatchThread;
 class Chunk;
+class MCPEConnection;
 
 class MCPEPlayer : public Player {
 
@@ -26,7 +27,7 @@ protected:
     int hotbarSlot = 0;
 
     MCPEProtocol &protocol;
-    Connection &connection;
+    MCPEConnection &connection;
 
     std::map<int, std::vector<ChunkPos>> raknetChunkQueue;
 
@@ -63,7 +64,8 @@ protected:
     virtual void sendDeathStatus();
 
 public:
-    MCPEPlayer(Server& server, MCPEProtocol& protocol, Connection& connection) : Player(server), protocol(protocol), connection(connection) {
+    MCPEPlayer(Server &server, MCPEProtocol &protocol, MCPEConnection &connection) : Player(server), protocol(protocol),
+                                                                                     connection(connection) {
         for (int i = 0; i < 9; i++)
             hotbarSlots[i] = i;
     };

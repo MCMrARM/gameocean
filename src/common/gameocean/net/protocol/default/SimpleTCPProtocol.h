@@ -15,7 +15,7 @@ namespace DefaultProtocol {
         SimpleTCPProtocol();
 
         virtual Packet *readPacket(BinaryStream &stream, bool client);
-        virtual void writePacket(BinaryStream &stream, const Packet &packet);
+        virtual void writePacket(BinaryStream &stream, Packet &packet);
 
         virtual std::string getName() { return "default-tcp"; }
 

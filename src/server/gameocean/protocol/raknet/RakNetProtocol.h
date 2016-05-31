@@ -8,11 +8,21 @@
 class RakNetProtocol : public Protocol {
 
 public:
-    RakNetProtocol() {}
+    RakNetProtocol();
 
     virtual Packet *readPacket(BinaryStream &stream, bool client);
-    virtual void writePacket(BinaryStream &stream, const Packet &packet);
+    virtual void writePacket(BinaryStream &stream, Packet &packet);
 
     static bool checkRakNetMagicBytes(char magic[16]);
     static bool checkRakNetMagicBytes(BinaryStream &stream);
+
+    static sockaddr readRakNetAddress(BinaryStream &stream);
+    static void writeRakNetAddress(BinaryStream &stream, sockaddr const& addr);
+    static inline unsigned int getRakNetAddressSize(sockaddr const& addr) {
+        if (addr.sa_family == AF_INET)
+            return 4;
+        return 0;
+    }
+
+    static long long getTimeForPing();
 };

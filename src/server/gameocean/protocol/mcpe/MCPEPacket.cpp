@@ -11,7 +11,7 @@
 #include <gameocean/item/recipes/Recipe.h>
 #include "../../utils/NBT.h"
 
-std::map<int, MCPEPacket::CreatePacket*> MCPEPacket::packets;
+MCPEPacket::CreatePacket *MCPEPacket::packets[256];
 
 void MCPEPacket::registerPackets() {
     MCPEPacket::registerPacket<MCPELoginPacket>(MCPE_LOGIN_PACKET);

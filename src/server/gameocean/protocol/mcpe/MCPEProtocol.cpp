@@ -8,10 +8,12 @@
 #include "MCPEPacket.h"
 #include "MCPEPlayer.h"
 #include "MCPEPacketBatchThread.h"
+#include "MCPEPacketWrapper.h"
 
 const char *MCPEProtocol::CURRENT_VERSION_STRING = "0.14.2";
 
 MCPEProtocol::MCPEProtocol() : server(*this) {
+    registerPacket<MCPEReceivePacketWrapper>();
     MCPEPacket::registerPackets();
 }/*
 

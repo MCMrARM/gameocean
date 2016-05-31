@@ -33,7 +33,7 @@ namespace DefaultProtocol {
         return pk;
     }
 
-    void SimpleTCPProtocol::writePacket(BinaryStream& stream, const Packet& packet) {
+    void SimpleTCPProtocol::writePacket(BinaryStream& stream, Packet& packet) {
         int pkLen = BinaryStream::BYTE_SIZE + packet.getPacketSize();
         int bufLen = BinaryStream::INT_SIZE + pkLen;
 

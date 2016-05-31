@@ -12,9 +12,9 @@ class ProtocolServer : public Thread {
 
 protected:
 #ifdef SERVER
-    Server* server = nullptr;
+    Server *server = nullptr;
 #endif
-    Protocol& protocol;
+    Protocol &protocol;
     int port;
     bool shouldStop = false;
 
@@ -23,8 +23,12 @@ protected:
     }
 
 public:
-    ProtocolServer(Protocol& protocol) : protocol(protocol) {
+    ProtocolServer(Protocol &protocol) : protocol(protocol) {
         //
+    }
+
+    inline Protocol &getProtocol() {
+        return protocol;
     }
 
     virtual void start() {

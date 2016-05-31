@@ -70,4 +70,6 @@ public:
 
     static std::string sprintf(const char* format, ...);
 
+    static void printInHex(std::ostream &stream, unsigned char *data, size_t dataSize);
+
 };

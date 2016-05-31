@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include "MCPEPacket.h"
+#include "MCPEPacketWrapper.h"
+#include "MCPEConnection.h"
 #include <gameocean/world/World.h>
 #include <gameocean/world/Chunk.h>
 #include <gameocean/world/tile/Container.h>
@@ -15,13 +17,10 @@ void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedP
     packetQueueMutex.unlock();
 }
 
-int MCPEPlayer::directPacket(MCPEPacket *packet) {/*
- * TODO:
-    MemoryBinaryStream bs;
-    bs << (byte) 0x8e;
-    bs << (byte) packet->id;
-    packet->write(bs);*/
-    return 0;//this->protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, packet->reliable ? (packet->needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE) : UNRELIABLE, 0, address, false);
+int MCPEPlayer::directPacket(MCPEPacket *packet) {
+    MCPESendPacketWrapper wrapper (*packet);
+    connection.send(wrapper, packet->reliable ? (packet->needsACK ? RakNetReliability::RELIABLE_ACK_RECEIPT : RakNetReliability::RELIABLE) : RakNetReliability::UNRELIABLE);
+    return 0;
 }
 
 int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {

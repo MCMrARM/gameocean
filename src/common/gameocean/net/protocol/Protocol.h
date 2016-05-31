@@ -46,6 +46,6 @@ public:
 
     virtual Packet *getPacket(int id, bool client);
     virtual Packet *readPacket(BinaryStream &stream, bool client) = 0;
-    virtual void writePacket(BinaryStream &stream, const Packet &packet) = 0;
+    virtual void writePacket(BinaryStream &stream, Packet &packet) = 0;
 
 };
