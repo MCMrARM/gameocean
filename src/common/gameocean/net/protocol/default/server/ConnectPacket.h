@@ -73,8 +73,7 @@ namespace DefaultProtocol {
                 return;
             }
 
-            ServerConnectionHandler::ClientAcceptanceStatus status = connection.getServerHandler().acceptClient(
-                    connection);
+            ConnectionHandler::ClientAcceptanceStatus status = connection.getHandler()->acceptClient(connection);
             if (!status.accepted) {
                 connection.kick(status.reason);
                 return;

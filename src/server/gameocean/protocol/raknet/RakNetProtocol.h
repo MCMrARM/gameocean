@@ -20,7 +20,7 @@ public:
     static void writeRakNetAddress(BinaryStream &stream, sockaddr const& addr);
     static inline unsigned int getRakNetAddressSize(sockaddr const& addr) {
         if (addr.sa_family == AF_INET)
-            return 4;
+            return 1+4+2;
         return 0;
     }
 

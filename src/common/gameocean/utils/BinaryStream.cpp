@@ -15,6 +15,7 @@ void MemoryBinaryStream::write(const byte *data, unsigned int size) {
             Logger::main->error("MemoryBinaryStream",
                                 "Attempting to write %i bytes to a buffer with only %i bytes remaining!", size,
                                 this->size - pos);
+            abort();
             throw EOFException();
         }
     }

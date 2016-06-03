@@ -7,6 +7,7 @@ void ProtocolServer::loop() {
         std::shared_ptr<Connection> connection (handleConnection());
         if (!connection)
             return;
+        connection->setHandler(handler);
         new ConnectionReceiveThread(connection, true);
     }
 }

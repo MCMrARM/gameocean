@@ -4,16 +4,16 @@
 #include <zlib.h>
 #include "MCPEProtocolServer.h"
 #include "MCPEPlayer.h"
+#include "MCPEPacketWrapper.h"
 
 void MCPEPacketBatchThread::run() {
     while(true) {
         std::this_thread::sleep_for(std::chrono::milliseconds(protocol.packetBatchDelay));
         if (stopping)
             return;
-/*
-        std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players = protocol.getPlayers();
-        for (auto& p : players) {
-            std::shared_ptr<MCPEPlayer>& player = p.second;
+
+        auto players = protocol.getPlayers();
+        for (auto& player : players) {
             player->packetQueueMutex.lock();
             if (player->packetQueue.size() > 0) {
                 if (player->packetQueue.size() == 1 &&
@@ -29,10 +29,12 @@ void MCPEPacketBatchThread::run() {
                     std::deque<MCPEPlayer::QueuedPacket> packetQueue = std::move(player->packetQueue);
                     player->packetQueueMutex.unlock();
 
-                    RakNet::BitStream bs;
-                    bs.Write((RakNet::MessageID) 0x8e);
-                    bs.Write((RakNet::MessageID) MCPE_BATCH_PACKET);
-                    bs.Write((int) 0);
+                    MCPESendDataPacketWrapper wrapper;
+                    DynamicMemoryBinaryStream &bs = wrapper.stream;
+                    bs.swapEndian = true;
+                    //bs << (byte) 0x8e;
+                    bs << (byte) MCPE_BATCH_PACKET;
+                    bs << (int) 0;
 
                     const int BUFFER_SIZE = 1024 * 16;
                     byte data [BUFFER_SIZE];
@@ -55,21 +57,19 @@ void MCPEPacketBatchThread::run() {
                         MCPEPacket* pk = it->pk.get();
                         if (pk->needsACK)
                             needsACK = true;
-                        RakNet::BitStream pbs;
-                        pbs.Write((int) 0);
-                        pbs.Write((RakNet::MessageID) pk->id);
+                        DynamicMemoryBinaryStream pbs;
+                        pbs.swapEndian = true;
+                        pbs << (int) 0 << (byte) pk->id;
                         pk->write(pbs);
 
-                        RakNet::BitSize_t o = pbs.GetWriteOffset();
-                        pbs.SetWriteOffset(0);
-                        pbs.Write(BITS_TO_BYTES(o) - 4);
-                        pbs.SetWriteOffset(o);
+                        ((int*) pbs.getBuffer(false))[0] = pbs.getSize() - 4;
+                        BinaryStream::swapBytes(&pbs.getBuffer(false)[0], sizeof(int));
 
                         it++;
                         int flush = (it == packetQueue.end() ? Z_FINISH : Z_NO_FLUSH);
 
-                        zs.avail_in = pbs.GetNumberOfBytesUsed();
-                        zs.next_in = &pbs.GetData()[0];
+                        zs.avail_in = pbs.getSize();
+                        zs.next_in = &pbs.getBuffer(false)[0];
 
                         do {
                             zs.avail_out = BUFFER_SIZE;
@@ -80,19 +80,17 @@ void MCPEPacketBatchThread::run() {
                                 deflateEnd(&zs);
                                 break;
                             }
-                            bs.Write((char*) data, BUFFER_SIZE - zs.avail_out);
+                            bs.write(data, BUFFER_SIZE - zs.avail_out);
                         } while (zs.avail_out == 0);
 
                         if (zs.avail_in != 0)
                             Logger::main->error("MCPE/Batch", "Failed to batch packet");
                     }
                     deflateEnd(&zs);
-                    int o = bs.GetWriteOffset();
-                    bs.SetWriteOffset(16);
-                    bs.Write(BITS_TO_BYTES(o) - 6);
-                    bs.SetWriteOffset(o);
+                    ((int*) (&bs.getBuffer(false)[1]))[0] = bs.getSize() - 5;
+                    BinaryStream::swapBytes(&bs.getBuffer(false)[1], sizeof(int));
 
-                    int i = protocol.getPeer()->Send(&bs, MEDIUM_PRIORITY, needsACK ? RELIABLE_WITH_ACK_RECEIPT : RELIABLE, 0, player->address, false);
+                    int i = player->getConnection().send(wrapper, (needsACK ? RakNetReliability::RELIABLE_ACK_RECEIPT : RakNetReliability::RELIABLE));
                     for (MCPEPlayer::QueuedPacket& pk : packetQueue) {
                         pk.callback(pk.pk.get(), i);
                     }
@@ -100,6 +98,6 @@ void MCPEPacketBatchThread::run() {
             } else {
                 player->packetQueueMutex.unlock();
             }
-        }*/
+        }
     }
 }

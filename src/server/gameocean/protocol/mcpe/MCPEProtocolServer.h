@@ -3,17 +3,22 @@
 #include "MCPEPacketBatchThread.h"
 #include "../raknet/RakNetProtocolServer.h"
 #include "MCPEConnection.h"
+#include "MCPEConnectionHandler.h"
 
 class MCPEProtocolServer : public RakNetProtocolServer {
 
 protected:
     MCPEPacketBatchThread batchThread;
+    MCPEConnectionHandler connectionHandler;
+    std::set<std::shared_ptr<MCPEPlayer>> players;
+    std::mutex playersMutex;
 
 public:
     int packetBatchDelay = 50; // in ms
 
     MCPEProtocolServer(Protocol& protocol) : RakNetProtocolServer(protocol), batchThread(*this) {
         port = 19132;
+        setRakNetHandler(&connectionHandler);
     }
 
     void updateServerName();
@@ -35,6 +40,15 @@ public:
 
     virtual std::shared_ptr<RakNetConnection> createRakNetConnection(sockaddr_in addr) {
         return std::shared_ptr<RakNetConnection>(new MCPEConnection(*this, addr));
+    }
+
+    std::set<std::shared_ptr<MCPEPlayer>> getPlayers() {
+        std::lock_guard<std::mutex> lock (playersMutex);
+        return players;
+    }
+    void addPlayer(std::shared_ptr<MCPEPlayer> player) {
+        std::lock_guard<std::mutex> lock (playersMutex);
+        players.insert(player);
     }
 
 

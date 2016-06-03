@@ -15,6 +15,7 @@ protected:
     Server *server = nullptr;
 #endif
     Protocol &protocol;
+    ConnectionHandler *handler = nullptr;
     int port;
     bool shouldStop = false;
 
@@ -27,8 +28,21 @@ public:
         //
     }
 
+#ifdef SERVER
+    inline Server *getServer() {
+        return server;
+    }
+#endif
+
     inline Protocol &getProtocol() {
         return protocol;
+    }
+
+    inline ConnectionHandler *getHandler() {
+        return handler;
+    }
+    inline void setHandler(ConnectionHandler *handler) {
+        this->handler = handler;
     }
 
     virtual void start() {

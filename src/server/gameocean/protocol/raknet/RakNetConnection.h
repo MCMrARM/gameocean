@@ -3,25 +3,61 @@
 #include <map>
 #include <gameocean/net/Connection.h>
 #include <netinet/in.h>
+#include <gameocean/utils/BinaryStream.h>
 #include "RakNetReliability.h"
 #include "RakNetCompound.h"
+#include "RakNetConnectionHandler.h"
 class RakNetProtocolServer;
 
 class RakNetConnection : public Connection {
 
 protected:
+    struct SendFrameCompound {
+        int id = -1;
+        int frameRefs = 0;
+        int frameCount;
+        int ackReceiptId = -1;
+    };
+    struct SendFrame {
+        std::vector<char> data;
+        RakNetReliability reliability;
+        int reliableIndex = -1;
+        int seqencedIndex = -1;
+        int orderIndex = -1;
+        char orderChannel = -1;
+        SendFrameCompound *compound = nullptr;
+        int compoundIndex = -1;
+    };
+
+    std::map<int, SendFrameCompound> sendCompounds;
+    std::map<int, SendFrame> resendQueue;
+    std::map<int, int> ackReceiptIds;
+
+    int sendFrame(SendFrame &frame);
+
     RakNetProtocolServer &server;
+    RakNetConnectionHandler *rakNetConnectionHandler = nullptr;
     sockaddr_in addr;
-    int mtu = 1492;
+    unsigned int mtu = 1492;
+    int ackReceiptId = 1;
     int sendFrameIndex = 0;
     int sendReliableIndex = 0;
-    int sendSequencedIndex = 0;
+    int sendSequencedIndex[256];
+    int sendOrderIndex[256];
+    int sendCompoundIndex = 0;
+    int receiveSequencedIndex[256];
+    int receiveReliableIndexMin = -1;
+    std::set<int> receiveReliableIndexes;
     std::map<int, RakNetCompound> receiveCompounds;
 
 public:
     RakNetConnection(RakNetProtocolServer &server, sockaddr_in addr);
     virtual ~RakNetConnection() {
         close();
+    }
+
+    inline RakNetProtocolServer &getServer() {
+        return server;
     }
 
     void setPrefferedMTU(int mtu);
@@ -44,6 +80,41 @@ public:
         return false; // this doesn't work this way with udp
     }
 
+    void setRakNetHandler(RakNetConnectionHandler *handler) {
+        setHandler(handler);
+        rakNetConnectionHandler = handler;
+    }
+    inline RakNetConnectionHandler *getRakNetHandler() {
+        return rakNetConnectionHandler;
+    }
+
+    bool handleReliableIndex(int index) {
+        if (index <= receiveReliableIndexMin) {
+            return false;
+        }
+        if (index == receiveReliableIndexMin + 1) {
+            receiveReliableIndexMin++;
+            std::set<int>::iterator it = receiveReliableIndexes.find(receiveReliableIndexMin + 1);
+            while (it != receiveReliableIndexes.end()) {
+                if (*it == receiveReliableIndexMin + 1) {
+                    receiveReliableIndexes.erase(it++);
+                    receiveReliableIndexMin++;
+                } else {
+                    it++;
+                }
+            }
+            return true;
+        }
+        receiveReliableIndexes.insert(index);
+        return true;
+    }
+    bool handleSequencedIndex(int index, int channel) {
+        if (index > receiveSequencedIndex[channel]) {
+            receiveSequencedIndex[channel] = index;
+            return true;
+        }
+        return false;
+    }
     void handleFragmentedPacket(std::vector<char> data, int compoundSize, int compoundId, int index);
 
 };

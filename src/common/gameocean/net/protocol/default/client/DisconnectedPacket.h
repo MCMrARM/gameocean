@@ -34,7 +34,7 @@ namespace DefaultProtocol {
 
         virtual void handleClient(Connection& connection) {
             connection.setAccepted(true);
-            connection.getClientHandler().disconnected(reason, textReason);
+            connection.close(reason, textReason);
         };
 
     };

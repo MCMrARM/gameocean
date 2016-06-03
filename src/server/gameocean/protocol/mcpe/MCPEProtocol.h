@@ -11,8 +11,6 @@ class MCPEProtocol : public RakNetProtocol {
 
 protected:
     MCPEProtocolServer server;
-    //std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> players;
-    std::mutex playersMutex;
 
 public:
     MCPEProtocol();
@@ -25,13 +23,5 @@ public:
     virtual ProtocolServer& getServer() {
         return server;
     }
-
-/*
-    std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> getPlayers() {
-        playersMutex.lock();
-        std::map<RakNet::RakNetGUID, std::shared_ptr<MCPEPlayer>> ret (players);
-        playersMutex.unlock();
-        return ret;
-    };*/
 
 };

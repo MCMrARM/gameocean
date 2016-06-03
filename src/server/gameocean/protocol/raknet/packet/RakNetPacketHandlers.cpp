@@ -12,6 +12,10 @@ void RakNetOnlineConnectRequestPacket::handleServer(Connection &connection) {
     ((RakNetConnection &) connection).send(reply, RakNetReliability::UNRELIABLE);
 }
 
+void RakNetClientHandshakePacket::handleServer(Connection &connection) {
+    ((RakNetConnection &) connection).setAccepted(true);
+}
+
 void RakNetPingPacket::handleServer(Connection &connection) {
     RakNetPongPacket pong;
     pong.pingTime = time;

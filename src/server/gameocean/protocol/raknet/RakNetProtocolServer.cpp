@@ -81,6 +81,9 @@ void RakNetProtocolServer::loop() {
             Logger::main->trace("RakNetProtocolServer", "An client has connected");
 
             std::shared_ptr<RakNetConnection> connection (createRakNetConnection(dg.addr));
+            connection->setHandler(getHandler());
+            if (rakNetHandler != nullptr)
+                connection->setRakNetHandler(rakNetHandler);
             connection->setPrefferedMTU(mtuSize);
             clients[(sockaddr&) dg.addr] = connection;
             RakNetConnectReplyPacket pk;
@@ -100,21 +103,23 @@ void RakNetProtocolServer::loop() {
                 ackPacket.addPacketId(index);
                 connection->sendRaw(ackPacket);
             }
-            //Logger::main->trace("RakNetProtocolServer", "Frame set index: %i", index);
+            Logger::main->trace("RakNetProtocolServer", "Frame set index: %i", index);
             while (stream.getRemainingSize() > 0) {
                 char flags;
                 unsigned short length;
                 stream >> flags >> length;
-                unsigned short orgLength = length;
                 length = (unsigned short) ((length + 7) / 8);
                 RakNetReliability type = (RakNetReliability) (flags >> 5);
                 bool isFragmented = (flags & 0b10000) != 0;
+                bool ignore = false;
                 if (RakNetIsTypeReliable(type)) {
                     int relIndex = 0;
                     stream.read((byte*) &relIndex, 3);
+                    if (!connection->handleReliableIndex(relIndex))
+                        ignore = true;
                 }
+                int seqIndex = 0;
                 if (RakNetIsTypeSequenced(type)) {
-                    int seqIndex = 0;
                     stream.read((byte*) &seqIndex, 3);
                 }
                 if (RakNetIsTypeOrdered(type)) {
@@ -122,7 +127,18 @@ void RakNetProtocolServer::loop() {
                     stream.read((byte*) &frameIndex, 3);
                     byte channel;
                     stream >> channel;
+                    if (RakNetIsTypeSequenced(type)) {
+                        if (!connection->handleSequencedIndex(seqIndex, channel))
+                            ignore = true;
+                    } else {
+                        //abort();
+                    }
                 }
+                if (ignore) {
+                    stream.skip(length);
+                    continue;
+                }
+
                 if (isFragmented) {
                     int csize;
                     short cid;
@@ -138,10 +154,10 @@ void RakNetProtocolServer::loop() {
                     unsigned int readSize = stream.getPos() - startOff;
                     if (readSize > length) {
                         Logger::main->error("RakNetProtocolServer", "Read too much data (read %i but was supposed to read only %i)", readSize, length);
+                        break;
                     } else if (readSize < length) {
                         Logger::main->trace("RakNetProtocolServer", "Read not enough data (read %i but was supposed to read %i)", readSize, length);
-                        char filler[length - readSize];
-                        stream.read((byte *) filler, sizeof(filler));
+                        stream.skip(length - readSize);
                     }
                     if (pk != nullptr) {
                         Logger::main->trace("RakNetProtocolServer", "Received sub-packet; id: %i, length: %i", pk->getId(), length);

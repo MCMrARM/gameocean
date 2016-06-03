@@ -13,7 +13,9 @@ void MCPEReceivePacketWrapper::read(BinaryStream &stream) {
     }
 }
 void MCPEReceivePacketWrapper::handleServer(Connection &connection) {
-    MCPEPlayer *player = ((MCPEConnection &) connection).getMCPEPlayer();
-    if (player != nullptr)
+    if (recvdPk == nullptr)
+        return;
+    std::shared_ptr<MCPEPlayer> player = ((MCPEConnection &) connection).getMCPEPlayer();
+    if (player)
         recvdPk->handle(*player);
 }

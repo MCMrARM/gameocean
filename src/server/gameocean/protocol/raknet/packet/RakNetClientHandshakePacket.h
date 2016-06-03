@@ -41,4 +41,6 @@ struct RakNetClientHandshakePacket : public Packet {
             RakNetProtocol::writeRakNetAddress(stream, internalIDs[i]);
         stream << requestTime << time;
     }
+
+    virtual void handleServer(Connection &connection);
 };

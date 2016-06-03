@@ -5,42 +5,28 @@
 class ConnectionHandler {
 
 public:
-    virtual bool isServer() { return false; };
-    virtual bool isClient() { return false; };
-
-};
-
-class ServerConnectionHandler : public ConnectionHandler {
-
-public:
-    virtual bool isServer() { return true; };
-
     struct ClientAcceptanceStatus {
         bool accepted = true;
         std::string reason;
     };
 
-    virtual ClientAcceptanceStatus acceptClient(Connection& connection) {
-        ClientAcceptanceStatus status;
-        return status;
+    /**
+     * Only needed for server handler.
+     * This function is called when the server gets a connection request.
+     */
+    virtual ClientAcceptanceStatus acceptClient(Connection &connection) {
+        return ClientAcceptanceStatus ();
     }
 
-    virtual void connected(Connection& connection) { };
-    virtual void disconnected(Connection& connection, Connection::DisconnectReason reason, std::string textReason) { }
+    /**
+     * This function is called when the Connection instance is accepted. It should be called when the protocol version
+     * and details are negotiated.
+     */
+    virtual void connected(Connection &connection) { }
 
-};
-
-class ClientConnectionHandler : public ConnectionHandler {
-
-public:
-    virtual bool isClient() { return true; };
-
-    Connection& connection;
-
-    ClientConnectionHandler(Connection& connection) : connection(connection) {};
-
-    virtual void connected() { }
-    virtual void disconnected(Connection::DisconnectReason reason, std::string textReason) { }
-
+    /**
+     * This function is called when the Connection instance is closed.
+     */
+    virtual void disconnected(Connection &connection, Connection::DisconnectReason reason, std::string textReason) { }
 
 };

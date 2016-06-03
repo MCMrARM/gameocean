@@ -206,6 +206,7 @@ class MCPEPlayStatusPacket : public MCPEPacket {
 public:
     MCPEPlayStatusPacket() {
         id = MCPE_PLAY_STATUS_PACKET;
+        priority = true;
     };
 
     enum class Status {
@@ -229,7 +230,7 @@ public:
     std::string message;
 
     virtual void write(BinaryStream& stream) {
-        message = readString(stream);
+        writeString(stream, message);
     };
 };
 

@@ -19,8 +19,7 @@ void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedP
 
 int MCPEPlayer::directPacket(MCPEPacket *packet) {
     MCPESendPacketWrapper wrapper (*packet);
-    connection.send(wrapper, packet->reliable ? (packet->needsACK ? RakNetReliability::RELIABLE_ACK_RECEIPT : RakNetReliability::RELIABLE) : RakNetReliability::UNRELIABLE);
-    return 0;
+    return connection.send(wrapper, packet->reliable ? (packet->needsACK ? RakNetReliability::RELIABLE_ACK_RECEIPT : RakNetReliability::RELIABLE) : RakNetReliability::UNRELIABLE);
 }
 
 int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
@@ -29,8 +28,7 @@ int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {
         return 0;
     }
 
-    int ret = directPacket(&*packet);
-    return ret;
+    return directPacket(&*packet);
 }
 
 bool MCPEPlayer::sendChunk(int x, int z) {
@@ -46,6 +44,7 @@ bool MCPEPlayer::sendChunk(int x, int z) {
         chunkArrayMutex.lock();
         raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
         chunkArrayMutex.unlock();
+        receivedACK(pkId); //TODO:This is temporary workaround
     });
     return true;
 }

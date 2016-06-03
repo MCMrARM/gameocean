@@ -34,19 +34,18 @@ public:
 class Connection {
 
 protected:
-    bool accepted;
+    bool accepted = false;
     bool closed = false;
-    Protocol& protocol;
+    Protocol &protocol;
+    ConnectionHandler *handler = nullptr;
 
 public:
-    ConnectionHandler* handler;
-
     const bool client;
 
-    Connection(Protocol& protocol, bool client) : protocol(protocol), client(client) {
+    Connection(Protocol &protocol, bool client) : protocol(protocol), client(client) {
         //
     }
-    Connection(Protocol& protocol) : Connection(protocol, true) {
+    Connection(Protocol &protocol) : Connection(protocol, true) {
         //
     }
     virtual ~Connection() {
@@ -65,22 +64,29 @@ public:
     virtual void close(DisconnectReason reason, std::string msg = "");
     virtual void kick(std::string reason);
 
-    void setHandler(ConnectionHandler& handler);
-    virtual void setAccepted(bool accepted) {
-        this->accepted = accepted;
-    }
+    virtual void setAccepted(bool accepted);
 
-    virtual void send(Packet& packet) = 0;
+    virtual void send(Packet &packet) = 0;
 
     inline bool isAccepted() {
         return accepted;
     }
 
-    ConnectionHandler& getHandler();
-    ClientConnectionHandler& getClientHandler();
-    ServerConnectionHandler& getServerHandler();
+    inline Protocol &getProtocol() {
+        return protocol;
+    }
 
-    virtual void handlePacket(Packet* packet);
+    inline ConnectionHandler *getHandler() {
+        return handler;
+    }
+    inline bool hasHandler() {
+        return (handler != nullptr);
+    }
+    void setHandler(ConnectionHandler *handler) {
+        this->handler = handler;
+    }
+
+    virtual void handlePacket(Packet *packet);
     virtual bool readAndHandlePacket() = 0;
     virtual void loop();
 

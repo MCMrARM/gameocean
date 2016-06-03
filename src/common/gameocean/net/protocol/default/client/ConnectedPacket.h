@@ -40,7 +40,6 @@ namespace DefaultProtocol {
 
         virtual void handleClient(Connection& connection) {
             connection.setAccepted(true);
-            connection.getClientHandler().connected();
         };
 
     };

@@ -7,6 +7,7 @@
 #include <gameocean/net/protocol/ProtocolServer.h>
 #include <gameocean/net/ServerSocket.h>
 #include "RakNetConnection.h"
+#include "RakNetConnectionHandler.h"
 
 class RakNetProtocolServer : public ProtocolServer {
 
@@ -22,6 +23,8 @@ protected:
         }
     };
 
+    RakNetConnectionHandler *rakNetHandler = nullptr;
+
     ServerSocket socket;
     std::string serverName;
     std::mutex serverNameMutex;
@@ -30,6 +33,11 @@ protected:
 
 public:
     RakNetProtocolServer(Protocol& protocol);
+
+    inline void setRakNetHandler(RakNetConnectionHandler *handler) {
+        setHandler(handler);
+        rakNetHandler = handler;
+    }
 
     void setBroadcastedServerName(std::string serverName) {
         std::lock_guard<std::mutex> lock(serverNameMutex);

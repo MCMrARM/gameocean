@@ -222,6 +222,13 @@ public:
      */
     inline unsigned int getRemainingSize() const { return size - pos; }
 
+    unsigned int skip(unsigned int count) {
+        if (pos + count > size)
+            count = (size - pos);
+        pos += count;
+        return count;
+    }
+
     virtual void write(const byte *data, unsigned int size);
 
     virtual unsigned int read(byte *data, unsigned int size);
