@@ -129,7 +129,7 @@ protected:
         stream << (short) 0; // no nbt data
     }
     std::string readString(BinaryStream& stream) {
-        unsigned int len;
+        unsigned short len;
         stream >> len;
         std::string str;
         str.resize(len);
@@ -137,7 +137,7 @@ protected:
         return str;
     }
     void writeString(BinaryStream& stream, std::string const& str) {
-        stream << (unsigned int) str.size();
+        stream << (unsigned short) str.size();
         stream.write((byte*) &str[0], (unsigned int) str.size());
     }
 

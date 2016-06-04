@@ -21,7 +21,7 @@ void ChunkPtr::releaseChunk() {
     if (chunk != nullptr) {
         chunk->refMutex.lock();
         chunk->refCount--;
-        if (chunk->refCount <= 0 && chunk->shouldDestroy()) {
+        if (chunk->refCount <= 0 && chunk->shouldDestroy() && !chunk->isDestroying) {
             chunk->isDestroying = true;
             chunk->refMutex.unlock();
             chunk->destroy();

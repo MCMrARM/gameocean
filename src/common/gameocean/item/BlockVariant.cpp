@@ -46,7 +46,7 @@ void BlockVariant::dropItems(World& world, BlockPos pos, ItemVariant* heldItem) 
     }
     Random& random = Random::instance;
     for (ItemDrop drop : drops) {
-        if (drop.requiredGroup != nullptr && heldItem->toolGroup != drop.requiredGroup)
+        if (drop.requiredGroup != nullptr && (heldItem == nullptr || heldItem->toolGroup != drop.requiredGroup))
             continue;
         if (drop.requiredVariantId.length() > 0 && heldItem->getStringId() != drop.requiredVariantId)
             continue;

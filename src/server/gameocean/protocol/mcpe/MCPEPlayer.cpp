@@ -53,7 +53,7 @@ void MCPEPlayer::receivedChunk(int x, int z) {
     Player::receivedChunk(x, z);
 
     ChunkPtr chunk = world->getChunkAt({x, z}, false);
-    if (!chunk) {
+    if (chunk) {
         std::unique_lock<std::mutex> lock (chunk->tilesMutex);
         for (std::shared_ptr<Tile> tile : chunk->tiles) {
             std::unique_ptr<MCPETileEntityDataPacket> pk (new MCPETileEntityDataPacket());

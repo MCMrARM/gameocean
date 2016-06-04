@@ -71,6 +71,7 @@ void MCPEFullChunkDataPacket::write(BinaryStream& stream) {
 }
 
 void MCPELoginPacket::handle(MCPEPlayer& player) {
+    Logger::main->trace("LoginPacket", "Username = %s, skinModel = %s", username.c_str(), skin.c_str());
     player.setName(std::string(username));
 
     player.skinModel = skinModel;
