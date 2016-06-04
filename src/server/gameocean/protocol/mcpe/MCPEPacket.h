@@ -191,12 +191,7 @@ public:
         serverAddress = readString(stream);
         clientSecret = readString(stream);
         skinModel = readString(stream);
-        unsigned short skinLen;
-        stream >> skinLen;
-        if (skinLen <= 0)
-            return;
-        skin.resize(skinLen);
-        stream.read((byte*) &skin[0], skinLen);
+        skin = readString(stream);
     };
 
     virtual void handle(MCPEPlayer& player);
@@ -365,7 +360,7 @@ public:
 
     virtual void write(BinaryStream& stream) {
         writeUUID(stream, uuid);
-        username = readString(stream);
+        writeString(stream, username);
         stream << eid;
         stream << x;
         stream << y;
@@ -1090,8 +1085,8 @@ public:
             for (AddEntry e : addEntries) {
                 writeUUID(stream, e.uuid);
                 stream << e.eid;
-                stream << e.name;
-                stream << e.skinModel;
+                writeString(stream, e.name);
+                writeString(stream, e.skinModel);
                 stream << (short) e.skin.size();
                 stream.write((byte*) e.skin.c_str(), (unsigned int) e.skin.size());
             }

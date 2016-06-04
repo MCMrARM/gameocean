@@ -173,6 +173,7 @@ void RakNetConnection::handleFragmentedPacket(std::vector<char> data, int compou
     if (compound.isComplete()) {
         std::vector<char> built = std::move(compound.build());
         MemoryBinaryStream stream ((byte *) built.data(), (unsigned int) built.size());
+        stream.swapEndian = true;
         Packet *pk = protocol.readPacket(stream, false);
         if (pk != nullptr) {
             Logger::main->trace("RakNet/FragmentedPacket", "Received packet; id: %i, length: %i", pk->getId(), built.size());

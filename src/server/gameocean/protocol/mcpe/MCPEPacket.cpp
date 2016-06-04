@@ -71,7 +71,7 @@ void MCPEFullChunkDataPacket::write(BinaryStream& stream) {
 }
 
 void MCPELoginPacket::handle(MCPEPlayer& player) {
-    player.setName(std::string(username));
+    player.setName(username);
 
     player.skinModel = skinModel;
     player.skin = skin;

@@ -104,28 +104,22 @@ public:
         return *this;
     }
 
-private:
-    byte _buf[LONG_SIZE];
-
 public:
     BinaryStream &operator>>(float &val) {
-        this->read(_buf, FLOAT_SIZE);
-        if(swapEndian) swapBytes(_buf, FLOAT_SIZE);
-        val = ((float *) _buf)[0];
+        this->read((byte *) &val, FLOAT_SIZE);
+        if(swapEndian) swapBytes((byte *) &val, FLOAT_SIZE);
         return *this;
     }
 
     BinaryStream &operator>>(double &val) {
-        this->read(_buf, DOUBLE_SIZE);
-        if(swapEndian) swapBytes(_buf, DOUBLE_SIZE);
-        val = ((double *) _buf)[0];
+        this->read((byte *) &val, DOUBLE_SIZE);
+        if(swapEndian) swapBytes((byte *) &val, DOUBLE_SIZE);
         return *this;
     }
 
     BinaryStream &operator>>(long long &val) {
-        this->read(_buf, LONG_SIZE);
-        if(swapEndian) swapBytes(_buf, LONG_SIZE);
-        val = ((int64_t *) _buf)[0];
+        this->read((byte *) &val, LONG_SIZE);
+        if(swapEndian) swapBytes((byte *) &val, LONG_SIZE);
         return *this;
     }
 
@@ -135,9 +129,8 @@ public:
     }
 
     BinaryStream &operator>>(int &val) {
-        this->read(_buf, INT_SIZE);
-        if(swapEndian) swapBytes(_buf, INT_SIZE);
-        val = ((int32_t *) _buf)[0];
+        this->read((byte *) &val, INT_SIZE);
+        if(swapEndian) swapBytes((byte *) &val, INT_SIZE);
         return *this;
     }
 
@@ -147,9 +140,8 @@ public:
     }
 
     BinaryStream &operator>>(short &val) {
-        this->read(_buf, SHORT_SIZE);
-        if(swapEndian) swapBytes(_buf, SHORT_SIZE);
-        val = ((int16_t *) _buf)[0];
+        this->read((byte *) &val, SHORT_SIZE);
+        if(swapEndian) swapBytes((byte *) &val, SHORT_SIZE);
         return *this;
     }
 
@@ -159,8 +151,7 @@ public:
     }
 
     BinaryStream &operator>>(char &val) {
-        this->read(_buf, BYTE_SIZE);
-        val = ((int8_t *) _buf)[0];
+        this->read((byte *) &val, BYTE_SIZE);
         return *this;
     }
 
@@ -178,7 +169,7 @@ public:
         return *this;
     }
 
-    static void swapBytes(byte* array, int size) {
+    static void swapBytes(byte *array, size_t size) {
         byte* array2 = new byte[size];
         memcpy(array2, array, size);
         for (int i = size - 1; i >= 0; i--) {
