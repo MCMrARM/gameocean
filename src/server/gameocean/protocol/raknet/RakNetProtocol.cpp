@@ -6,6 +6,7 @@
 #include "packet/RakNetOnlineConnectReplyPacket.h"
 #include "packet/RakNetClientHandshakePacket.h"
 #include "packet/RakNetACKPacket.h"
+#include "packet/RakNetNAKPacket.h"
 #include "packet/RakNetPingPacket.h"
 #include "packet/RakNetPongPacket.h"
 
@@ -15,6 +16,7 @@ RakNetProtocol::RakNetProtocol() {
     registerPacket<RakNetOnlineConnectReplyPacket>();
     registerPacket<RakNetClientHandshakePacket>();
     registerPacket<RakNetACKPacket>();
+    registerPacket<RakNetNAKPacket>();
     registerPacket<RakNetPingPacket>();
     registerPacket<RakNetPongPacket>();
 }

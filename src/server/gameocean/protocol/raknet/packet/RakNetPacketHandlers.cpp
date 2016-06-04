@@ -4,6 +4,7 @@
 #include "RakNetPingPacket.h"
 #include "RakNetPongPacket.h"
 #include "RakNetACKPacket.h"
+#include "RakNetNAKPacket.h"
 
 void RakNetOnlineConnectRequestPacket::handleServer(Connection &connection) {
     RakNetOnlineConnectReplyPacket reply;
@@ -30,17 +31,26 @@ void RakNetPongPacket::handleServer(Connection &connection) {
 
 void RakNetACKPacket::handleServer(Connection &connection) {
     RakNetConnection &rakNetConnection = (RakNetConnection &) connection;
-    RakNetConnectionHandler *connHandler = rakNetConnection.getRakNetHandler();
+    if (rakNetConnection.sentPackets.size() <= 0)
+        return;
     for (Range &range : ranges) {
+        range.min = std::max(range.min, (unsigned int) rakNetConnection.sentPackets.begin()->first);
+        range.max = std::min(range.max, (unsigned int) (--rakNetConnection.sentPackets.end())->first);
         for (int pkId = range.min; pkId <= range.max; pkId++) {
-            if (rakNetConnection.sentPackets.count(pkId)) {
-                RakNetConnection::PacketMeta &meta = rakNetConnection.sentPackets.at(pkId);
-                if (meta.unreliableAckReceiptId != -1 && connHandler != nullptr)
-                    connHandler->onPacketDelivered(rakNetConnection, meta.unreliableAckReceiptId);
-                if (meta.reliableFrameId != -1)
-                    rakNetConnection.onReliableFrameReceived(meta.reliableFrameId);
-                rakNetConnection.sentPackets.erase(pkId);
-            }
+            rakNetConnection.onPacketDelivered(pkId);
+        }
+    }
+}
+
+void RakNetNAKPacket::handleServer(Connection &connection) {
+    RakNetConnection &rakNetConnection = (RakNetConnection &) connection;
+    if (rakNetConnection.sentPackets.size() <= 0)
+        return;
+    for (Range &range : ranges) {
+        range.min = std::max(range.min, (unsigned int) rakNetConnection.sentPackets.begin()->first);
+        range.max = std::min(range.max, (unsigned int) (--rakNetConnection.sentPackets.end())->first);
+        for (int pkId = range.min; pkId <= range.max; pkId++) {
+            rakNetConnection.onPacketLost(pkId);
         }
     }
 }

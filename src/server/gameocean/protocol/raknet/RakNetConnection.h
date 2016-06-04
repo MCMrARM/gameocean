@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <unordered_map>
+#include <chrono>
 #include <gameocean/net/Connection.h>
 #include <netinet/in.h>
 #include <gameocean/utils/BinaryStream.h>
@@ -13,6 +15,7 @@ class RakNetConnection : public Connection {
 
 protected:
     friend class RakNetACKPacket;
+    friend class RakNetNAKPacket;
 
     struct SendFrameCompound {
         int id = -1;
@@ -36,12 +39,19 @@ protected:
         int reliableFrameId = -1;
     };
 
+    std::recursive_mutex sendReliableMutex;
     std::map<int, SendFrame> sendReliableFrames;
     std::map<int, PacketMeta> sentPackets;
+    std::unordered_map<int, std::chrono::steady_clock::time_point> sendReliableQueue;
+    bool sendReliableQueueSorted = false;
 
     int sendFrame(SendFrame &frame);
 
-    void onReliableFrameReceived(int frameId);
+    void onPacketDelivered(int pkId);
+    void onPacketLost(int pkId);
+    void onReliableFrameDelivered(int frameId);
+    void queueReliablePacketResend(int frameId, std::chrono::milliseconds resendTime);
+    void dequeueReliablePacketResend(int frameId);
 
     RakNetProtocolServer &server;
     RakNetConnectionHandler *rakNetConnectionHandler = nullptr;
@@ -124,6 +134,8 @@ public:
         return false;
     }
     void handleFragmentedPacket(std::vector<char> data, int compoundSize, int compoundId, int index);
+
+    void resendPackets();
 
 };
 

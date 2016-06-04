@@ -8,6 +8,7 @@
 #include <gameocean/net/ServerSocket.h>
 #include "RakNetConnection.h"
 #include "RakNetConnectionHandler.h"
+#include "RakNetResendThread.h"
 
 class RakNetProtocolServer : public ProtocolServer {
 
@@ -23,13 +24,18 @@ protected:
         }
     };
 
+    typedef std::unordered_map<sockaddr, std::shared_ptr<RakNetConnection>, SockaddrHash, SockaddrComparator> ClientMap;
+
     RakNetConnectionHandler *rakNetHandler = nullptr;
+
+    RakNetResendThread resendThread;
 
     ServerSocket socket;
     std::string serverName;
     std::mutex serverNameMutex;
     long long serverId;
-    std::unordered_map<sockaddr, std::shared_ptr<RakNetConnection>, SockaddrHash, SockaddrComparator> clients;
+    std::mutex clientsMutex;
+    ClientMap clients;
 
 public:
     RakNetProtocolServer(Protocol& protocol);
@@ -58,6 +64,19 @@ public:
     }
 
     void removeConnection(RakNetConnection &connection);
+
+    inline ClientMap getConnections() {
+        std::lock_guard<std::mutex> lock(clientsMutex);
+        return clients;
+    }
+
+    virtual void setOption(std::string key, std::string value) {
+        if (key == "resend-interval") {
+            resendThread.resendDelay = StringUtils::asInt(value, resendThread.resendDelay);
+        } else {
+            ProtocolServer::setOption(key, value);
+        }
+    }
 
 };
 

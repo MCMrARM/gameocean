@@ -5,8 +5,9 @@
 #include "RakNetProtocol.h"
 #include "packet/RakNetConnectReplyPacket.h"
 #include "packet/RakNetACKPacket.h"
+#include "packet/RakNetNAKPacket.h"
 
-RakNetProtocolServer::RakNetProtocolServer(Protocol &protocol) : ProtocolServer(protocol) {
+RakNetProtocolServer::RakNetProtocolServer(Protocol &protocol) : ProtocolServer(protocol), resendThread(*this) {
     serverId = Random::instance.nextInt(0, INT_MAX);
 }
 
@@ -15,6 +16,7 @@ void RakNetProtocolServer::loop() {
         Logger::main->error("RakNetProtocolServer", "Failed to start listening");
         return;
     }
+    resendThread.start();
     Datagram dg;
     while (true) {
         if (shouldStop)
@@ -85,7 +87,9 @@ void RakNetProtocolServer::loop() {
             if (rakNetHandler != nullptr)
                 connection->setRakNetHandler(rakNetHandler);
             connection->setPrefferedMTU(mtuSize);
+            clientsMutex.lock();
             clients[(sockaddr&) dg.addr] = connection;
+            clientsMutex.unlock();
             RakNetConnectReplyPacket pk;
             pk.serverId = serverId;
             pk.clientAddr = (sockaddr const&) dg.addr;
@@ -93,9 +97,13 @@ void RakNetProtocolServer::loop() {
             pk.clientId = clientId;
             connection->sendRaw(pk);
         } else if (pkId >= 0x80 && pkId < 0x8e) {
-            if (clients.count((sockaddr&) dg.addr) <= 0)
+            clientsMutex.lock();
+            if (clients.count((sockaddr&) dg.addr) <= 0) {
+                clientsMutex.unlock();
                 continue;
+            }
             std::shared_ptr<RakNetConnection> connection = clients.at((sockaddr&) dg.addr);
+            clientsMutex.unlock();
             int index = 0;
             stream.read((byte*) &index, 3);
             {
@@ -147,7 +155,7 @@ void RakNetProtocolServer::loop() {
                     data.resize(length);
                     stream.read((byte *) data.data(), length);
                     connection->handleFragmentedPacket(std::move(data), csize, cid, cindex);
-                } else {
+                } else if (length > 0) {
                     unsigned int startOff = stream.getPos();
                     Packet *pk = protocol.readPacket(stream, false);
                     unsigned int readSize = stream.getPos() - startOff;
@@ -166,8 +174,13 @@ void RakNetProtocolServer::loop() {
                 }
             }
         } else if (pkId == RAKNET_PACKET_ACK) {
-            // it, sadly, has a special case
+            std::lock_guard<std::mutex> lock(clientsMutex);
             RakNetACKPacket pk;
+            pk.read(stream);
+            pk.handleServer(*clients.at((sockaddr&) dg.addr));
+        } else if (pkId == RAKNET_PACKET_NAK) {
+            std::lock_guard<std::mutex> lock(clientsMutex);
+            RakNetNAKPacket pk;
             pk.read(stream);
             pk.handleServer(*clients.at((sockaddr&) dg.addr));
         } else {
@@ -177,8 +190,10 @@ void RakNetProtocolServer::loop() {
     }
     socket.close();
     Logger::main->trace("RakNetProtocolServer", "Finished listening");
+    resendThread.stop();
 }
 
 void RakNetProtocolServer::removeConnection(RakNetConnection &connection) {
+    std::lock_guard<std::mutex> lock(clientsMutex);
     clients.erase((const sockaddr &) connection.getSockAddr());
 }

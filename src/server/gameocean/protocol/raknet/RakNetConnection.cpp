@@ -67,15 +67,52 @@ int RakNetConnection::sendFrame(SendFrame &frame) {
             sendReliableFrames[frame.reliableIndex] = frame;
         }
         sentPackets[myIndex].reliableFrameId = frame.reliableIndex;
+        queueReliablePacketResend(frame.reliableIndex, std::chrono::seconds(5));
     }
     dg.dataSize = stream.getSize();
     server.getSocket().sendDatagram(dg);
     return ret;
 }
 
-void RakNetConnection::onReliableFrameReceived(int frameId) {
+void RakNetConnection::queueReliablePacketResend(int frameId, std::chrono::milliseconds resendTime) {
+    std::lock_guard<std::recursive_mutex> lock (sendReliableMutex);
+    std::chrono::steady_clock::time_point tp = std::chrono::steady_clock::now() + resendTime;
+    if (sendReliableQueue.count(frameId) <= 0 || sendReliableQueue.at(frameId) > tp)
+        sendReliableQueue[frameId] = tp;
+}
+
+void RakNetConnection::dequeueReliablePacketResend(int frameId) {
+    std::lock_guard<std::recursive_mutex> lock (sendReliableMutex);
+    sendReliableQueue.erase(frameId);
+}
+
+void RakNetConnection::onPacketDelivered(int pkId) {
+    if (sentPackets.count(pkId)) {
+        RakNetConnection::PacketMeta &meta = sentPackets.at(pkId);
+        if (meta.unreliableAckReceiptId != -1 && getRakNetHandler() != nullptr)
+            getRakNetHandler()->onPacketDelivered(*this, meta.unreliableAckReceiptId);
+        if (meta.reliableFrameId != -1)
+            onReliableFrameDelivered(meta.reliableFrameId);
+        sentPackets.erase(pkId);
+    }
+}
+
+void RakNetConnection::onPacketLost(int pkId) {
+    if (sentPackets.count(pkId)) {
+        RakNetConnection::PacketMeta &meta = sentPackets.at(pkId);
+        if (meta.unreliableAckReceiptId != -1 && getRakNetHandler() != nullptr)
+            getRakNetHandler()->onPacketLost(*this, meta.unreliableAckReceiptId);
+        if (meta.reliableFrameId != -1)
+            queueReliablePacketResend(meta.reliableFrameId, std::chrono::milliseconds(10));
+        sentPackets.erase(pkId);
+    }
+}
+
+void RakNetConnection::onReliableFrameDelivered(int frameId) {
+    std::lock_guard<std::recursive_mutex> lock (sendReliableMutex);
     if (sendReliableFrames.count(frameId) <= 0)
         return;
+    dequeueReliablePacketResend(frameId);
     SendFrame &frame = sendReliableFrames.at(frameId);
     if (frame.compound != nullptr) {
         frame.compound->frameRefs--;
@@ -184,4 +221,18 @@ void RakNetConnection::handleFragmentedPacket(std::vector<char> data, int compou
         }
         receiveCompounds.erase(compoundId);
     }
+}
+
+void RakNetConnection::resendPackets() {
+    std::vector<int> requeued;
+    std::lock_guard<std::recursive_mutex> lock(sendReliableMutex);
+    for (auto it = sendReliableQueue.begin(); it != sendReliableQueue.end();) {
+        if (it->second >= std::chrono::steady_clock::now()) {
+            requeued.push_back(it->first);
+            it = sendReliableQueue.erase(it);
+        } else
+            it++;
+    }
+    for (int pkId : requeued)
+        sendFrame(sendReliableFrames[pkId]);
 }

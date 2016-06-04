@@ -5,9 +5,9 @@
 #include "../RakNetProtocol.h"
 #include "RakNetBaseACKPacket.h"
 
-struct RakNetACKPacket : public RakNetBaseACKPacket {
+struct RakNetNAKPacket : public RakNetBaseACKPacket {
 
-    PacketDef(RAKNET_PACKET_ACK, Type::BOTH)
+    PacketDef(RAKNET_PACKET_NAK, Type::BOTH)
 
     virtual void handleServer(Connection &connection);
 
