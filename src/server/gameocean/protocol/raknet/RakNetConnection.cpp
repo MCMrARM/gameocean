@@ -20,6 +20,7 @@ void RakNetConnection::close() {
 
 int RakNetConnection::sendFrame(SendFrame &frame) {
     int ret = 0;
+    bool isResending = false;
     Datagram dg;
     dg.addr = addr;
     MemoryBinaryStream stream((byte *) dg.data, sizeof(dg.data));
@@ -34,8 +35,9 @@ int RakNetConnection::sendFrame(SendFrame &frame) {
     if (RakNetIsTypeReliable(frame.reliability)) {
         if (frame.reliableIndex == -1)
             frame.reliableIndex = sendReliableIndex++;
+        else
+            isResending = true;
         stream.write((byte*) &frame.reliableIndex, 3);
-        //TODO:
     }
     if (RakNetIsTypeSequenced(frame.reliability)) {
         if (frame.seqencedIndex == -1)
@@ -52,17 +54,43 @@ int RakNetConnection::sendFrame(SendFrame &frame) {
         stream << frame.compound->frameCount << (short) frame.compound->id << frame.compoundIndex;
     }
     if (frame.compound == nullptr && RakNetTypeNeedsACKReceipt(frame.reliability)) {
-        ret = ackReceiptId++;
-        ackReceiptIds[myIndex] = ret;
+        if (RakNetIsTypeReliable(frame.reliability)) {
+            frame.reliableACKReceiptId = ackReceiptId++;
+        } else {
+            ret = ackReceiptId++;
+            sentPackets[myIndex].unreliableAckReceiptId = ret;
+        }
     }
     stream.write((byte*) &frame.data[0], (unsigned int) frame.data.size());
+    if (RakNetIsTypeReliable(frame.reliability)) {
+        if (!isResending) {
+            sendReliableFrames[frame.reliableIndex] = frame;
+        }
+        sentPackets[myIndex].reliableFrameId = frame.reliableIndex;
+    }
     dg.dataSize = stream.getSize();
     server.getSocket().sendDatagram(dg);
     return ret;
 }
 
+void RakNetConnection::onReliableFrameReceived(int frameId) {
+    if (sendReliableFrames.count(frameId) <= 0)
+        return;
+    SendFrame &frame = sendReliableFrames.at(frameId);
+    if (frame.compound != nullptr) {
+        frame.compound->frameRefs--;
+        if (frame.compound->frameRefs <= 0) {
+            if (frame.compound->ackReceiptId != -1 && getRakNetHandler() != nullptr)
+                getRakNetHandler()->onPacketDelivered(*this, frame.compound->ackReceiptId);
+            delete frame.compound;
+        }
+    }
+    if (frame.reliableACKReceiptId != -1 && getRakNetHandler() != nullptr)
+        getRakNetHandler()->onPacketDelivered(*this, frame.reliableACKReceiptId);
+    sendReliableFrames.erase(frameId);
+}
+
 int RakNetConnection::send(Packet &packet, RakNetReliability reliability) {
-    reliability = RakNetReliability::UNRELIABLE;
     unsigned int packetSize = packet.getPacketSize();
     // base packet overhead: 1 (pk id) + 3 (frame count) + 1 (flags) + 2 (length)
     // additional: reliable - 3, sequenced - 3, ordered - 4
@@ -83,17 +111,23 @@ int RakNetConnection::send(Packet &packet, RakNetReliability reliability) {
             reliability = RakNetReliability::RELIABLE_SEQUENCED;
         else if (reliability == RakNetReliability::UNRELIABLE_ACK_RECEIPT)
             reliability = RakNetReliability::RELIABLE_ACK_RECEIPT;
+        bool needsACKReceipt = RakNetTypeNeedsACKReceipt(reliability);
+        if (reliability == RakNetReliability::RELIABLE_ACK_RECEIPT)
+            reliability = RakNetReliability::RELIABLE;
+        else if (reliability == RakNetReliability::RELIABLE_ORDERED_ACK_RECEIPT)
+            reliability = RakNetReliability::RELIABLE_ORDERED;
 
         // fragment it!
         unsigned int off = 0;
         unsigned int singleSize = mtu - 7 - 3 - (RakNetIsTypeSequenced(reliability) ? 3 : 0)
                                   - (RakNetIsTypeOrdered(reliability) ? 4 : 0)
                                   - 4 - 2 - 4;
-        SendFrameCompound compound;
-        compound.id = sendCompoundIndex++;
-        compound.frameCount = (packetSize + 1 + singleSize - 1) / singleSize;
-        compound.frameRefs = compound.frameCount;
-        Logger::main->trace("RakNetConnection", "Sending fragmented frame: id %i, size: %i - %i %i", sendCompoundIndex, compound.frameCount, packetSize, singleSize);
+        SendFrameCompound *compound = new SendFrameCompound();
+        compound->id = sendCompoundIndex++;
+        compound->frameCount = (packetSize + 1 + singleSize - 1) / singleSize;
+        compound->frameRefs = compound->frameCount;
+        if (needsACKReceipt)
+            compound->ackReceiptId = ackReceiptId++;
         int compoundIndex = 0;
         while (off < packetSize + 1) {
             SendFrame frame;
@@ -101,12 +135,12 @@ int RakNetConnection::send(Packet &packet, RakNetReliability reliability) {
             frame.data = std::vector<char>(frameSize);
             memcpy(frame.data.data(), &data[off], frameSize);
             frame.reliability = reliability;
-            frame.compound = &compound;
+            frame.compound = compound;
             frame.compoundIndex = compoundIndex++;
             sendFrame(frame);
             off += frameSize;
         }
-        return 0;
+        return (compound->ackReceiptId == -1 ? 0 : compound->ackReceiptId);
     } else {
         SendFrame frame;
         frame.data = std::move(data);

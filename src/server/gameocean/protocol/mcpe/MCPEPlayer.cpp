@@ -44,7 +44,6 @@ bool MCPEPlayer::sendChunk(int x, int z) {
         chunkArrayMutex.lock();
         raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
         chunkArrayMutex.unlock();
-        receivedACK(pkId); //TODO:This is temporary workaround
     });
     return true;
 }

@@ -12,6 +12,8 @@ class RakNetProtocolServer;
 class RakNetConnection : public Connection {
 
 protected:
+    friend class RakNetACKPacket;
+
     struct SendFrameCompound {
         int id = -1;
         int frameRefs = 0;
@@ -27,13 +29,19 @@ protected:
         char orderChannel = -1;
         SendFrameCompound *compound = nullptr;
         int compoundIndex = -1;
+        int reliableACKReceiptId = -1;
+    };
+    struct PacketMeta {
+        int unreliableAckReceiptId = -1;
+        int reliableFrameId = -1;
     };
 
-    std::map<int, SendFrameCompound> sendCompounds;
-    std::map<int, SendFrame> resendQueue;
-    std::map<int, int> ackReceiptIds;
+    std::map<int, SendFrame> sendReliableFrames;
+    std::map<int, PacketMeta> sentPackets;
 
     int sendFrame(SendFrame &frame);
+
+    void onReliableFrameReceived(int frameId);
 
     RakNetProtocolServer &server;
     RakNetConnectionHandler *rakNetConnectionHandler = nullptr;

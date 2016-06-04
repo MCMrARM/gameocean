@@ -26,7 +26,7 @@ void RakNetProtocolServer::loop() {
         stream.swapEndian = true;
         byte pkId;
         stream >> pkId;
-        Logger::main->trace("RakNetProtocolServer", "Received packet id %i (size: %i)", pkId, stream.getRemainingSize());
+        // Logger::main->trace("RakNetProtocolServer", "Received packet id %i (size: %i)", pkId, stream.getRemainingSize());
         if (pkId == RAKNET_PACKET_UNCONNECTED_PING) { // ping: int64 id, MAGIC magic
             if (stream.getRemainingSize() < 8)
                 continue;
@@ -103,8 +103,7 @@ void RakNetProtocolServer::loop() {
                 ackPacket.addPacketId(index);
                 connection->sendRaw(ackPacket);
             }
-            Logger::main->trace("RakNetProtocolServer", "Frame set index: %i", index);
-            while (stream.getRemainingSize() > 0) {
+            while (stream.getRemainingSize() > 3) {
                 char flags;
                 unsigned short length;
                 stream >> flags >> length;
@@ -160,7 +159,7 @@ void RakNetProtocolServer::loop() {
                         stream.skip(length - readSize);
                     }
                     if (pk != nullptr) {
-                        Logger::main->trace("RakNetProtocolServer", "Received sub-packet; id: %i, length: %i", pk->getId(), length);
+                        // Logger::main->trace("RakNetProtocolServer", "Received sub-packet; id: %i, length: %i", pk->getId(), length);
                         connection->handlePacket(pk);
                         delete pk;
                     }

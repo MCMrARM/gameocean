@@ -22,7 +22,6 @@ RakNetProtocol::RakNetProtocol() {
 Packet *RakNetProtocol::readPacket(BinaryStream &stream, bool client) {
     unsigned char pkId;
     stream >> pkId;
-    Logger::main->trace("RakNetProtocol", "Received packet with id: %i", pkId);
 
     Packet* pk = getPacket(pkId, client);
     if (pk == nullptr) {

@@ -11,3 +11,10 @@ void MCPEConnectionHandler::connected(Connection &connection) {
     server.addPlayer(player);
     ((MCPEProtocolServer &) mcpeConnection.getServer()).addPlayer(player);
 }
+
+void MCPEConnectionHandler::onPacketDelivered(RakNetConnection &connection, int ackId) {
+    MCPEConnection &mcpeConnection = (MCPEConnection &) connection;
+    auto pl = mcpeConnection.getMCPEPlayer();
+    if (pl)
+        pl->receivedACK(ackId);
+}

@@ -4,7 +4,6 @@
 void MCPEReceivePacketWrapper::read(BinaryStream &stream) {
     byte id;
     stream >> id;
-    Logger::main->trace("MCPEPacket", "Received packet: %i", id);
     recvdPk = MCPEPacket::getPacket(id);
     if (recvdPk != nullptr) {
         recvdPk->read(stream);

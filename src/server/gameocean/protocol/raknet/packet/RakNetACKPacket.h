@@ -8,7 +8,7 @@ struct RakNetACKPacket : public Packet {
     PacketDef(RAKNET_PACKET_ACK, Type::BOTH)
 
     struct Range {
-        int min, max;
+        unsigned int min, max;
     };
 
     std::vector<Range> ranges;
@@ -16,7 +16,7 @@ struct RakNetACKPacket : public Packet {
     RakNetACKPacket() {
     }
 
-    void addPacketId(int i) {
+    void addPacketId(unsigned int i) {
         if (ranges.size() > 0) {
             if (ranges.back().max + 1 == i) {
                 ranges.back().max++;
@@ -47,12 +47,12 @@ struct RakNetACKPacket : public Packet {
             char mode;
             stream >> mode;
             if (mode == 0) {
-                int min, max;
+                unsigned int min = 0, max = 0;
                 stream.read((byte*) &min, 3);
                 stream.read((byte*) &max, 3);
                 ranges.push_back({min, max});
             } else if (mode == 1) {
-                int val;
+                unsigned int val = 0;
                 stream.read((byte*) &val, 3);
                 ranges.push_back({val, val});
             }
@@ -72,4 +72,6 @@ struct RakNetACKPacket : public Packet {
             }
         }
     }
+
+    virtual void handleServer(Connection &connection);
 };
