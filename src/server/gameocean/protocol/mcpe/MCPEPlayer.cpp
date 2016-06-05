@@ -19,7 +19,7 @@ void MCPEPlayer::batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedP
 
 int MCPEPlayer::directPacket(MCPEPacket *packet) {
     MCPESendPacketWrapper wrapper (*packet);
-    return connection.send(wrapper, packet->reliable ? (packet->needsACK ? RakNetReliability::RELIABLE_ACK_RECEIPT : RakNetReliability::RELIABLE) : RakNetReliability::UNRELIABLE);
+    return connection.send(wrapper, packet->reliable ? (packet->needsACK ? RakNetReliability::RELIABLE_ORDERED_ACK_RECEIPT : RakNetReliability::RELIABLE_ORDERED) : RakNetReliability::UNRELIABLE);
 }
 
 int MCPEPlayer::writePacket(std::unique_ptr<MCPEPacket> packet, bool batch) {

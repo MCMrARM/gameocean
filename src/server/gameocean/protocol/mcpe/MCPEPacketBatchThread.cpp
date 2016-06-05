@@ -90,7 +90,7 @@ void MCPEPacketBatchThread::run() {
                     ((int*) (&bs.getBuffer(false)[1]))[0] = bs.getSize() - 5;
                     BinaryStream::swapBytes(&bs.getBuffer(false)[1], sizeof(int));
 
-                    int i = player->getConnection().send(wrapper, (needsACK ? RakNetReliability::RELIABLE_ACK_RECEIPT : RakNetReliability::RELIABLE));
+                    int i = player->getConnection().send(wrapper, (needsACK ? RakNetReliability::RELIABLE_ORDERED_ACK_RECEIPT : RakNetReliability::RELIABLE_ORDERED));
                     for (MCPEPlayer::QueuedPacket& pk : packetQueue) {
                         pk.callback(pk.pk.get(), i);
                     }

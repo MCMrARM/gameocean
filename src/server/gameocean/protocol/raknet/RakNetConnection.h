@@ -21,6 +21,9 @@ protected:
         int id = -1;
         int frameRefs = 0;
         int frameCount;
+        int orderIndex = -1;
+        char orderChannel = 0;
+        int sequencedIndex = -1;
         int ackReceiptId = -1;
     };
     struct SendFrame {
@@ -29,7 +32,7 @@ protected:
         int reliableIndex = -1;
         int seqencedIndex = -1;
         int orderIndex = -1;
-        char orderChannel = -1;
+        char orderChannel = 0;
         SendFrameCompound *compound = nullptr;
         int compoundIndex = -1;
         int reliableACKReceiptId = -1;
@@ -92,7 +95,7 @@ public:
      * This function sends the packet with the specified reliability. If the packet is supposed to be Reliable then
      * this function will return the corresponding packet id. Otherwise this function should return 0.
      */
-    virtual int send(Packet &packet, RakNetReliability reliability);
+    virtual int send(Packet &packet, RakNetReliability reliability, int orderChannel = 0);
     void sendRaw(Packet &packet);
     virtual bool readAndHandlePacket() {
         return false; // this doesn't work this way with udp
