@@ -30,6 +30,7 @@ public:
     static Permission* stopServerCommand;
     static Permission* reloadServerCommand;
     static Permission* serverVersionCommand;
+    static Permission* pingCommand;
     static Permission* teleportPlayerCommand;
     static Permission* giveItemCommand;
     static Permission* worldTimeCommand;

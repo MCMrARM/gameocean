@@ -16,6 +16,8 @@ class RakNetConnection : public Connection {
 protected:
     friend class RakNetACKPacket;
     friend class RakNetNAKPacket;
+    friend class RakNetClientHandshakePacket;
+    friend class RakNetPongPacket;
 
     struct SendFrameCompound {
         int id = -1;
@@ -41,6 +43,8 @@ protected:
         int unreliableAckReceiptId = -1;
         int reliableFrameId = -1;
     };
+
+    int pingTime = -1;
 
     std::recursive_mutex sendReliableMutex;
     std::map<int, SendFrame> sendReliableFrames;
@@ -148,6 +152,13 @@ public:
     void incrementOrderIndex(byte orderChannel);
 
     void resendPackets();
+
+    void sendPing();
+
+    /**
+     * This function returns the time that took to to receive a pong after sending a ping, in ms.
+     */
+    inline int getPing() { return pingTime; }
 
 };
 

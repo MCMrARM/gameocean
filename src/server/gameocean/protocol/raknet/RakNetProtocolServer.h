@@ -9,6 +9,7 @@
 #include "RakNetConnection.h"
 #include "RakNetConnectionHandler.h"
 #include "RakNetResendThread.h"
+#include "RakNetPingThread.h"
 
 class RakNetProtocolServer : public ProtocolServer {
 
@@ -29,6 +30,7 @@ protected:
     RakNetConnectionHandler *rakNetHandler = nullptr;
 
     RakNetResendThread resendThread;
+    RakNetPingThread pingThread;
 
     ServerSocket socket;
     std::string serverName;

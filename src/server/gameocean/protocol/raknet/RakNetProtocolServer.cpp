@@ -4,10 +4,11 @@
 #include "RakNetPacketIds.h"
 #include "RakNetProtocol.h"
 #include "packet/RakNetConnectReplyPacket.h"
+#include "packet/RakNetPongPacket.h"
 #include "packet/RakNetACKPacket.h"
 #include "packet/RakNetNAKPacket.h"
 
-RakNetProtocolServer::RakNetProtocolServer(Protocol &protocol) : ProtocolServer(protocol), resendThread(*this) {
+RakNetProtocolServer::RakNetProtocolServer(Protocol &protocol) : ProtocolServer(protocol), resendThread(*this), pingThread(*this) {
     serverId = Random::instance.nextInt(0, INT_MAX);
 }
 
@@ -17,6 +18,7 @@ void RakNetProtocolServer::loop() {
         return;
     }
     resendThread.start();
+    pingThread.start();
     Datagram dg;
     while (true) {
         if (shouldStop)
@@ -200,6 +202,7 @@ void RakNetProtocolServer::loop() {
     socket.close();
     Logger::main->trace("RakNetProtocolServer", "Finished listening");
     resendThread.stop();
+    pingThread.stop();
 }
 
 void RakNetProtocolServer::removeConnection(RakNetConnection &connection) {

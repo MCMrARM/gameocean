@@ -15,6 +15,7 @@ void RakNetOnlineConnectRequestPacket::handleServer(Connection &connection) {
 }
 
 void RakNetClientHandshakePacket::handleServer(Connection &connection) {
+    ((RakNetConnection &) connection).pingTime = (int) (RakNetProtocol::getTimeForPing() - requestTime);
     ((RakNetConnection &) connection).setAccepted(true);
 }
 
@@ -26,7 +27,7 @@ void RakNetPingPacket::handleServer(Connection &connection) {
 }
 
 void RakNetPongPacket::handleServer(Connection &connection) {
-    //
+    ((RakNetConnection &) connection).pingTime = (int) (RakNetProtocol::getTimeForPing() - pingTime);
 }
 
 void RakNetACKPacket::handleServer(Connection &connection) {

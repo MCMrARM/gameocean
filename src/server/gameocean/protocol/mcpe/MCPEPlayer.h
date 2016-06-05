@@ -93,6 +93,8 @@ public:
 
     virtual void setMotion(Vector3D motion);
 
+    virtual int getPing();
+
 };
 
 

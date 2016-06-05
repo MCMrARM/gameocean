@@ -24,5 +24,8 @@ public:
         return 0;
     }
 
+    /**
+     * This function always returns a time in milliseconds. The value to which the time is relative is not specified.
+     */
     static long long getTimeForPing();
 };

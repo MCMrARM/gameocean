@@ -370,3 +370,7 @@ void MCPEPlayer::setMotion(Vector3D motion) {
     pk->entries.push_back({ 0, motion.x, motion.y, motion.z });
     writePacket(std::move(pk));
 }
+
+int MCPEPlayer::getPing() {
+    return connection.getPing();
+}

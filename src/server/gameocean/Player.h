@@ -221,6 +221,12 @@ public:
         hungerDisabled = !enabled;
     }
 
+    /**
+     * This function returns the time that it takes to receive a pong reply for a ping request, in ms. If unspecified
+     * the function should return -1.
+     */
+    virtual int getPing() { return -1; }
+
 };
 
 

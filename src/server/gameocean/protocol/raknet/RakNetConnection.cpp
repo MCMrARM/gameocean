@@ -1,6 +1,7 @@
 #include "RakNetConnection.h"
 #include <gameocean/net/Socket.h>
 #include "RakNetProtocolServer.h"
+#include "packet/RakNetPingPacket.h"
 
 RakNetConnection::RakNetConnection(RakNetProtocolServer &server, sockaddr_in addr) : Connection(server.getProtocol(), false),
                                                                                      server(server), addr(addr) {
@@ -283,4 +284,10 @@ void RakNetConnection::resendPackets() {
     }
     for (int pkId : requeued)
         sendFrame(sendReliableFrames[pkId]);
+}
+
+void RakNetConnection::sendPing() {
+    RakNetPingPacket ping;
+    ping.time = RakNetProtocol::getTimeForPing();
+    send(ping, RakNetReliability::UNRELIABLE);
 }
