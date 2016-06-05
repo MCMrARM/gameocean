@@ -15,6 +15,8 @@ private:
     std::vector<Frame> frames;
     int remainingFrames;
     unsigned long totalFrameSize = 0;
+    int orderIndex = -1;
+    byte orderChannel = 0;
 
 public:
     RakNetCompound() {
@@ -23,6 +25,10 @@ public:
     RakNetCompound(unsigned int frameCount) {
         frames.resize(frameCount);
         remainingFrames = frameCount;
+    }
+    inline void setOrderInfo(int orderIndex, byte orderChannel) {
+        this->orderIndex = orderIndex;
+        this->orderChannel = orderChannel;
     }
     void addFrame(unsigned int frameId, std::vector<char> data) {
         if (frameId >= frames.size())
@@ -52,6 +58,16 @@ public:
             off += it->data.size();
         }
         return std::move(ret);
+    }
+
+    inline bool isOrdered() const {
+        return (orderIndex != -1);
+    }
+    inline int getOrderIndex() const {
+        return orderIndex;
+    }
+    inline byte getOrderChannel() const {
+        return orderChannel;
     }
 
 };

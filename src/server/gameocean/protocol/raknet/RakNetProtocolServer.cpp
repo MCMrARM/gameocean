@@ -129,16 +129,18 @@ void RakNetProtocolServer::loop() {
                 if (RakNetIsTypeSequenced(type)) {
                     stream.read((byte*) &seqIndex, 3);
                 }
+                int orderIndex = -1;
+                byte orderChannel = 0;
+                bool isOrdered = false;
                 if (RakNetIsTypeOrdered(type)) {
-                    int frameIndex = 0;
-                    stream.read((byte*) &frameIndex, 3);
-                    byte channel;
-                    stream >> channel;
+                    orderIndex = 0;
+                    stream.read((byte*) &orderIndex, 3);
+                    stream >> orderChannel;
                     if (RakNetIsTypeSequenced(type)) {
-                        if (!connection->handleSequencedIndex(seqIndex, channel))
+                        if (!connection->handleSequencedIndex(seqIndex, orderChannel))
                             ignore = true;
                     } else {
-                        //abort();
+                        isOrdered = true;
                     }
                 }
                 if (ignore) {
@@ -154,8 +156,15 @@ void RakNetProtocolServer::loop() {
                     std::vector<char> data;
                     data.resize(length);
                     stream.read((byte *) data.data(), length);
-                    connection->handleFragmentedPacket(std::move(data), csize, cid, cindex);
+                    connection->handleFragmentedPacket(std::move(data), csize, cid, cindex, orderIndex, orderChannel);
+                } else if (isOrdered && !connection->isPacketNextInOrderedQueue(orderIndex, orderChannel)) {
+                    std::vector<char> data;
+                    data.resize(length);
+                    stream.read((byte *) data.data(), length);
+                    connection->handleOrderedPacket(std::move(data), orderIndex, orderChannel);
                 } else if (length > 0) {
+                    if (isOrdered)
+                        connection->incrementOrderIndex(orderChannel);
                     unsigned int startOff = stream.getPos();
                     Packet *pk = protocol.readPacket(stream, false);
                     unsigned int readSize = stream.getPos() - startOff;

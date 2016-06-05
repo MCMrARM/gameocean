@@ -67,9 +67,11 @@ protected:
     int sendOrderIndex[256];
     int sendCompoundIndex = 0;
     int receiveSequencedIndex[256];
+    int receiveOrderIndex[256];
     int receiveReliableIndexMin = -1;
     std::set<int> receiveReliableIndexes;
     std::map<int, RakNetCompound> receiveCompounds;
+    std::map<std::pair<byte, int>, std::vector<char>> receiveOrderedQueue; // pair<channelId, orderId>, data
 
 public:
     RakNetConnection(RakNetProtocolServer &server, sockaddr_in addr);
@@ -136,7 +138,14 @@ public:
         }
         return false;
     }
-    void handleFragmentedPacket(std::vector<char> data, int compoundSize, int compoundId, int index);
+    void readAndHandlePacket(std::vector<char> data);
+    void handleFragmentedPacket(std::vector<char> data, int compoundSize, int compoundId, int index, int orderIndex,
+                                byte orderChannel);
+    void handleOrderedPacket(std::vector<char> data, int orderIndex, byte orderChannel);
+    inline bool isPacketNextInOrderedQueue(int orderIndex, byte orderChannel) {
+        return (receiveOrderIndex[orderChannel] == orderIndex);
+    }
+    void incrementOrderIndex(byte orderChannel);
 
     void resendPackets();
 

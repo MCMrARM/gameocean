@@ -6,6 +6,7 @@ RakNetConnection::RakNetConnection(RakNetProtocolServer &server, sockaddr_in add
                                                                                      server(server), addr(addr) {
     memset(sendSequencedIndex, 0, sizeof(sendSequencedIndex));
     memset(sendOrderIndex, 0, sizeof(sendOrderIndex));
+    memset(receiveOrderIndex, 0, sizeof(receiveOrderIndex));
     for (int i = 0; i < 256; i++)
         receiveSequencedIndex[i] = -1;
 }
@@ -218,24 +219,54 @@ void RakNetConnection::sendRaw(Packet &packet) {
     server.getSocket().sendDatagram(dg);
 }
 
-void RakNetConnection::handleFragmentedPacket(std::vector<char> data, int compoundSize, int compoundId, int index) {
+void RakNetConnection::readAndHandlePacket(std::vector<char> data) {
+    MemoryBinaryStream stream((byte *) data.data(), (unsigned int) data.size());
+    stream.swapEndian = true;
+    Packet *pk = protocol.readPacket(stream, false);
+    if (pk != nullptr) {
+        Logger::main->trace("RakNetConnection", "Received packet; id: %i, length: %i", pk->getId(), data.size());
+        handlePacket(pk);
+        delete pk;
+    } else {
+        Logger::main->trace("RakNetConnection", "Received unknown packet; id: %i, length: %i", data[0], data.size());
+    }
+}
+
+void RakNetConnection::handleFragmentedPacket(std::vector<char> data, int compoundSize, int compoundId, int index,
+                                              int orderIndex, byte orderChannel) {
     if (receiveCompounds.count(compoundId) <= 0)
         receiveCompounds[compoundId] = RakNetCompound((unsigned int) compoundSize);
     RakNetCompound &compound = receiveCompounds.at(compoundId);
+    compound.setOrderInfo(orderIndex, orderChannel);
     compound.addFrame((unsigned int) index, std::move(data));
     if (compound.isComplete()) {
         std::vector<char> built = std::move(compound.build());
-        MemoryBinaryStream stream ((byte *) built.data(), (unsigned int) built.size());
-        stream.swapEndian = true;
-        Packet *pk = protocol.readPacket(stream, false);
-        if (pk != nullptr) {
-            Logger::main->trace("RakNet/FragmentedPacket", "Received packet; id: %i, length: %i", pk->getId(), built.size());
-            handlePacket(pk);
-            delete pk;
+        if (!compound.isOrdered()) {
+            readAndHandlePacket(std::move(built));
         } else {
-            Logger::main->trace("RakNet/FragmentedPacket", "Received unknown packet; id: %i, length: %i", built[0], built.size());
+            handleOrderedPacket(std::move(built), orderIndex, orderChannel);
         }
         receiveCompounds.erase(compoundId);
+    }
+}
+
+void RakNetConnection::handleOrderedPacket(std::vector<char> data, int orderIndex, byte orderChannel) {
+    if (isPacketNextInOrderedQueue(orderIndex, orderChannel)) {
+        readAndHandlePacket(std::move(data));
+        incrementOrderIndex(orderChannel);
+        return;
+    }
+    receiveOrderedQueue[{orderChannel, orderIndex}] = std::move(data);
+}
+
+void RakNetConnection::incrementOrderIndex(byte orderChannel) {
+    auto it = receiveOrderedQueue.find({orderChannel, ++receiveOrderIndex[orderChannel]});
+    while (it != receiveOrderedQueue.end()) {
+        if (it->first.first == orderChannel && it->first.second == receiveOrderIndex[orderChannel]) {
+            readAndHandlePacket(std::move(it->second));
+            it = receiveOrderedQueue.erase(it);
+            receiveOrderIndex[orderChannel]++;
+        }
     }
 }
 
