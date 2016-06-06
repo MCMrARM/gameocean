@@ -82,6 +82,9 @@ public:
     virtual const char *getTypeName() { return "Entity"; }
     virtual bool isLiving() { return true; }
 
+    /**
+     * This function returns for how many seconds this entity has lived.
+     */
     float getExistenceTime();
 
     inline EntityId getId() { return id; }
@@ -94,11 +97,20 @@ public:
         return chunk;
     }
 
+    /**
+     * Sends the entity to the specified world and coordinates.
+     */
     virtual void setWorld(World &world, float x, float y, float z);
+    /**
+     * Sends the entity to the specified coordinates.
+     */
     virtual void setPos(float x, float y, float z);
 
     virtual void moveRelative(float x, float y, float z);
 
+    /**
+     * Gives the entity the specified motion velocity.
+     */
     virtual void setMotion(Vector3D motion) {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         this->motion = motion;

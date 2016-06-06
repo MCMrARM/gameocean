@@ -26,6 +26,10 @@ class Plugin;
 class Container;
 class Permission;
 
+/**
+ * This is the base class for a player. All network protocols have a class extending this one. All empty methods are
+ * most likely implemented in the specialized subclass.
+ */
 class Player : public Entity, public CommandSender {
     friend class Entity;
     friend class World;
@@ -127,6 +131,9 @@ public:
 
     std::string skin, skinModel;
 
+    /**
+     * This function will kick the player out of server with the specified reason.
+     */
     virtual void close(std::string reason, bool sendToPlayer);
     virtual void close() {
         close("unknown", true);
@@ -142,43 +149,112 @@ public:
     static const char *TYPE_NAME;
     virtual const char *getTypeName() { return TYPE_NAME; };
 
+    /**
+     * This function will switch the current player's world. It is recommended to use teleport() function instead, to
+     * avoid possible MCPE bugs.
+     */
     virtual void setWorld(World &world, float x, float y, float z);
+    /**
+     * This function will change the player's position to the specified coordinates. When teleporting to far distances,
+     * it is recommended to use teleport, as it'll first send the chunks and then teleport the player, avoiding some
+     * possible MCPE bugs.
+     */
     virtual void setPos(float x, float y, float z);
+    /**
+     * This function will teleport the player to the specified coordinates. First missing chunks will be sent, and after
+     * those are received, player will be actually teleported to the specified coordinates.
+     */
     void teleport(float x, float y, float z);
+    /**
+     * This function will teleport the player to the specified coordinates in the specified world. It works similarly
+     * to teleport(x, y, z) - it'll first send the chunks, and then after those are received, it'll update the player's
+     * position.
+     */
     void teleport(World &world, float x, float y, float z);
 
+    /**
+     * This function will attempt to move the player to the specified coordinates, while checking for collisions, etc.
+     * If the result position is different from the specified, this function will return false.
+     */
     bool tryMove(float x, float y, float z);
 
+    /**
+     * Checks if the player is walking in fluid or is inside it.
+     */
     bool isInFluid();
+    /**
+     * Checks if the player is fully under fluid.
+     */
     bool isUnderFluid();
 
-    virtual void sendMessage(std::string text) {};
+    virtual void sendMessage(std::string text) {}
 
+    /**
+     * This function will process a message as if it was sent by the player. It'll handle commands or broadcast the
+     * message to chat if it's not a command.
+     */
     void processMessage(std::string text);
 
+    /**
+     * This function will send the specified inventory slot to the player. You shouldn't use it unless you have a good
+     * reason to do so.
+     */
     virtual void sendInventorySlot(int slotId) = 0;
+    /**
+     * This function will resend the whole inventory to the player. You shouldn't use it unless you have a good reason
+     * to do so.
+     */
     virtual void sendInventory() = 0;
-    virtual void sendArmor() { sendPlayerArmor(this); };
-    virtual void sendHeldItem() { sendPlayerHeldItem(this); };
+    virtual void sendArmor() { sendPlayerArmor(this); }
+    virtual void sendHeldItem() { sendPlayerHeldItem(this); }
 
+    /**
+     * Internal use. Starts mining a block at the specified coordinates.
+     */
     virtual void startMining(BlockPos pos);
+    /**
+     * This function cancels mining the current mined block.
+     */
     virtual void cancelMining();
+    /**
+     * This function finishes mining the current mined block, even if it is not actually finished.
+     */
     virtual void finishedMining();
+    /**
+     * This function returns how much time it takes to mine the currently mined block.
+     */
     inline int getMiningTime() { return miningTime; };
+    /**
+     * This function returns in how much time the player will finish mining the currently mined block.
+     */
     int getRemainingMiningTime();
 
+    /**
+     * Internal use. This function will attack the specified Entity.
+     */
     void attack(Entity &entity);
     virtual void damage(EntityDamageEvent &event);
+    /**
+     * This function returns the multiplier that includes the armor damage reduction. When you don't have any armor,
+     * this function will return 1.f. The return value is between 0.f - 1.f.
+     */
     float getArmorReductionMultiplier();
 
     virtual void setHealth(float hp);
 
     virtual void kill();
 
+    /**
+     * This function checks if the player is an server operator. Server operators gain access to special commands and
+     * privileges.
+     */
     inline bool isOperator() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return isOp;
     }
+    /**
+     * Sets the player to be a server operator or remove the privilege from him.
+     */
     void setOperator(bool op);
     bool hasPermission(Permission *perm);
     void grantPermissions(std::set<Permission *> perms, bool children);
@@ -190,9 +266,21 @@ public:
         removePermissions({ perm }, children);
     }
 
+    /**
+     * This function get the data stored by a plugin for this player. You should check if the return is not null and if
+     * it's not, cast it to your own internal type.
+     */
     void *getPluginData(Plugin *plugin);
+    /**
+     * This function sets plugin data for this player. You can cast any pointer to void * and pass it to this function.
+     * You can later get the data using the getPluginData() function. This data is session only - it won't be stored
+     * after a restart or reconnect.
+     */
     void setPluginData(Plugin *plugin, void *data);
 
+    /**
+     * This function opens a container (eg. chests) as this player.
+     */
     virtual void openContainer(std::shared_ptr<Container> container) {
         openedContainer = container;
     }
@@ -206,8 +294,14 @@ public:
         return openedContainer;
     }
 
+    /**
+     * This function is internal use only.
+     */
     virtual void tickPhysics();
 
+    /**
+     * This function is internal use only.
+     */
     virtual void update();
 
     void tickHunger();
@@ -216,6 +310,10 @@ public:
     float getHunger();
     void restoreHunger(float hunger, float saturation);
 
+    /**
+     * Enables or disables hunger for this player. When disabled, the player won't lose hunger when walking, breaking
+     * blocks, etc. but still will be able to regain it by eating food.
+     */
     inline void setFoodEnabled(bool enabled) {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         hungerDisabled = !enabled;
