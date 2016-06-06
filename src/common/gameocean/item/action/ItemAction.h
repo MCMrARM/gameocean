@@ -10,27 +10,27 @@ namespace Json { class Value; };
 class ItemAction {
 
 protected:
-    ItemVariant* item;
+    ItemVariant *item;
 
 public:
     typedef std::unique_ptr<ActionHandlerData> (*ProcessDataHandler)(Json::Value const&);
 
     template <typename T>
-    static void registerAction(std::string name, std::unique_ptr<ActionHandlerData> (*process)(Json::Value const&), bool (*handler)(T&, ActionHandlerData*)) {
+    static void registerAction(std::string name, std::unique_ptr<ActionHandlerData> (*process)(Json::Value const &), bool (*handler)(T &, ActionHandlerData *)) {
         T::handlers[name] = handler;
         T::processHandlers[name] = process;
     }
 
     template <typename T>
-    static void registerAction(std::string name, bool (*handler)(T&, ActionHandlerData*)) {
+    static void registerAction(std::string name, bool (*handler)(T &, ActionHandlerData *)) {
         T::handlers[name] = handler;
     }
 
-    ItemAction(ItemVariant* item) : item(item) {
+    ItemAction(ItemVariant *item) : item(item) {
         //
     }
 
-    inline ItemVariant* getItemVariant() {
+    inline ItemVariant *getItemVariant() {
         return item;
     }
 

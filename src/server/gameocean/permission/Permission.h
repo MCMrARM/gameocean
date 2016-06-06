@@ -12,28 +12,28 @@
 class Permission {
 
 protected:
-    static std::map<std::string, Permission*> permissions;
+    static std::map<std::string, Permission *> permissions;
 
-    static std::set<Permission*> defaultPermissions;
-    static std::set<Permission*> operatorPermissions;
+    static std::set<Permission *> defaultPermissions;
+    static std::set<Permission *> operatorPermissions;
 
 public:
-    static Permission* getPermission(std::string name);
+    static Permission *getPermission(std::string name);
     static void initializeDefaultPermissions();
 
     // default permissions
-    static Permission* defaultCommands;
-    static Permission* defaultPlayerCommands;
-    static Permission* defaultOperatorCommands;
-    static Permission* helpCommand;
-    static Permission* suicideCommand;
-    static Permission* stopServerCommand;
-    static Permission* reloadServerCommand;
-    static Permission* serverVersionCommand;
-    static Permission* pingCommand;
-    static Permission* teleportPlayerCommand;
-    static Permission* giveItemCommand;
-    static Permission* worldTimeCommand;
+    static Permission *defaultCommands;
+    static Permission *defaultPlayerCommands;
+    static Permission *defaultOperatorCommands;
+    static Permission *helpCommand;
+    static Permission *suicideCommand;
+    static Permission *stopServerCommand;
+    static Permission *reloadServerCommand;
+    static Permission *serverVersionCommand;
+    static Permission *pingCommand;
+    static Permission *teleportPlayerCommand;
+    static Permission *giveItemCommand;
+    static Permission *worldTimeCommand;
 
     static inline std::set<Permission*> const& getPlayerPermissions() {
         return defaultPermissions;

@@ -10,10 +10,10 @@
 #include "default/PingCommand.h"
 #include <gameocean/utils/StringUtils.h>
 
-std::unordered_map<std::string, Command*> Command::commands;
-std::set<Command*> Command::commandSet;
+std::unordered_map<std::string, Command *> Command::commands;
+std::set<Command *> Command::commandSet;
 
-void Command::registerCommand(Command* command) {
+void Command::registerCommand(Command *command) {
     commandSet.insert(command);
     commands[command->getName()] = command;
     for (std::string str : command->getAlternativeNames()) {
@@ -23,12 +23,12 @@ void Command::registerCommand(Command* command) {
     }
 }
 
-void Command::unregisterCommand(Command* command) {
+void Command::unregisterCommand(Command *command) {
     commands.erase(command->getName());
     commandSet.erase(command);
 }
 
-void Command::registerDefaultCommands(Server& server) {
+void Command::registerDefaultCommands(Server &server) {
     Command::registerCommand(new TeleportCommand(server));
     Command::registerCommand(new HelpCommand(server));
     Command::registerCommand(new GiveCommand(server));
@@ -39,12 +39,12 @@ void Command::registerDefaultCommands(Server& server) {
     Command::registerCommand(new PingCommand(server));
 }
 
-void Command::registerPluginCommand(Plugin* plugin, Command* command) {
+void Command::registerPluginCommand(Plugin *plugin, Command *command) {
     registerCommand(command);
     plugin->commands.push_back(command);
 }
 
-Command* Command::getCommand(std::string name) {
+Command *Command::getCommand(std::string name) {
     if (commands.count(name) > 0) {
         return commands.at(name);
     }

@@ -6,7 +6,7 @@
 class PluginPermission : public Permission {
 
 public:
-    PluginPermission(Plugin* plugin, std::string name, DefaultGrantTo grantTo) : Permission(name, grantTo) {
+    PluginPermission(Plugin *plugin, std::string name, DefaultGrantTo grantTo) : Permission(name, grantTo) {
         plugin->permissions.insert(this);
     }
 

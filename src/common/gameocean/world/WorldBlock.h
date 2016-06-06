@@ -8,7 +8,7 @@ struct WorldBlock {
     BlockId id;
     byte data;
 
-    inline BlockVariant* getBlockVariant() {
+    inline BlockVariant *getBlockVariant() {
         return ItemRegister::getBlockVariant(id, data);
     }
 };

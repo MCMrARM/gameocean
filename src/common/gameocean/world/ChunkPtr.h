@@ -8,40 +8,40 @@ class ChunkPtr {
 protected:
     Chunk* chunk;
 
-    void setChunk(Chunk* chunk);
+    void setChunk(Chunk *chunk);
     void releaseChunk();
 public:
     ChunkPtr() : chunk(nullptr) {
     }
-    ChunkPtr(Chunk* chunk)  {
+    ChunkPtr(Chunk *chunk)  {
         setChunk(chunk);
     }
-    ChunkPtr(const ChunkPtr& org) : ChunkPtr(org.chunk) {
+    ChunkPtr(const ChunkPtr &org) : ChunkPtr(org.chunk) {
         //
     }
-    ChunkPtr(ChunkPtr&& org) {
+    ChunkPtr(ChunkPtr &&org) {
         this->chunk = org.chunk;
         org.chunk = nullptr;
     }
     ~ChunkPtr() {
         releaseChunk();
     }
-    Chunk* operator->() {
+    Chunk *operator->() {
         return chunk;
     }
-    Chunk& operator*() {
+    Chunk &operator*() {
         return *chunk;
     }
     operator bool() {
         return (chunk != nullptr);
     }
-    bool operator==(const ChunkPtr& sec) {
+    bool operator==(const ChunkPtr &sec) {
         return sec.chunk == chunk;
     }
-    bool operator!=(const ChunkPtr& sec) {
+    bool operator!=(const ChunkPtr &sec) {
         return sec.chunk != chunk;
     }
-    ChunkPtr& operator=(const ChunkPtr& sec) {
+    ChunkPtr &operator=(const ChunkPtr &sec) {
         if (sec.chunk != chunk) {
             releaseChunk();
             setChunk(sec.chunk);

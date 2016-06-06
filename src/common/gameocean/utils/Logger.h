@@ -29,21 +29,21 @@ class Logger {
         return "?";
     }
 
-    void vlog(LogLevel level, const char* tag, const char* text, va_list args);
+    void vlog(LogLevel level, const char *tag, const char *text, va_list args);
 
-    virtual void print(LogLevel level, const char* tag, const char* text);
+    virtual void print(LogLevel level, const char *tag, const char *text);
 
 public:
 
-    static Logger* main;
+    static Logger *main;
 
-    void log(LogLevel level, const char* tag, const char* text, ...);
+    void log(LogLevel level, const char *tag, const char *text, ...);
 
-    void trace(const char* tag, const char* text, ...);
-    void debug(const char* tag, const char* text, ...);
-    void info(const char* tag, const char* text, ...);
-    void warn(const char* tag, const char* text, ...);
-    void error(const char* tag, const char* text, ...);
+    void trace(const char *tag, const char *text, ...);
+    void debug(const char *tag, const char *text, ...);
+    void info(const char *tag, const char *text, ...);
+    void warn(const char *tag, const char *text, ...);
+    void error(const char *tag, const char *text, ...);
 
 };
 
@@ -53,8 +53,8 @@ class MultiLogger : public Logger {
 
 public:
 
-    std::vector<Logger*> loggers;
+    std::vector<Logger *> loggers;
 
-    void addLogger(Logger* logger);
+    void addLogger(Logger *logger);
 
 };

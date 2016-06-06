@@ -5,12 +5,12 @@
 class Chest : public Container {
 
 public:
-    static const char* name;
+    static const char *name;
 
-    Chest(World& world, BlockPos pos) : Container(world, pos, 27) {
+    Chest(World &world, BlockPos pos) : Container(world, pos, 27) {
     }
 
-    virtual const char* getId() {
+    virtual const char *getId() {
         return name;
     }
 

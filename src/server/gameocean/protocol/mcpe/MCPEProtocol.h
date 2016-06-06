@@ -15,12 +15,12 @@ protected:
 public:
     MCPEProtocol();
 
-    virtual std::string getName() { return "MCPE"; };
+    virtual std::string getName() { return "MCPE"; }
 
     static const int CURRENT_VERSION = 60;
     static const char *CURRENT_VERSION_STRING;
 
-    virtual ProtocolServer& getServer() {
+    virtual ProtocolServer &getServer() {
         return server;
     }
 

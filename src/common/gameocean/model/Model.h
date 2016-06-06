@@ -8,9 +8,9 @@
 class Model {
 
 public:
-    static std::map<std::string, Model*> models;
+    static std::map<std::string, Model *> models;
 
-    static Model* getModel(std::string name);
+    static Model *getModel(std::string name);
 
     std::vector<AABB> aabbs;
 

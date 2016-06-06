@@ -72,12 +72,12 @@ public:
 
     virtual void close(std::string reason, bool sendToPlayer);
 
-    inline MCPEConnection &getConnection() { return connection; };
+    inline MCPEConnection &getConnection() { return connection; }
 
-    int directPacket(MCPEPacket* packet);
+    int directPacket(MCPEPacket *packet);
     int writePacket(std::unique_ptr<MCPEPacket> packet, bool batch);
     inline int writePacket(std::unique_ptr<MCPEPacket> packet) { return writePacket(std::move(packet), !packet->priority); };
-    void batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback&& sentCallback);
+    void batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback);
     void receivedACK(int packetId);
 
     virtual void sendMessage(std::string text);

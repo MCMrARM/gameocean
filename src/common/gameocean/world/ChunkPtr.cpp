@@ -1,7 +1,7 @@
 #include "ChunkPtr.h"
 #include "Chunk.h"
 
-void ChunkPtr::setChunk(Chunk* chunk) {
+void ChunkPtr::setChunk(Chunk *chunk) {
     this->chunk = chunk;
     if (chunk != nullptr) {
         chunk->refMutex.lock();

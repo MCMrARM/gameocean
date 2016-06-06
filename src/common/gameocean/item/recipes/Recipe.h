@@ -11,19 +11,19 @@ class Recipe {
 public:
     static int nextId;
 
-    static std::map<int, Recipe*> recipes;
+    static std::map<int, Recipe *> recipes;
 
     const int id;
     std::vector<ItemInstance> result;
-    std::map<ItemVariant*, ItemInstance> summedIngredients;
+    std::map<ItemVariant *, ItemInstance> summedIngredients;
 
     Recipe(ItemInstance result) : id(nextId++) {
         recipes[id] = this;
         this->result.push_back(result);
     }
 
-    virtual bool isShaped() { return false; };
-    inline bool isShapeless() { return !isShaped(); };
+    virtual bool isShaped() { return false; }
+    inline bool isShapeless() { return !isShaped(); }
 
     virtual void addIngredient(ItemInstance itm) {
         if (itm.isEmpty())
@@ -52,7 +52,7 @@ public:
         return false;
     }
 
-    inline const std::vector<ItemInstance>& getIngredients() {
+    inline const std::vector<ItemInstance> &getIngredients() {
         return ingredients;
     }
 
@@ -68,7 +68,7 @@ public:
 class ShapedRecipe : public Recipe {
 
 private:
-    ItemInstance* ingredients;
+    ItemInstance *ingredients;
 
 public:
     const int sizeX;
@@ -82,7 +82,7 @@ public:
         return true;
     }
 
-    inline const ItemInstance* getIngredients() {
+    inline const ItemInstance *getIngredients() {
         return ingredients;
     }
 

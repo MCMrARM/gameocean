@@ -9,8 +9,8 @@
 
 class NBTTag {
 private:
-    static std::string getString(BinaryStream& stream);
-    static std::unique_ptr<NBTTag> getTag(BinaryStream& stream, bool hasName, char dataType);
+    static std::string getString(BinaryStream &stream);
+    static std::unique_ptr<NBTTag> getTag(BinaryStream &stream, bool hasName, char dataType);
 
 protected:
     friend class NBTList;
@@ -32,10 +32,10 @@ public:
     inline void print() { print(""); };
     virtual std::string getTypeString() { return "unknown"; };
 
-    virtual void write(BinaryStream& stream) = 0;
+    virtual void write(BinaryStream &stream) = 0;
 
-    static inline std::unique_ptr<NBTTag> getTag(BinaryStream& stream) { return getTag(stream, true, -1); };
-    static void writeTag(BinaryStream& stream, NBTTag& tag, bool writeName) {
+    static inline std::unique_ptr<NBTTag> getTag(BinaryStream &stream) { return getTag(stream, true, -1); };
+    static void writeTag(BinaryStream &stream, NBTTag &tag, bool writeName) {
         stream << (char) tag.ID;
         if (writeName) {
             stream << (short) tag.name.size();
@@ -49,7 +49,7 @@ class NBTEnd : public NBTTag {
 public:
     NBTEnd() : NBTTag("", 0) {};
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << (char) 0;
     }
 };
@@ -69,7 +69,7 @@ public:
     NBTByte(std::string name, char val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "byte"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << val;
     }
 
@@ -90,7 +90,7 @@ public:
     NBTShort(std::string name, short val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "short"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << val;
     }
 };
@@ -110,7 +110,7 @@ public:
     NBTInt(std::string name, int val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "int"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << val;
     }
 };
@@ -130,7 +130,7 @@ public:
     NBTLong(std::string name, long long val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "long"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << val;
     }
 };
@@ -150,7 +150,7 @@ public:
     NBTFloat(std::string name, float val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "float"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << val;
     }
 };
@@ -170,7 +170,7 @@ public:
     NBTDouble(std::string name, double val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "double"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << val;
     }
 };
@@ -190,7 +190,7 @@ public:
     NBTByteArray(std::string name) : NBTTag(name, ID) {};
     virtual std::string getTypeString() { return "byte[]"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << (int) val.size();
         stream.write(&val[0], (int) val.size());
     }
@@ -211,7 +211,7 @@ public:
     NBTString(std::string name, std::string val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "string"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << (short) val.size();
         stream.write((byte*) &val[0], (int) val.size());
     }
@@ -239,7 +239,7 @@ public:
     NBTList(std::string name) : NBTTag(name, ID) {};
     virtual std::string getTypeString() { return "list"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         if (val.size() <= 0) {
             stream << (char) 0 << (int) 0;
             return;
@@ -270,7 +270,7 @@ public:
     NBTCompound(std::string name) : NBTTag(name, ID) {};
     virtual std::string getTypeString() { return "compound"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         for (auto const& e : val) {
             stream << (char) e.second->ID;
             stream << (short) e.first.size();
@@ -303,7 +303,7 @@ public:
     NBTIntArray(std::string name, std::vector<int> val) : NBTTag(name, ID), val(val) {};
     virtual std::string getTypeString() { return "int[]"; };
 
-    virtual void write(BinaryStream& stream) {
+    virtual void write(BinaryStream &stream) {
         stream << (int) val.size();
         for (int i : val) {
             stream << i;

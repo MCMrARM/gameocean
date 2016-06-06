@@ -2,7 +2,7 @@
 
 #include <stdarg.h>
 
-std::string StringUtils::sprintf(const char* format, ...) {
+std::string StringUtils::sprintf(const char *format, ...) {
     va_list args;
     va_start(args, format);
     char buffer [4096];

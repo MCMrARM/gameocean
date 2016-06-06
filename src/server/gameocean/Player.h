@@ -34,7 +34,7 @@ class Player : public Entity, public CommandSender {
     friend class PlayerBlockDestroyThread;
 
 protected:
-    Server& server;
+    Server &server;
 
     std::string name;
 
@@ -51,7 +51,7 @@ protected:
     bool isSprinting = false;
 
     BlockPos miningBlockPos;
-    BlockVariant* miningBlock = nullptr;
+    BlockVariant *miningBlock = nullptr;
     long long miningStarted = -1;
     int miningTime;
 
@@ -64,12 +64,12 @@ protected:
     std::unordered_map<ChunkPos, ChunkPtr> receivedChunks;
     std::vector<ChunkPos> sendChunksQueue;
 
-    std::set<Entity*> spawnedEntities;
+    std::set<Entity *> spawnedEntities;
 
     bool isOp = false;
-    std::set<Permission*> permissions;
+    std::set<Permission *> permissions;
 
-    std::map<Plugin*, void*> pluginData;
+    std::map<Plugin *, void*> pluginData;
 
     std::shared_ptr<Container> openedContainer;
 
@@ -88,21 +88,21 @@ protected:
 
     virtual void sendPosition(float x, float y, float z) = 0;
 
-    virtual void spawnEntity(Entity* entity) {
+    virtual void spawnEntity(Entity *entity) {
         if (closed)
             return;
         spawnedEntities.insert(entity);
-    };
-    virtual void despawnEntity(Entity* entity) {
+    }
+    virtual void despawnEntity(Entity *entity) {
         if (closed)
             return;
         spawnedEntities.erase(entity);
-    };
-    virtual void updateEntityPos(Entity* entity) {};
-    virtual void sendHurtAnimation(Entity* entity) {};
+    }
+    virtual void updateEntityPos(Entity *entity) {};
+    virtual void sendHurtAnimation(Entity *entity) {};
 
-    virtual void sendPlayerArmor(Player* player) {};
-    virtual void sendPlayerHeldItem(Player* player) {};
+    virtual void sendPlayerArmor(Player *player) {};
+    virtual void sendPlayerHeldItem(Player *player) {};
 
     virtual void sendBlockUpdate(BlockPos bpos) = 0;
 
@@ -115,13 +115,13 @@ protected:
 
     virtual void sendDeathStatus() = 0;
 
-    void addTransaction(Inventory& inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to);
+    void addTransaction(Inventory &inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to);
 
     void broadcastArmorChange();
     void broadcastHeldItem();
 
 public:
-    Player(Server& server);
+    Player(Server &server);
 
     PlayerInventory inventory;
 
@@ -130,7 +130,7 @@ public:
     virtual void close(std::string reason, bool sendToPlayer);
     virtual void close() {
         close("unknown", true);
-    };
+    }
 
     virtual std::string getName() { return name; };
     void setName(std::string name) {
@@ -139,13 +139,13 @@ public:
 
     inline bool hasSpawned() { return spawned; };
 
-    static const char* TYPE_NAME;
-    virtual const char* getTypeName() { return TYPE_NAME; };
+    static const char *TYPE_NAME;
+    virtual const char *getTypeName() { return TYPE_NAME; };
 
-    virtual void setWorld(World& world, float x, float y, float z);
+    virtual void setWorld(World &world, float x, float y, float z);
     virtual void setPos(float x, float y, float z);
     void teleport(float x, float y, float z);
-    void teleport(World& world, float x, float y, float z);
+    void teleport(World &world, float x, float y, float z);
 
     bool tryMove(float x, float y, float z);
 
@@ -167,8 +167,8 @@ public:
     inline int getMiningTime() { return miningTime; };
     int getRemainingMiningTime();
 
-    void attack(Entity& entity);
-    virtual void damage(EntityDamageEvent& event);
+    void attack(Entity &entity);
+    virtual void damage(EntityDamageEvent &event);
     float getArmorReductionMultiplier();
 
     virtual void setHealth(float hp);
@@ -180,18 +180,18 @@ public:
         return isOp;
     }
     void setOperator(bool op);
-    bool hasPermission(Permission* perm);
-    void grantPermissions(std::set<Permission*> perms, bool children);
-    inline void grantPermission(Permission* perm, bool children) {
+    bool hasPermission(Permission *perm);
+    void grantPermissions(std::set<Permission *> perms, bool children);
+    inline void grantPermission(Permission *perm, bool children) {
         grantPermissions({ perm }, children);
     }
-    void removePermissions(std::set<Permission*> perms, bool children);
-    inline void removePermissions(Permission* perm, bool children) {
+    void removePermissions(std::set<Permission *> perms, bool children);
+    inline void removePermissions(Permission *perm, bool children) {
         removePermissions({ perm }, children);
     }
 
-    void* getPluginData(Plugin* plugin);
-    void setPluginData(Plugin* plugin, void* data);
+    void *getPluginData(Plugin *plugin);
+    void setPluginData(Plugin *plugin, void *data);
 
     virtual void openContainer(std::shared_ptr<Container> container) {
         openedContainer = container;
@@ -216,7 +216,7 @@ public:
     float getHunger();
     void restoreHunger(float hunger, float saturation);
 
-    inline bool setFoodEnabled(bool enabled) {
+    inline void setFoodEnabled(bool enabled) {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         hungerDisabled = !enabled;
     }

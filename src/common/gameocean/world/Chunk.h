@@ -43,11 +43,11 @@ protected:
     bool shouldDestroy();
 
 public:
-    World& world;
+    World &world;
     const ChunkPos pos;
     std::map<EntityId, std::shared_ptr<Entity>> entities;
     std::set<std::shared_ptr<Tile>> tiles;
-    std::set<Player*> usedBy;
+    std::set<Player *> usedBy;
     std::recursive_mutex mutex;
     std::recursive_mutex entityMutex;
     std::mutex tilesMutex;
@@ -61,10 +61,10 @@ public:
 
     std::atomic<bool> ready;
 
-    Chunk(World& world, ChunkPos pos) : world(world), pos(pos), ready(false), refCount(0), isDestroying(false), markedDead(false) { };
-    Chunk(World& world, int x, int z) : world(world), pos(x, z), ready(false), refCount(0), isDestroying(false), markedDead(false) { };
-    Chunk(World& world, ChunkPos pos, bool empty) : world(world), pos(pos), ready(empty), refCount(0), isDestroying(false), markedDead(false) { if (empty) clear(); };
-    Chunk(World& world, int x, int z, bool empty) : world(world), pos(x, z), ready(empty), refCount(0), isDestroying(false), markedDead(false) { if (empty) clear(); };
+    Chunk(World &world, ChunkPos pos) : world(world), pos(pos), ready(false), refCount(0), isDestroying(false), markedDead(false) { };
+    Chunk(World &world, int x, int z) : world(world), pos(x, z), ready(false), refCount(0), isDestroying(false), markedDead(false) { };
+    Chunk(World &world, ChunkPos pos, bool empty) : world(world), pos(pos), ready(empty), refCount(0), isDestroying(false), markedDead(false) { if (empty) clear(); };
+    Chunk(World &world, int x, int z, bool empty) : world(world), pos(x, z), ready(empty), refCount(0), isDestroying(false), markedDead(false) { if (empty) clear(); };
 
     void clear() {
         memset(blockId, 0, sizeof(blockId));
@@ -73,7 +73,7 @@ public:
         memset(blockLight.array, 0, sizeof(blockLight.array));
         memset(heightmap, 0, sizeof(heightmap));
         memset(biomeColors, 0, sizeof(biomeColors));
-    };
+    }
 
     void setLoaded();
 
@@ -81,16 +81,16 @@ public:
         entityMutex.lock();
         entities[entity->getId()] = entity;
         entityMutex.unlock();
-    };
-    void removeEntity(Entity* entity) {
+    }
+    void removeEntity(Entity *entity) {
         entityMutex.lock();
         entities.erase(entity->getId());
         entityMutex.unlock();
-    };
+    }
 
     inline int getBlockPos(int x, int y, int z) {
         return ((y << 8) | (z << 4) | x);
-    };
+    }
 
     void setBlock(int x, int y, int z, BlockId id, byte data) {
         int pos = getBlockPos(x, y, z);
@@ -100,11 +100,11 @@ public:
         blockSkylight.set(pos, 0);
 
         if (id != 0 && heightmap[(z << 4) | x] < y) {
-            heightmap[(z << 4) | x] = y;
+            heightmap[(z << 4) | x] = (byte) y;
         } else if (heightmap[(z << 4) | x] == y) {
-            heightmap[(z << 4) | x] = y - 1;
+            heightmap[(z << 4) | x] = (byte) (y - 1);
         }
-    };
+    }
 
     WorldBlock getBlock(int x, int y, int z) {
         int pos = getBlockPos(x, y, z);
@@ -114,7 +114,7 @@ public:
     std::shared_ptr<Tile> getTile(int x, int y, int z);
 
 #ifdef SERVER
-    inline void setUsedBy(Player* player, bool used) {
+    inline void setUsedBy(Player *player, bool used) {
         entityMutex.lock();
         if (used) {
             if (usedBy.count(player) <= 0)

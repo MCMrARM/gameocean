@@ -17,9 +17,9 @@ public:
     /**
      * This map links all command names to their respective Command instance. This map includes all command aliases.
      */
-    static std::unordered_map<std::string, Command*> commands;
+    static std::unordered_map<std::string, Command *> commands;
 
-    static std::set<Command*> commandSet;
+    static std::set<Command *> commandSet;
 
     /**
      * This function registers a command.
@@ -27,26 +27,26 @@ public:
      * Please don't use it to register plugin commands as this function doesn't allow automatical unregister of the
      * command after unloading the plugin and therefore can break reloading.
      */
-    static void registerCommand(Command* command);
-    static void registerPluginCommand(Plugin* plugin, Command* command);
-    static void registerDefaultCommands(Server& server);
-    static void unregisterCommand(Command* command);
-    static Command* getCommand(std::string name);
+    static void registerCommand(Command *command);
+    static void registerPluginCommand(Plugin *plugin, Command *command);
+    static void registerDefaultCommands(Server &server);
+    static void unregisterCommand(Command *command);
+    static Command *getCommand(std::string name);
 
-    Server& server;
-    Command(Server& server) : server(server) { };
+    Server &server;
+    Command(Server &server) : server(server) { };
     virtual ~Command() { };
 
     virtual std::string getName() = 0;
     virtual std::string getDescription() { return ""; };
     virtual std::string getUsage() = 0;
     virtual std::vector<std::string> getAlternativeNames() { return {}; };
-    virtual Permission* getRequiredPermission() { return nullptr; };
+    virtual Permission *getRequiredPermission() { return nullptr; };
 
-    virtual void process(CommandSender& sender, std::vector<std::string> args) = 0;
-    virtual void process(Player& sender, std::vector<std::string> args) { process((CommandSender&) sender, args); };
+    virtual void process(CommandSender &sender, std::vector<std::string> args) = 0;
+    virtual void process(Player &sender, std::vector<std::string> args) { process((CommandSender &) sender, args); };
 
-    void sendUsage(CommandSender& to) {
+    void sendUsage(CommandSender &to) {
         to.sendMessage(getUsage());
     };
 
@@ -55,11 +55,11 @@ public:
 class IngameCommand : public Command {
 
 public:
-    IngameCommand(Server& server) : Command(server) { };
+    IngameCommand(Server &server) : Command(server) { };
 
-    virtual void process(CommandSender& sender, std::vector<std::string> args) {
+    virtual void process(CommandSender &sender, std::vector<std::string> args) {
         sender.sendMessage("You must run this command in-game");
     };
-    virtual void process(Player& sender, std::vector<std::string> args) = 0;
+    virtual void process(Player &sender, std::vector<std::string> args) = 0;
 
 };

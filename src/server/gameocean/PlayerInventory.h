@@ -6,10 +6,10 @@ class Player;
 class PlayerInventory : public InventoryWithArmor {
 
 public:
-    Player& player;
+    Player &player;
     int heldSlot = -1;
 
-    PlayerInventory(Player& player, int numSlots) : InventoryWithArmor(numSlots), player(player) { };
+    PlayerInventory(Player &player, int numSlots) : InventoryWithArmor(numSlots), player(player) { };
 
     virtual void setItem(int slot, ItemInstance item);
 

@@ -14,14 +14,14 @@ public:
     static CallbackList<PlayerAttackEvent> callbacks;
 
 protected:
-    EntityDamageEvent& event;
+    EntityDamageEvent &event;
 
 public:
-    PlayerAttackEvent(Player& player, EntityDamageEvent& event) : PlayerEvent(player), event(event) {
+    PlayerAttackEvent(Player &player, EntityDamageEvent &event) : PlayerEvent(player), event(event) {
         //
     }
 
-    inline EntityDamageEvent& getEvent() {
+    inline EntityDamageEvent &getEvent() {
         return event;
     }
 

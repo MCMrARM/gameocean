@@ -12,9 +12,9 @@ protected:
 public:
     static int tickRate;
 
-    World& world;
+    World &world;
 
-    EntityUpdateTickTask(World& world) : world(world) { };
+    EntityUpdateTickTask(World &world) : world(world) { };
 
     virtual void run();
     virtual void stop() { shouldStop = true; };

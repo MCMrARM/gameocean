@@ -15,25 +15,25 @@ public:
     static CallbackList<PlayerBlockDestroyEvent> callbacks;
 
 protected:
-    World& world;
-    BlockVariant* block;
+    World &world;
+    BlockVariant *block;
     BlockPos pos;
 
 public:
-    PlayerBlockDestroyEvent(Player& player, World& world, BlockVariant* block, BlockPos pos) :
+    PlayerBlockDestroyEvent(Player &player, World &world, BlockVariant *block, BlockPos pos) :
             PlayerEvent(player), world(world), block(block), pos(pos) {
         //
     }
 
-    inline World& getWorld() {
+    inline World &getWorld() {
         return world;
     }
 
-    inline BlockVariant* getBlockVariant() {
+    inline BlockVariant *getBlockVariant() {
         return block;
     }
 
-    inline BlockPos const& getPosition() {
+    inline BlockPos const &getPosition() {
         return pos;
     }
 

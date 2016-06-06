@@ -1,6 +1,6 @@
 #include "Protocol.h"
 
-std::map<std::string, Protocol*> Protocol::protocols = std::map<std::string, Protocol*>();
+std::map<std::string, Protocol *> Protocol::protocols = std::map<std::string, Protocol *>();
 
 Packet *Protocol::getPacket(int id, bool client) {
     if (client) {

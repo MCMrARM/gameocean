@@ -11,7 +11,7 @@ BlockVariant::BlockVariant(int id, short variantDataId, std::string stringId) : 
     //
 }
 
-bool BlockVariant::use(UseItemAction& action) {
+bool BlockVariant::use(UseItemAction &action) {
     if (ItemVariant::use(action))
         return true;
 #ifdef SERVER
@@ -23,7 +23,7 @@ bool BlockVariant::use(UseItemAction& action) {
     if (event.isCancelled())
         return false;
     BlockPos pos = action.getTargetBlockPos().side(action.getTargetBlockSide());
-    BlockVariant* variant = action.getWorld().getBlock(pos).getBlockVariant();
+    BlockVariant *variant = action.getWorld().getBlock(pos).getBlockVariant();
     if (variant == nullptr || variant->replaceable) {
         action.getWorld().setBlock(pos, (BlockId) id, (byte) variantDataId);
         action.getPlayer()->inventory.removeItem(ItemInstance(id, 1, variantDataId));
@@ -32,19 +32,19 @@ bool BlockVariant::use(UseItemAction& action) {
 #endif
 }
 
-bool BlockVariant::useOn(UseItemAction& action) {
+bool BlockVariant::useOn(UseItemAction &action) {
     if (useOnAction != nullptr) {
         return (*useOnAction)(action, useOnActionData.get());
     }
     return false;
 }
 
-void BlockVariant::dropItems(World& world, BlockPos pos, ItemVariant* heldItem) {
+void BlockVariant::dropItems(World &world, BlockPos pos, ItemVariant *heldItem) {
     Vector3D dropPos (pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f);
     if (dropItself) {
         world.dropItem(dropPos, ItemInstance (this, 1, variantDataId));
     }
-    Random& random = Random::instance;
+    Random &random = Random::instance;
     for (ItemDrop drop : drops) {
         if (drop.requiredGroup != nullptr && (heldItem == nullptr || heldItem->toolGroup != drop.requiredGroup))
             continue;
@@ -56,7 +56,7 @@ void BlockVariant::dropItems(World& world, BlockPos pos, ItemVariant* heldItem) 
                 continue;
         }
 
-        BlockVariant* variant = ItemRegister::getBlockVariant(drop.dropVariantId);
+        BlockVariant *variant = ItemRegister::getBlockVariant(drop.dropVariantId);
         if (variant != nullptr)
             world.dropItem(dropPos, ItemInstance (variant, (byte) drop.dropCount, variant->getVariantDataId()));
     }

@@ -26,6 +26,6 @@ protected:
     virtual void loadChunk(ChunkPos pos);
 
 public:
-    MCAnvilProvider(World& world);
+    MCAnvilProvider(World &world);
 
 };

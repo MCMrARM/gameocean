@@ -26,14 +26,14 @@ public:
 protected:
     float hp;
     DamageSource source;
-    Entity* attacker;
+    Entity *attacker;
     float knockback;
 
 public:
-    EntityDamageEvent(Entity& entity, float hp, DamageSource source) : EntityEvent(entity), hp(hp), attacker(nullptr), knockback(0.f) {
+    EntityDamageEvent(Entity &entity, float hp, DamageSource source) : EntityEvent(entity), hp(hp), attacker(nullptr), knockback(0.f) {
         //
     }
-    EntityDamageEvent(Entity& entity, float hp, DamageSource source, Entity* attacker, float knockback) : EntityEvent(entity), hp(hp), attacker(attacker), knockback(knockback) {
+    EntityDamageEvent(Entity &entity, float hp, DamageSource source, Entity *attacker, float knockback) : EntityEvent(entity), hp(hp), attacker(attacker), knockback(knockback) {
         //
     }
 
@@ -47,7 +47,7 @@ public:
     inline DamageSource getSource() {
         return source;
     }
-    inline Entity* getAttacker() {
+    inline Entity *getAttacker() {
         return attacker;
     }
 

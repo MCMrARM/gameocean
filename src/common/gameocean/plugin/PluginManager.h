@@ -10,11 +10,11 @@
 class PluginManager {
 
 private:
-    Server& server;
-    std::map<std::string, Plugin*> plugins;
+    Server &server;
+    std::map<std::string, Plugin *> plugins;
 
 public:
-    PluginManager(Server& server) : server(server) {
+    PluginManager(Server &server) : server(server) {
         //
     }
 
@@ -23,10 +23,10 @@ public:
     void enablePlugins();
     void disablePlugins();
 
-    Plugin* loadPlugin(std::string plugin);
-    void unloadPlugin(Plugin* plugin);
+    Plugin *loadPlugin(std::string plugin);
+    void unloadPlugin(Plugin *plugin);
 
-    Plugin* getPluginByName(std::string name);
+    Plugin *getPluginByName(std::string name);
 
     void doReload();
 

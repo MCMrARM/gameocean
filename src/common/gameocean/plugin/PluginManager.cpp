@@ -5,7 +5,7 @@
 #include "PluginManager.h"
 #include <dlfcn.h>
 
-Plugin* PluginManager::loadPlugin(std::string name) {
+Plugin *PluginManager::loadPlugin(std::string name) {
     if (plugins.count(name) > 0)
         return plugins[name];
 
@@ -23,7 +23,7 @@ Plugin* PluginManager::loadPlugin(std::string name) {
     i.libFile = config.getString("binary", "");
     std::shared_ptr<ContainerConfigNode> node = config.getContainer("dependencies");
     if (node) {
-        for (std::pair<std::string, std::shared_ptr<ConfigNode>> const& dependency : node->val) {
+        for (std::pair<std::string, std::shared_ptr<ConfigNode>> const &dependency : node->val) {
             loadPlugin(dependency.first);
         }
     }
@@ -33,20 +33,20 @@ Plugin* PluginManager::loadPlugin(std::string name) {
         return nullptr;
     }
 
-    void* handle = dlopen(i.libFile[0] == '/' ? i.libFile.c_str() : ("plugins/" + name + "/" + i.libFile).c_str(), RTLD_LAZY);
+    void *handle = dlopen(i.libFile[0] == '/' ? i.libFile.c_str() : ("plugins/" + name + "/" + i.libFile).c_str(), RTLD_LAZY);
     if (handle == nullptr) {
         Logger::main->error("PluginManager", "Failed to open plugin binary: %s (%s): %s", i.libFile.c_str(), name.c_str(), dlerror());
         return nullptr;
     }
     i.handle = handle;
-    Plugin* (*initFunc)(PluginManager*) = (Plugin* (*)(PluginManager*)) dlsym(handle, "_Z4initP13PluginManager");
-    Plugin* plugin = initFunc(this);
+    Plugin *(*initFunc)(PluginManager *) = (Plugin *(*)(PluginManager *)) dlsym(handle, "_Z4initP13PluginManager");
+    Plugin *plugin = initFunc(this);
     plugin->setInfo(server, i);
     plugins[name] = plugin;
 }
 
-void PluginManager::unloadPlugin(Plugin* plugin) {
-    void* handle = plugin->getPluginInfo().handle;
+void PluginManager::unloadPlugin(Plugin *plugin) {
+    void *handle = plugin->getPluginInfo().handle;
     std::string name = plugin->getPluginInfo().dirName;
     delete plugin;
     if (dlclose(handle) != 0)
@@ -82,8 +82,8 @@ void PluginManager::loadPlugins() {
 }
 
 void PluginManager::unloadPlugins() {
-    for (auto const& e : plugins) {
-        void* handle = e.second->getPluginInfo().handle;
+    for (auto const &e : plugins) {
+        void *handle = e.second->getPluginInfo().handle;
         std::string name = e.second->getPluginInfo().dirName;
         delete e.second;
         if (dlclose(handle) != 0)
@@ -99,7 +99,7 @@ void PluginManager::doReload() {
     enablePlugins();
 }
 
-Plugin* PluginManager::getPluginByName(std::string name) {
+Plugin *PluginManager::getPluginByName(std::string name) {
     if (plugins.count(name) > 0)
         return plugins.at(name);
     return nullptr;

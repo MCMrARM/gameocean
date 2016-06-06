@@ -11,7 +11,7 @@ std::string ItemVariant::getName() {
     return getNameId();
 }
 
-bool ItemVariant::use(UseItemAction& action) {
+bool ItemVariant::use(UseItemAction &action) {
     if (useAction != nullptr) {
         if ((*useAction)(action, useActionData.get()))
             return true;

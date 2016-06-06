@@ -5,7 +5,7 @@ class AABB {
 public:
     float minX, minY, minZ, maxX, maxY, maxZ;
 
-    AABB const& translate(float x, float y, float z) {
+    AABB const &translate(float x, float y, float z) {
         this->minX += x;
         this->maxX += x;
         this->minY += y;
@@ -15,7 +15,7 @@ public:
         return *this;
     }
 
-    AABB const& expand(float x, float y, float z) {
+    AABB const &expand(float x, float y, float z) {
         this->minX -= x;
         this->maxX += x;
         this->minY -= y;
@@ -25,7 +25,7 @@ public:
         return *this;
     }
 
-    AABB const& add(float x, float y, float z) {
+    AABB const &add(float x, float y, float z) {
         if (x > 0)
             this->maxX += x;
         else
@@ -44,7 +44,7 @@ public:
     }
 
 
-    bool intersects(AABB const& aabb) const {
+    bool intersects(AABB const &aabb) const {
         return (aabb.minX <= maxX && aabb.maxX >= minX &&
                 aabb.minY <= maxY && aabb.maxY >= minY &&
                 aabb.minZ <= maxZ && aabb.maxZ >= minZ);

@@ -20,18 +20,18 @@ public:
     ConfigNode(std::string name, Type type) : name(name), type(type) {};
 
     operator std::string() const;
-    std::shared_ptr<ConfigNode> operator[](const std::string& name);
-    std::shared_ptr<ContainerConfigNode> getContainer(const std::string& name) {
+    std::shared_ptr<ConfigNode> operator[](const std::string &name);
+    std::shared_ptr<ContainerConfigNode> getContainer(const std::string &name) {
         std::shared_ptr<ContainerConfigNode> n = std::static_pointer_cast<ContainerConfigNode>((*this)[name]);
         return n;
-    };
-    std::string getString(const std::string& name, std::string d) {
+    }
+    std::string getString(const std::string &name, std::string d) {
         std::shared_ptr<ConfigNode> n = (*this)[name];
         if (n == nullptr) return d;
         return *n;
-    };
-    int getInt(const std::string& name, int d);
-    bool getBool(const std::string& name, bool d) {
+    }
+    int getInt(const std::string &name, int d);
+    bool getBool(const std::string &name, bool d) {
         std::shared_ptr<ConfigNode> n = (*this)[name];
         if (n == nullptr) return d;
         std::string nt = *n;
@@ -41,7 +41,7 @@ public:
             return false;
         }
         return d;
-    };
+    }
 
 };
 
@@ -71,18 +71,18 @@ protected:
 public:
     std::shared_ptr<ContainerConfigNode> mainNode;
 
-    Config(std::istream& is);
+    Config(std::istream &is);
 
     void print() {
-        for (auto& e : mainNode->val) {
+        for (auto &e : mainNode->val) {
             print(e.second, 0);
         }
-    };
+    }
 
-    inline std::shared_ptr<ConfigNode> operator[](const std::string& name) { return (*mainNode)[name]; };
-    inline std::shared_ptr<ContainerConfigNode> getContainer(const std::string& name) { return mainNode->getContainer(name); };
-    inline std::string getString(const std::string& name, std::string d) { return mainNode->getString(name, d); };
-    inline int getInt(const std::string& name, int d) { return mainNode->getInt(name, d); };
-    inline bool getBool(const std::string& name, bool d) { return mainNode->getBool(name, d); };
+    inline std::shared_ptr<ConfigNode> operator[](const std::string &name) { return (*mainNode)[name]; }
+    inline std::shared_ptr<ContainerConfigNode> getContainer(const std::string &name) { return mainNode->getContainer(name); }
+    inline std::string getString(const std::string &name, std::string d) { return mainNode->getString(name, d); }
+    inline int getInt(const std::string &name, int d) { return mainNode->getInt(name, d); }
+    inline bool getBool(const std::string &name, bool d) { return mainNode->getBool(name, d); }
 
 };

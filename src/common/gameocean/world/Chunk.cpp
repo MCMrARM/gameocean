@@ -6,7 +6,7 @@
 std::shared_ptr<Tile> Chunk::getTile(int x, int y, int z) {
     std::unique_lock<std::mutex> lock (tilesMutex);
     BlockPos p = {x, y, z};
-    for (std::shared_ptr<Tile> const& t : tiles) {
+    for (std::shared_ptr<Tile> const &t : tiles) {
         if (t->getPos() == p)
             return t;
     }

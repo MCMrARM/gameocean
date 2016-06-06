@@ -27,7 +27,7 @@ void Entity::close() {
     }
 }
 
-void Entity::setWorld(World& world, float x, float y, float z) {
+void Entity::setWorld(World &world, float x, float y, float z) {
     generalMutex.lock();
     this->world = &world;
     this->x = x;
@@ -48,7 +48,7 @@ void Entity::setWorld(World& world, float x, float y, float z) {
         updateViewers();
     }
 #ifdef SERVER
-    for (Player* p : spawnedTo) {
+    for (Player *p : spawnedTo) {
         p->updateEntityPos(this);
     }
 #endif
@@ -76,7 +76,7 @@ void Entity::setPos(float x, float y, float z) {
         updateViewers();
     }
 #ifdef SERVER
-    for (Player* p : spawnedTo) {
+    for (Player *p : spawnedTo) {
         p->updateEntityPos(this);
     }
 #endif
@@ -96,7 +96,7 @@ void Entity::updateOnGround() {
     aabbCheck.maxY = aabb.minY + 0.5f;
     aabbCheck.minY -= 0.5f;
     bool onGround = false;
-    world->getBlockBoxes(aabbCheck, [&onGround, aabb](AABB const& baabb) {
+    world->getBlockBoxes(aabbCheck, [&onGround, aabb](AABB const &baabb) {
         if (baabb.minX > aabb.maxX || baabb.maxX < aabb.minX ||
                 baabb.minZ > aabb.maxZ || baabb.maxZ < aabb.minZ ||
                 baabb.minY > aabb.maxY || baabb.maxY < aabb.minY)
@@ -125,7 +125,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     AABB expanded = aabb;
     expanded.add(0, y, 0);
     if (y > 0) {
-        world->getBlockBoxes(expanded, [&y, expanded, aabb, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&y, expanded, aabb, acceptance](AABB const &baabb) {
             if (baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance ||
                 baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
@@ -136,7 +136,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             }
         });
     } else if (y < 0) {
-        world->getBlockBoxes(expanded, [&y, expanded, aabb, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&y, expanded, aabb, acceptance](AABB const &baabb) {
             if (baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance ||
                 baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
@@ -151,7 +151,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     expanded = aabb;
     expanded.add(x, 0, 0);
     if (x > 0) {
-        world->getBlockBoxes(expanded, [&x, expanded, aabb, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&x, expanded, aabb, acceptance](AABB const &baabb) {
             if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
                 baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
@@ -162,7 +162,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             }
         });
     } else if (x < 0) {
-        world->getBlockBoxes(expanded, [&x, expanded, aabb, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&x, expanded, aabb, acceptance](AABB const &baabb) {
             if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
                 baabb.minZ > expanded.maxZ - acceptance || baabb.maxZ < expanded.minZ + acceptance)
                 return;
@@ -177,7 +177,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
     expanded = aabb;
     expanded.add(0, 0, z);
     if (z > 0) {
-        world->getBlockBoxes(expanded, [&z, expanded, aabb, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&z, expanded, aabb, acceptance](AABB const &baabb) {
             if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
                 baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance)
                 return;
@@ -188,7 +188,7 @@ Vector3D Entity::checkCollisions(float x, float y, float z) {
             }
         });
     } else if (z < 0) {
-        world->getBlockBoxes(expanded, [&z, expanded, aabb, acceptance](AABB const& baabb) {
+        world->getBlockBoxes(expanded, [&z, expanded, aabb, acceptance](AABB const &baabb) {
             if (baabb.minY > expanded.maxY - acceptance || baabb.maxY <= expanded.minY + acceptance ||
                 baabb.minX > expanded.maxX - acceptance || baabb.maxX < expanded.minX + acceptance)
                 return;
@@ -220,9 +220,9 @@ void Entity::setRot(float yaw, float pitch) {
 
 #ifdef SERVER
 void Entity::updateViewers() {
-    std::set<Player*> despawnFromPlayers (spawnedTo);
+    std::set<Player *> despawnFromPlayers (spawnedTo);
     chunk->entityMutex.lock();
-    for (Player* p : chunk->usedBy) {
+    for (Player *p : chunk->usedBy) {
         if (despawnFromPlayers.count(p) > 0) {
             despawnFromPlayers.erase(p);
         } else {
@@ -230,7 +230,7 @@ void Entity::updateViewers() {
         }
     }
     chunk->entityMutex.unlock();
-    for (Player* p : despawnFromPlayers) {
+    for (Player *p : despawnFromPlayers) {
         despawnFrom(p);
     }
 }
@@ -260,7 +260,7 @@ void Entity::despawnFrom(Player *player) {
 void Entity::spawnToAll() {
     generalMutex.lock();
     chunk->entityMutex.lock();
-    for (Player* p : chunk->usedBy) {
+    for (Player *p : chunk->usedBy) {
         spawnTo(p);
     }
     chunk->entityMutex.unlock();
@@ -269,7 +269,7 @@ void Entity::spawnToAll() {
 
 void Entity::despawnFromAll() {
     generalMutex.lock();
-    for (Player* p : spawnedTo) {
+    for (Player *p : spawnedTo) {
         p->despawnEntity(this);
     }
     spawnedTo.clear();
@@ -277,7 +277,7 @@ void Entity::despawnFromAll() {
 }
 #endif
 
-void Entity::damage(EntityDamageEvent& event) {
+void Entity::damage(EntityDamageEvent &event) {
     Event::broadcast(event);
 
     if (event.isCancelled())
@@ -315,7 +315,7 @@ void Entity::damageFall(float distance) {
 
 std::vector<std::shared_ptr<Entity>> Entity::getNearbyEntities(float range) {
     Vector3D myPos = getPos();
-    World& world = getWorld();
+    World &world = getWorld();
     std::vector<std::shared_ptr<Entity>> ret;
     AABB aabb = {myPos.x, myPos.y, myPos.z, myPos.x, myPos.y, myPos.z};
     aabb.expand(range, range, range);

@@ -7,7 +7,7 @@ class ServerActions {
 
 protected:
 
-    static bool openContainer(UseItemAction& action, ActionHandlerData*);
+    static bool openContainer(UseItemAction &action, ActionHandlerData *);
 
 public:
 

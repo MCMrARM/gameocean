@@ -11,12 +11,12 @@ void EntityUpdateTickTask::run() {
         if (shouldStop)
             break;
 
-        for (auto& chunk : world.getChunkPtrs()) {
+        for (auto &chunk : world.getChunkPtrs()) {
             chunk->entityMutex.lock();
             auto entities = chunk->entities;
             chunk->entityMutex.unlock();
 
-            for (auto& entity : entities) {
+            for (auto &entity : entities) {
                 entity.second->update();
             }
         }

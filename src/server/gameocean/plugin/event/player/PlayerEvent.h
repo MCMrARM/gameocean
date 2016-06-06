@@ -9,11 +9,11 @@ protected:
     Player& player;
 
 public:
-    PlayerEvent(Player& player) : player(player) {
+    PlayerEvent(Player &player) : player(player) {
         //
     }
 
-    inline Player& getPlayer() {
+    inline Player &getPlayer() {
         return player;
     }
 

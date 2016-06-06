@@ -11,9 +11,9 @@ protected:
     virtual void run() = 0;
 
 public:
-    static std::set<Thread*> threads;
+    static std::set<Thread *> threads;
 
-    std::thread* thread;
+    std::thread *thread;
 
     Thread() {
         threads.insert(this);
@@ -28,7 +28,7 @@ public:
 
     virtual void stop();
 
-    inline bool isRunning() { return (thread != nullptr); };
+    inline bool isRunning() { return (thread != nullptr); }
 
 };
 

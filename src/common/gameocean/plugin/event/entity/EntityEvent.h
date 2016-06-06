@@ -6,14 +6,14 @@ class Entity;
 class EntityEvent : public Event {
 
 protected:
-    Entity& entity;
+    Entity &entity;
 
 public:
-    EntityEvent(Entity& entity) : entity(entity) {
+    EntityEvent(Entity &entity) : entity(entity) {
         //
     }
 
-    inline Entity& getEntity() {
+    inline Entity &getEntity() {
         return entity;
     }
 

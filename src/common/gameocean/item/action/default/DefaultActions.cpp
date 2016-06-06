@@ -5,7 +5,7 @@
 #include <gameocean/world/World.h>
 #include <gameocean/entity/Snowball.h>
 
-bool DefaultActions::throwSnowball(UseItemAction& action, ActionHandlerData*) {
+bool DefaultActions::throwSnowball(UseItemAction &action, ActionHandlerData *) {
     if (action.isUsedOnAir()) {
         Vector2D rot = action.getPlayer()->getRot();
         Vector3D aim;
@@ -20,12 +20,12 @@ bool DefaultActions::throwSnowball(UseItemAction& action, ActionHandlerData*) {
     return true;
 }
 
-bool DefaultActions::placeWithFacing(UseItemAction& action, ActionHandlerData*) {
+bool DefaultActions::placeWithFacing(UseItemAction &action, ActionHandlerData *) {
     // TODO:
 }
 
-std::unique_ptr<ActionHandlerData> DefaultActions::processPlaceWithFacing(Json::Value const& value) {
-    PlaceWithFacingHandlerData* ret = new PlaceWithFacingHandlerData();
+std::unique_ptr<ActionHandlerData> DefaultActions::processPlaceWithFacing(Json::Value const &value) {
+    PlaceWithFacingHandlerData *ret = new PlaceWithFacingHandlerData();
     ret->down = ItemRegister::getBlockVariant(value.get("down", "").asString(), false);
     ret->up = ItemRegister::getBlockVariant(value.get("up", "").asString(), false);
     ret->north = ItemRegister::getBlockVariant(value.get("north", "").asString(), false);
@@ -35,11 +35,11 @@ std::unique_ptr<ActionHandlerData> DefaultActions::processPlaceWithFacing(Json::
     return std::unique_ptr<ActionHandlerData>(ret);
 }
 
-bool DefaultActions::placeHalf(UseItemAction& action, ActionHandlerData* data) {
-    PlaceHalfHandlerData* halfData = (PlaceHalfHandlerData*) data;
+bool DefaultActions::placeHalf(UseItemAction &action, ActionHandlerData *data) {
+    PlaceHalfHandlerData *halfData = (PlaceHalfHandlerData *) data;
     if (action.isUsedOnAir())
         return false;
-    BlockVariant* variant = action.getWorld().getBlock(action.getTargetBlockPos()).getBlockVariant();
+    BlockVariant *variant = action.getWorld().getBlock(action.getTargetBlockPos()).getBlockVariant();
     if (((variant == halfData->down && action.getTargetBlockSide() == BlockPos::Side::UP) ||
             (variant == halfData->up && action.getTargetBlockSide() == BlockPos::Side::DOWN)) &&
             halfData->full != nullptr) {
@@ -68,7 +68,7 @@ bool DefaultActions::placeHalf(UseItemAction& action, ActionHandlerData* data) {
 }
 
 std::unique_ptr<ActionHandlerData> DefaultActions::processPlaceHalf(Json::Value const& value) {
-    PlaceHalfHandlerData* ret = new PlaceHalfHandlerData();
+    PlaceHalfHandlerData *ret = new PlaceHalfHandlerData();
     ret->down = ItemRegister::getBlockVariant(value.get("down", "").asString(), false);
     ret->up = ItemRegister::getBlockVariant(value.get("up", "").asString(), false);
     ret->full = ItemRegister::getBlockVariant(value.get("full", "").asString(), false);

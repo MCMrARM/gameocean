@@ -17,7 +17,7 @@ World::World(std::string name) : name(name), physicsTickTask(*this), updateTickT
 ChunkPtr World::getChunkAt(ChunkPos pos, bool create) {
     chunkMutex.lock();
     if (chunks.count(pos) > 0) {
-        Chunk* c = chunks.at(pos);
+        Chunk *c = chunks.at(pos);
         chunkMutex.unlock();
         return c;
     }
@@ -60,13 +60,13 @@ void World::dropItem(Vector3D pos, ItemInstance item) {
 #ifdef SERVER
 
 void World::broadcastBlockUpdate(BlockPos pos) {
-    for (Player* p : getPlayers()) {
+    for (Player *p : getPlayers()) {
         p->sendBlockUpdate(pos);
     }
 }
 
 void World::broadcastTimeUpdate(int time, bool stopped) {
-    for (Player* p : getPlayers()) {
+    for (Player *p : getPlayers()) {
         p->sendWorldTime(time, stopped);
     }
 }

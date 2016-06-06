@@ -5,7 +5,7 @@
 class GameInfo {
 
 public:
-    static GameInfo* current;
+    static GameInfo *current;
 
     std::string name;
     Version version;

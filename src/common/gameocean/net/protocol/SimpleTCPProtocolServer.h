@@ -23,10 +23,10 @@ public:
         socket.close();
     }
     virtual Connection *handleConnection() {
-        //Socket *s = socket.accept();
-        //if (s == nullptr)
+        Socket *s = socket.accept();
+        if (s == nullptr)
             return nullptr;
-        //return new TConnection(protocol, *s, false);
+        return new TConnection(protocol, *s, false);
     }
 
 };

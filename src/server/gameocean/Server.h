@@ -26,8 +26,8 @@ public:
     int sendChunksCount = 4;
     int sendChunksDelay = 25; // in ms
     int maxChunkSendCount = 96;
-    World* mainWorld;
-    std::set<Protocol*> enabledProtocols;
+    World *mainWorld;
+    std::set<Protocol *> enabledProtocols;
     PlayerBlockDestroyThread playerBlockDestroyThread;
     PluginManager pluginManager;
 

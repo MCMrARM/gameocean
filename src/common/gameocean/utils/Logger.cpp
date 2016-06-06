@@ -61,11 +61,11 @@ void Logger::error(const char *tag, const char *text, ...) {
 }
 
 void MultiLogger::print(LogLevel level, const char *tag, const char *text) {
-    for(Logger* logger : loggers) {
+    for(Logger *logger : loggers) {
         logger->log(level, tag, text);
     }
 }
 
-void MultiLogger::addLogger(Logger* logger) {
+void MultiLogger::addLogger(Logger *logger) {
     loggers.push_back(logger);
 }

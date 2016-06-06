@@ -55,7 +55,7 @@ void SchedulerThread::run() {
                 }
             }
         }
-        for (auto& exec : executeQueue) {
+        for (auto &exec : executeQueue) {
             exec();
         }
         executeQueue.clear();

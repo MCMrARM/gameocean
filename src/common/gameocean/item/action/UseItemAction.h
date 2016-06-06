@@ -12,26 +12,26 @@ class Player;
 class UseItemAction : public ItemAction {
 
 public:
-    typedef bool (*Handler)(UseItemAction&, ActionHandlerData*);
+    typedef bool (*Handler)(UseItemAction &, ActionHandlerData *);
     static std::map<std::string, Handler> handlers;
     static std::map<std::string, ProcessDataHandler> processHandlers;
 
 protected:
     std::shared_ptr<Player> player;
     World& world;
-    BlockVariant* block;
+    BlockVariant *block;
     BlockPos pos;
     BlockPos::Side side;
     Vector3D touchVec;
 
 public:
-    UseItemAction(std::shared_ptr<Player> player, ItemVariant* item, World& world, BlockVariant* block, BlockPos pos,
+    UseItemAction(std::shared_ptr<Player> player, ItemVariant *item, World &world, BlockVariant *block, BlockPos pos,
                   BlockPos::Side side, Vector3D touchVec) : ItemAction(item), player(player), world(world), block(block),
                                                             pos(pos), side(side), touchVec(touchVec) {
         //
     }
 
-    inline BlockVariant* getTargetBlockVariant() const {
+    inline BlockVariant *getTargetBlockVariant() const {
         return block;
     }
 
@@ -39,11 +39,11 @@ public:
         return player;
     }
 
-    inline World& getWorld() const {
+    inline World &getWorld() const {
         return world;
     }
 
-    inline BlockPos const& getTargetBlockPos() const {
+    inline BlockPos const &getTargetBlockPos() const {
         return pos;
     }
 
@@ -55,7 +55,7 @@ public:
         return (block == nullptr);
     }
 
-    inline Vector3D const& getTouchVector() const {
+    inline Vector3D const &getTouchVector() const {
         return touchVec;
     }
 

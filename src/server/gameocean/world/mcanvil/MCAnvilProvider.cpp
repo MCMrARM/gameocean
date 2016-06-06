@@ -14,7 +14,7 @@
 #include <gameocean/world/tile/Tile.h>
 #include "../../utils/NBT.h"
 
-MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {
+MCAnvilProvider::MCAnvilProvider(World &world) : ThreadedWorldProvider(world) {
     start();
 
     int fd = open(("worlds/" + world.getName() + "/level.dat").c_str(), O_RDONLY);
@@ -25,16 +25,16 @@ MCAnvilProvider::MCAnvilProvider(World& world) : ThreadedWorldProvider(world) {
     s->swapEndian = true;
 
     std::unique_ptr<NBTTag> ptag = NBTTag::getTag(*s);
-    NBTCompound& tag = (NBTCompound&) *((NBTCompound&) *ptag).val["Data"];
+    NBTCompound &tag = (NBTCompound &) *((NBTCompound &) *ptag).val["Data"];
     bool isTimeStopped = false;
     if (tag.val.count("GameRules") > 0) {
-        NBTCompound& rules = (NBTCompound&) *tag.val["GameRules"];
+        NBTCompound &rules = (NBTCompound &) *tag.val["GameRules"];
         if (rules.val.count("doDaylightCycle") > 0)
             isTimeStopped = (((NBTString&) *rules.val["doDaylightCycle"]).val == "false");
     }
-    world.setTime(((NBTInt&) *tag.val["Time"]).val, isTimeStopped);
+    world.setTime(((NBTInt &) *tag.val["Time"]).val, isTimeStopped);
 
-    world.spawn = { ((NBTInt&) *tag.val["SpawnX"]).val, ((NBTInt&) *tag.val["SpawnY"]).val + 2, ((NBTInt&) *tag.val["SpawnZ"]).val };
+    world.spawn = { ((NBTInt &) *tag.val["SpawnX"]).val, ((NBTInt &) *tag.val["SpawnY"]).val + 2, ((NBTInt &) *tag.val["SpawnZ"]).val };
 }
 
 void MCAnvilProvider::loadRegion(RegionPos pos) {
@@ -48,8 +48,8 @@ void MCAnvilProvider::loadRegion(RegionPos pos) {
     
     std::shared_ptr<MCAnvilHeader> header (new MCAnvilHeader());
     header->filePath = ss.str();
-    s.read((byte*) header->locations, sizeof(header->locations));
-    s.read((byte*) header->timestamps, sizeof(header->timestamps));
+    s.read((byte *) header->locations, sizeof(header->locations));
+    s.read((byte *) header->timestamps, sizeof(header->timestamps));
     regions[pos] = header;
 }
 
@@ -74,7 +74,7 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
     std::shared_ptr<MCAnvilHeader> header = regions.at(r);
     int off = ((pos.z & 31) << 5) | (pos.x & 31);
     unsigned int loc = header->locations[off];
-    BinaryStream::swapBytes((byte*) &loc, 4);
+    BinaryStream::swapBytes((byte *) &loc, 4);
     loc = loc >> 8;
     if (loc == 0) {
         c->clear();
@@ -95,13 +95,13 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
     byte compressionType;
     s >> byteSize >> compressionType;
     byteSize--;
-    byte* data = new byte[byteSize];
+    byte *data = new byte[byteSize];
     if (compressionType == 2) {
         s.read(data, byteSize);
 
-        int decompressChunkSize = 4096;
-        int decompressBufferSize = decompressChunkSize;
-        byte* decompressed = new byte[decompressBufferSize];
+        unsigned int decompressChunkSize = 4096;
+        unsigned int decompressBufferSize = decompressChunkSize;
+        byte *decompressed = new byte[decompressBufferSize];
         z_stream zs;
         zs.opaque = Z_NULL;
         zs.zfree = Z_NULL;
@@ -128,7 +128,7 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
 
             if (ret == Z_OK && zs.avail_out == 0) {
                 // grow the buffer
-                byte* _decompressed = decompressed;
+                byte *_decompressed = decompressed;
                 int oldBufferSize = decompressBufferSize;
                 decompressBufferSize *= 2;
                 decompressed = new byte[decompressBufferSize];
@@ -158,22 +158,22 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
     MemoryBinaryStream ms (data, byteSize);
     ms.swapEndian = true;
     std::unique_ptr<NBTTag> ptag = NBTTag::getTag(ms);
-    NBTCompound& tag = (NBTCompound&) *((NBTCompound&) *ptag).val["Level"];
+    NBTCompound &tag = (NBTCompound &) *((NBTCompound &) *ptag).val["Level"];
 
     c->clear();
 
-    NBTList& list = (NBTList&) *tag.val["Sections"];
-    for (std::unique_ptr<NBTTag>& sectionTag : list.val) {
-        NBTCompound& section = (NBTCompound&) *sectionTag;
+    NBTList &list = (NBTList&) *tag.val["Sections"];
+    for (std::unique_ptr<NBTTag> &sectionTag : list.val) {
+        NBTCompound &section = (NBTCompound&) *sectionTag;
 
         char sectionY = ((NBTByte&) *section.val["Y"]).val;
         if (sectionY >= 8) continue;
         int offsetY = sectionY * 16 * 16 * 16;
 
-        byte* ids = &((NBTByteArray&) *section.val["Blocks"]).val[0];
-        NibbleArray<2048>* meta = (NibbleArray<2048>*) &((NBTByteArray&) *section.val["Data"]).val[0];
-        NibbleArray<2048>* light = (NibbleArray<2048>*) &((NBTByteArray&) *section.val["BlockLight"]).val[0];
-        NibbleArray<2048>* skylight = (NibbleArray<2048>*) &((NBTByteArray&) *section.val["SkyLight"]).val[0];
+        byte *ids = &((NBTByteArray &) *section.val["Blocks"]).val[0];
+        NibbleArray<2048> *meta = (NibbleArray<2048> *) &((NBTByteArray &) *section.val["Data"]).val[0];
+        NibbleArray<2048> *light = (NibbleArray<2048> *) &((NBTByteArray &) *section.val["BlockLight"]).val[0];
+        NibbleArray<2048> *skylight = (NibbleArray<2048> *) &((NBTByteArray &) *section.val["SkyLight"]).val[0];
         /*
         int i = 0;
         for (int y = 0; y < 16; y++) {
@@ -194,23 +194,18 @@ void MCAnvilProvider::loadChunk(ChunkPos pos) {
         memcpy(&c->blockSkylight.array[offsetY / 2], &skylight[0], 16 * 16 * 16 / 2);
     }
 
-    NBTIntArray& heightmap = (NBTIntArray&) *tag.val["HeightMap"];
+    NBTIntArray &heightmap = (NBTIntArray &) *tag.val["HeightMap"];
     memcpy(&c->heightmap[0], &heightmap.val[0], heightmap.val.size() * 4);
-    /*
-    for (int i = 0; i < heightmap.val.size(); i++) {
-        c->heightmap[i] = (byte) heightmap.val[i];
-    }
-*/
 
     if (tag.val.count("TileEntities") > 0) {
         c->tilesMutex.lock();
-        NBTList& tileEntities = (NBTList&) *tag.val["TileEntities"];
-        for (std::unique_ptr<NBTTag>& e : tileEntities.val) {
-            NBTCompound& tileEntity = (NBTCompound&) *e;
-            std::string entId = ((NBTString&) *tileEntity.val["id"]).val;
-            int entX = ((NBTInt&) *tileEntity.val["x"]).val;
-            int entY = ((NBTInt&) *tileEntity.val["y"]).val;
-            int entZ = ((NBTInt&) *tileEntity.val["z"]).val;
+        NBTList &tileEntities = (NBTList&) *tag.val["TileEntities"];
+        for (std::unique_ptr<NBTTag> &e : tileEntities.val) {
+            NBTCompound &tileEntity = (NBTCompound &) *e;
+            std::string entId = ((NBTString &) *tileEntity.val["id"]).val;
+            int entX = ((NBTInt &) *tileEntity.val["x"]).val;
+            int entY = ((NBTInt &) *tileEntity.val["y"]).val;
+            int entZ = ((NBTInt &) *tileEntity.val["z"]).val;
             std::shared_ptr<Tile> tile = Tile::createTile(entId, world, { entX, entY, entZ });
             if (tile)
                 c->tiles.insert(tile);

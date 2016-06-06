@@ -25,7 +25,7 @@ namespace std {
     {
         std::size_t operator()(const ChunkPos& k) const
         {
-            return ((long long) k.x << 32) | k.z;
+            return ((size_t) k.x << 32) | k.z;
         }
     };
 }

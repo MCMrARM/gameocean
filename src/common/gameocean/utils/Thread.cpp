@@ -3,7 +3,7 @@
 #include <functional>
 #include <gameocean/utils/Logger.h>
 
-std::set<Thread*> Thread::threads = std::set<Thread*>();
+std::set<Thread *> Thread::threads = std::set<Thread *>();
 
 void Thread::start() {
     thread = new std::thread(&Thread::run, this);

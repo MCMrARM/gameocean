@@ -12,9 +12,9 @@ protected:
     std::condition_variable notify;
 
 public:
-    Server& server;
+    Server &server;
 
-    PlayerBlockDestroyThread(Server& server) : server(server) { };
+    PlayerBlockDestroyThread(Server &server) : server(server) { };
 
     void notifyChange() {
         std::unique_lock<std::mutex> lock(notifyMutex);

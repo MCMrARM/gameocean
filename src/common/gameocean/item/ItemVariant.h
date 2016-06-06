@@ -21,7 +21,7 @@ protected:
     int maxStackSize = 64;
 
 public:
-    ItemGroup* toolGroup = nullptr;
+    ItemGroup *toolGroup = nullptr;
     std::set<BlockGroup*> toolAffects;
     float toolBreakMultiplier = 1.0f;
     float attackDamage = 1.f;
@@ -38,12 +38,12 @@ public:
 
     ItemVariant(int id, short variantDataId, std::string stringId);
     inline int getId() { return id; };
-    virtual std::string const& getStringId() { return stringId; };
+    virtual std::string const &getStringId() { return stringId; };
     inline short getVariantDataId() { return variantDataId; };
     virtual std::string getNameId() { return std::string("item.") + stringId + ".name"; };
     std::string getName();
 
-    void copyItemProperties(ItemVariant const& item) {
+    void copyItemProperties(ItemVariant const &item) {
         this->maxStackSize = item.maxStackSize;
         this->toolGroup = item.toolGroup;
         this->toolAffects = item.toolAffects;
@@ -56,10 +56,10 @@ public:
         this->isFood = item.isFood;
         this->restoreFoodPoints = item.restoreFoodPoints;
         this->restoreFoodSaturation = item.restoreFoodSaturation;
-    };
+    }
 
-    inline int getMaxStackSize() { return maxStackSize; };
-    inline void setMaxStackSize(int size) { maxStackSize = size; };
+    inline int getMaxStackSize() { return maxStackSize; }
+    inline void setMaxStackSize(int size) { maxStackSize = size; }
 
-    virtual bool use(UseItemAction& action);
+    virtual bool use(UseItemAction &action);
 };

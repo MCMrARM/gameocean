@@ -11,11 +11,11 @@ public:
     virtual std::string getName() { return "time"; };
     virtual std::string getDescription() { return "Sets the time"; };
     virtual std::string getUsage() { return "/time <start|stop|set <time>>"; };
-    virtual Permission* getRequiredPermission() { return Permission::worldTimeCommand; };
+    virtual Permission *getRequiredPermission() { return Permission::worldTimeCommand; };
 
-    TimeCommand(Server& server) : IngameCommand(server) { };
+    TimeCommand(Server &server) : IngameCommand(server) { };
 
-    virtual void process(Player& sender, std::vector<std::string> args) {
+    virtual void process(Player &sender, std::vector<std::string> args) {
         if (args.size() < 2) {
             sendUsage(sender);
             return;

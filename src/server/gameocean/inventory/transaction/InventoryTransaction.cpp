@@ -14,7 +14,7 @@ bool InventoryTransaction::isFinished() {
     if (isContainerTransfer()) {
         int totalPlayerDiff = 0;
         int totalContainerDiff = 0;
-        ItemInstance* i = &elements[0].toItem;
+        ItemInstance *i = &elements[0].toItem;
         if (i->isEmpty()) {
             i = &elements[0].fromItem;
             if (i->isEmpty())
@@ -41,8 +41,8 @@ bool InventoryTransaction::isValid() {
         return false;
 
     if (isArmorSlotTransfer()) {
-        Element const& e1 = elements[0];
-        Element const& e2 = elements[1];
+        Element const &e1 = elements[0];
+        Element const &e2 = elements[1];
         return (e1.toItem.isSameType(e2.fromItem) && e1.fromItem.isSameType(e2.toItem) && e1.getDiff() == -e2.getDiff());
     }
     if (isInInventoryTransfer())
@@ -50,7 +50,7 @@ bool InventoryTransaction::isValid() {
     if (isContainerTransfer()) {
         int totalPlayerDiff = 0;
         int totalContainerDiff = 0;
-        ItemInstance* i = &elements[0].toItem;
+        ItemInstance *i = &elements[0].toItem;
         if (i->isEmpty()) {
             i = &elements[0].fromItem;
             if (i->isEmpty())
@@ -75,7 +75,7 @@ bool InventoryTransaction::isValid() {
 bool InventoryTransaction::isStillValid() {
     for (Element e : elements) {
         if (e.kind == InventoryKind::ARMOR) {
-            if (((InventoryWithArmor&) e.inventory).getArmorSlot(e.slot) != e.fromItem)
+            if (((InventoryWithArmor &) e.inventory).getArmorSlot(e.slot) != e.fromItem)
                 return false;
             continue;
         }
@@ -96,7 +96,7 @@ bool InventoryTransaction::isInInventoryTransfer() {
 
 bool InventoryTransaction::isContainerTransfer() {
     bool hasPlayerInventory = false;
-    Inventory* secondInventory = nullptr;
+    Inventory *secondInventory = nullptr;
     for (Element const& e : elements) {
         if (&e.inventory == &owner.inventory && e.kind == InventoryKind::PLAYER) {
             hasPlayerInventory = true;
@@ -113,8 +113,8 @@ bool InventoryTransaction::isContainerTransfer() {
 bool InventoryTransaction::isArmorSlotTransfer() {
     if (elements.size() != 2)
         return false;
-    Element const& e1 = elements[0];
-    Element const& e2 = elements[1];
+    Element const &e1 = elements[0];
+    Element const &e2 = elements[1];
     return (&e1.inventory == &e2.inventory &&
             ((e1.kind == InventoryKind::PLAYER && e2.kind == InventoryKind::ARMOR)
              || (e2.kind == InventoryKind::PLAYER && e1.kind == InventoryKind::ARMOR)));

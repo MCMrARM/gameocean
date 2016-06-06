@@ -9,7 +9,7 @@ class ItemGroup;
 struct ItemDrop {
     std::string dropVariantId;
     int dropCount = 1;
-    ItemGroup* requiredGroup = nullptr;
+    ItemGroup *requiredGroup = nullptr;
     std::string requiredVariantId;
     float chances = 1.f;
 };

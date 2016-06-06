@@ -16,7 +16,7 @@ public:
     Socket *accept();
 
     Datagram receiveDatagram();
-    void sendDatagram(Datagram const& dg);
+    void sendDatagram(Datagram const &dg);
 
     void close();
 

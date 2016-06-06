@@ -10,10 +10,10 @@ class World;
 class WorldProvider {
 
 protected:
-    World& world;
+    World &world;
 
 public:
-    WorldProvider(World& world) : world(world) {};
+    WorldProvider(World &world) : world(world) {};
 
     virtual ChunkPtr requestChunk(ChunkPos pos) = 0;
 
@@ -33,7 +33,7 @@ protected:
     virtual void loadChunk(ChunkPos pos) = 0;
 
 public:
-    ThreadedWorldProvider(World& world) : WorldProvider(world) {};
+    ThreadedWorldProvider(World &world) : WorldProvider(world) {};
 
     virtual ChunkPtr requestChunk(ChunkPos pos);
 

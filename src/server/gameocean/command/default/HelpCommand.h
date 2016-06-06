@@ -12,14 +12,14 @@ public:
     virtual std::string getName() { return "help"; };
     virtual std::string getDescription() { return "Displays this help"; };
     virtual std::string getUsage() { return "/help [command|page]"; };
-    virtual Permission* getRequiredPermission() { return Permission::helpCommand; };
+    virtual Permission *getRequiredPermission() { return Permission::helpCommand; };
 
-    HelpCommand(Server& server) : Command(server) { };
+    HelpCommand(Server &server) : Command(server) { };
 
-    virtual void process(CommandSender& sender, std::vector<std::string> args) {
+    virtual void process(CommandSender &sender, std::vector<std::string> args) {
         int page = 0;
         if (args.size() > 1 && args[1].length() > 0) {
-            Command* command = Command::getCommand(args[1]);
+            Command *command = Command::getCommand(args[1]);
             if (command != nullptr) {
                 sender.sendMessage(command->getUsage() + ": " + command->getDescription());
                 return;
@@ -48,7 +48,7 @@ public:
         std::advance(it, start);
 
         for (int i = 0; it != Command::commandSet.end() && i < COMMANDS_PER_PAGE; it++, i++) {
-            Command* cmd = *it;
+            Command *cmd = *it;
             sender.sendMessage(cmd->getName() + ": " + cmd->getDescription());
         }
     };

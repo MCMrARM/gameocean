@@ -15,11 +15,11 @@ protected:
     std::string reason;
 
 public:
-    PlayerQuitEvent(Player& player, std::string const& reason) : PlayerEvent(player), reason(reason) {
+    PlayerQuitEvent(Player &player, std::string const &reason) : PlayerEvent(player), reason(reason) {
         //
     }
 
-    inline std::string& getReason() {
+    inline std::string &getReason() {
         return reason;
     }
 

@@ -13,7 +13,7 @@ void PlayerChunkQueueThread::run() {
             break;
 
         std::vector<std::shared_ptr<Player>> players = server.getPlayers();
-        for (auto& player : players) {
+        for (auto &player : players) {
             player->updateChunkQueue();
             player->sendQueuedChunks();
         }

@@ -18,7 +18,7 @@ void PlayerBlockDestroyThread::run() {
 
         waitTime = -1;
         std::vector<std::shared_ptr<Player>> players = server.getPlayers();
-        for (auto& player : players) {
+        for (auto &player : players) {
             if (player->miningBlock != nullptr) {
                 int r = player->getRemainingMiningTime();
                 if (r <= 0) {

@@ -13,7 +13,7 @@ class StringUtils {
 public:
     static std::string trim(std::string s) {
         if (s.length() <= 0) return "";
-        int i = s.find_first_not_of(" ");
+        size_t i = s.find_first_not_of(" ");
         return s.substr(i, s.find_last_not_of(" \r\n") + 1);
     }
 
@@ -21,7 +21,7 @@ public:
         std::vector<std::string> v;
         std::size_t p = 0;
         while (p < s.length()) {
-            int i = s.find_first_of(d, p);
+            size_t i = s.find_first_of(d, p);
             if (i == std::string::npos) {
                 v.push_back(s.substr(p));
                 break;
@@ -44,7 +44,7 @@ public:
 
     static int compareLowercase(std::string s1, std::string s2) {
         int i;
-        int l = std::min(s1.length(), s2.length());
+        size_t l = std::min(s1.length(), s2.length());
         for (i = 0; i < l; i++) {
             if (tolower(s1[i]) != tolower(s2[i])) {
                 break;
@@ -68,7 +68,7 @@ public:
         #endif
     }
 
-    static std::string sprintf(const char* format, ...);
+    static std::string sprintf(const char *format, ...);
 
     static void printInHex(std::ostream &stream, unsigned char *data, size_t dataSize);
 

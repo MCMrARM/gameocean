@@ -6,7 +6,7 @@
 class PluginInfo {
 
 public:
-    void* handle;
+    void *handle;
     std::string name;
     std::string dirName;
     std::string libFile;

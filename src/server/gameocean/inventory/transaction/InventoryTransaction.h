@@ -8,9 +8,9 @@ class Inventory;
 class InventoryTransaction {
 
 public:
-    Player& owner;
+    Player &owner;
 
-    InventoryTransaction(Player& owner) : owner(owner) {
+    InventoryTransaction(Player &owner) : owner(owner) {
         //
     }
 
@@ -19,7 +19,7 @@ public:
     };
 
     struct Element {
-        Inventory& inventory;
+        Inventory &inventory;
         InventoryKind kind;
         int slot;
         ItemInstance fromItem, toItem;

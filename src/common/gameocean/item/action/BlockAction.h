@@ -8,19 +8,19 @@ class BlockVariant;
 class BlockAction {
 
 protected:
-    BlockVariant* block;
+    BlockVariant *block;
     BlockPos pos;
 
 public:
-    BlockAction(BlockVariant* block, BlockPos pos) : block(block), pos(pos) {
+    BlockAction(BlockVariant *block, BlockPos pos) : block(block), pos(pos) {
         //
     }
 
-    inline BlockVariant* getBlockVariant() {
+    inline BlockVariant *getBlockVariant() {
         return block;
     }
 
-    inline BlockPos const& getBlockPos() {
+    inline BlockPos const &getBlockPos() {
         return pos;
     }
 

@@ -61,7 +61,7 @@ public:
     }
 
     virtual void loop();
-    virtual Connection* handleConnection() = 0;
+    virtual Connection *handleConnection() = 0;
 
     inline void setPort(int port) {
         if (isRunning())

@@ -12,7 +12,7 @@
 #include "recipes/Recipe.h"
 
 void JSONItemLoader::parseDataDirectory(std::string path) {
-    for (ResourceManager::DirEntry const& file : ResourceManager::instance->getDataDirectoryFiles(path)) {
+    for (ResourceManager::DirEntry const &file : ResourceManager::instance->getDataDirectoryFiles(path)) {
         if (file.isDir) {
             parseDataDirectory(path + "/" + file.name + "/");
             continue;
@@ -24,7 +24,7 @@ void JSONItemLoader::parseDataDirectory(std::string path) {
 }
 
 void JSONItemLoader::parseAssetDirectory(std::string path) {
-    for (ResourceManager::DirEntry const& file : ResourceManager::instance->getAssetDirectoryFiles(path)) {
+    for (ResourceManager::DirEntry const &file : ResourceManager::instance->getAssetDirectoryFiles(path)) {
         if (file.isDir) {
             parseAssetDirectory(path + "/" + file.name + "/");
             continue;
@@ -43,11 +43,11 @@ void JSONItemLoader::parseAssetFile(std::string filePath) {
     parseStream(*ResourceManager::instance->openAssetFile(filePath, std::ios_base::in));
 }
 
-void JSONItemLoader::parseStream(std::istream& data) {
+void JSONItemLoader::parseStream(std::istream &data) {
     Json::Value val;
     data >> val;
     if (val.isArray()) {
-        for (Json::Value& c : val) {
+        for (Json::Value &c : val) {
             process(c);
         }
     } else if (val.isObject()) {
@@ -55,7 +55,7 @@ void JSONItemLoader::parseStream(std::istream& data) {
     }
 }
 
-void JSONItemLoader::process(Json::Value const& val) {
+void JSONItemLoader::process(Json::Value const &val) {
     std::string type = val.get("type", "unknown").asString();
     if (type == "item" || type == "block") {
         int id = val.get("id", 0).asInt();
@@ -65,10 +65,10 @@ void JSONItemLoader::process(Json::Value const& val) {
             return;
         }
 
-        const Json::Value& variants = val["variants"];
+        const Json::Value &variants = val["variants"];
 
         if (type == "item") {
-            ItemVariant* item = new ItemVariant(id, -1, nameId);
+            ItemVariant *item = new ItemVariant(id, -1, nameId);
             processItemVariant(item, val);
             ItemRegister::registerItemVariant(item);
 
@@ -76,13 +76,13 @@ void JSONItemLoader::process(Json::Value const& val) {
                 int varId = it->get("id", id).asInt();
                 int varData = it->get("data", -1).asInt();
                 std::string varNameId = it->get("name_id", nameId).asString();
-                ItemVariant* variant = new ItemVariant(varId, (short) varData, varNameId);
+                ItemVariant *variant = new ItemVariant(varId, (short) varData, varNameId);
                 variant->copyItemProperties(*item);
                 processItemVariant(variant, *it);
                 ItemRegister::registerItemVariant(variant);
             }
         } else if (type == "block") {
-            BlockVariant* item = new BlockVariant(id, -1, nameId);
+            BlockVariant *item = new BlockVariant(id, -1, nameId);
             processBlockVariant(item, val);
             ItemRegister::registerBlockVariant(item);
 
@@ -90,7 +90,7 @@ void JSONItemLoader::process(Json::Value const& val) {
                 int varId = it->get("id", id).asInt();
                 int varData = it->get("data", -1).asInt();
                 std::string varNameId = it->get("name_id", nameId).asString();
-                BlockVariant* variant = new BlockVariant(varId, (short) varData, varNameId);
+                BlockVariant *variant = new BlockVariant(varId, (short) varData, varNameId);
                 variant->copyItemProperties(*item);
                 variant->copyBlockProperties(*item);
                 processBlockVariant(variant, *it);
@@ -105,7 +105,7 @@ void JSONItemLoader::process(Json::Value const& val) {
 }
 
 template <typename T>
-void JSONItemLoader::processAction(bool (*&handler)(T&, ActionHandlerData*), std::unique_ptr<ActionHandlerData>& handlerData, const Json::Value& data) {
+void JSONItemLoader::processAction(bool (*&handler)(T &, ActionHandlerData *), std::unique_ptr<ActionHandlerData> &handlerData, const Json::Value &data) {
     if (data.isString()) {
         std::string action = data.asString();
         if (action.length() > 0 && T::handlers.count(action) > 0)
@@ -121,11 +121,11 @@ void JSONItemLoader::processAction(bool (*&handler)(T&, ActionHandlerData*), std
     }
 }
 
-void JSONItemLoader::processItemVariant(ItemVariant* item, const Json::Value& val) {
+void JSONItemLoader::processItemVariant(ItemVariant *item, const Json::Value &val) {
     /*
     std::string base = val.get("base", "").asString();
     if (base.length() > 0) {
-        ItemVariant* baseItem = ItemRegister::getItemVariant(base, true);
+        ItemVariant *baseItem = ItemRegister::getItemVariant(base, true);
         if (baseItem == null) {
             Logger::main->error("JSON/ItemVariant", "Base item (%s) not found for %s: is the file order correct?", base.c_str(), item->getNameId().c_str());
             return;
@@ -142,7 +142,7 @@ void JSONItemLoader::processItemVariant(ItemVariant* item, const Json::Value& va
         }
     }
     {
-        const Json::Value& multiplierAffects = val["multiplier_affects"];
+        const Json::Value &multiplierAffects = val["multiplier_affects"];
         for (auto it = multiplierAffects.begin(); it != multiplierAffects.end(); it++) {
             item->toolAffects.insert(BlockGroup::get(it->asString()));
         }
@@ -159,32 +159,32 @@ void JSONItemLoader::processItemVariant(ItemVariant* item, const Json::Value& va
     item->restoreFoodSaturation = val.get("food_saturation", item->restoreFoodSaturation).asFloat();
 
     {
-        const Json::Value& actions = val["actions"];
+        const Json::Value &actions = val["actions"];
         if (!actions.empty()) {
             processAction<UseItemAction>(item->useAction, item->useActionData, actions.get("use", ""));
         }
     }
     {
-        const Json::Value& recipe = val["recipe"];
+        const Json::Value &recipe = val["recipe"];
         if (!recipe.empty()) {
             processItemRecipe(item, recipe);
         }
     }
     {
-        const Json::Value& recipes = val["recipes"];
-        for (const Json::Value& recipe : recipes) {
+        const Json::Value &recipes = val["recipes"];
+        for (const Json::Value &recipe : recipes) {
             processItemRecipe(item, recipe);
         }
     }
 }
 
-void JSONItemLoader::processBlockVariant(BlockVariant* item, const Json::Value& val) {
+void JSONItemLoader::processBlockVariant(BlockVariant *item, const Json::Value &val) {
     processItemVariant(item, val);
 
     /*
     std::string base = val.get("base", "").asString();
     if (base.length() > 0) {
-        BlockVariant* baseItem = ItemRegister::getBlockVariant(base, true);
+        BlockVariant *baseItem = ItemRegister::getBlockVariant(base, true);
         if (baseItem == null) {
             Logger::main->error("JSON/BlockVariant", "Base item (%s) not found for %s: is the file order correct?", base.c_str(), item->getNameId().c_str());
             return;
@@ -206,22 +206,22 @@ void JSONItemLoader::processBlockVariant(BlockVariant* item, const Json::Value& 
         item->model = Model::getModel(val.get("model", "default").asString());
 
     {
-        const Json::Value& actions = val["actions"];
+        const Json::Value &actions = val["actions"];
         if (!actions.empty()) {
             processAction<UseItemAction>(item->useOnAction, item->useOnActionData, actions.get("use_on", ""));
             processAction<DestroyBlockAction>(item->destroyAction, item->destroyActionData, actions.get("destroy", ""));
         }
     }
     {
-        const Json::Value& drops = val["drops"];
+        const Json::Value &drops = val["drops"];
         if (!drops.empty()) {
-            for (const Json::Value& drop : drops) {
+            for (const Json::Value &drop : drops) {
                 ItemDrop itmDrop;
                 itmDrop.dropVariantId = drop.get("name_id", item->getNameId()).asString();
                 itmDrop.dropCount = drop.get("count", 1).asInt();
                 itmDrop.chances = drop.get("chances", 1.f).asFloat();
 
-                const Json::Value& requires = drop["requires"];
+                const Json::Value &requires = drop["requires"];
                 if (!requires.empty()) {
                     itmDrop.requiredVariantId = requires.get("name_id", "").asString();
 
@@ -239,16 +239,16 @@ void JSONItemLoader::processBlockVariant(BlockVariant* item, const Json::Value& 
     }
 }
 
-void JSONItemLoader::processModel(const Json::Value& val) {
+void JSONItemLoader::processModel(const Json::Value &val) {
     std::string nameId = val.get("name_id", "").asString();
     if (nameId.length() <= 0) {
         Logger::main->error("JSON/Model", "Cannot create model: has no name id");
         return;
     }
 
-    Model* model = Model::getModel(nameId);
+    Model *model = Model::getModel(nameId);
 
-    const Json::Value& aabbs = val["aabbs"];
+    const Json::Value &aabbs = val["aabbs"];
     for (auto it = aabbs.begin(); it != aabbs.end(); it++) {
         if (it->isArray() && it->size() == 6) {
             model->aabbs.push_back({(*it)[0].asFloat(), (*it)[1].asFloat(), (*it)[2].asFloat(),
@@ -257,7 +257,7 @@ void JSONItemLoader::processModel(const Json::Value& val) {
     }
 }
 
-void JSONItemLoader::processItemRecipe(ItemVariant* item, const Json::Value& val) {
+void JSONItemLoader::processItemRecipe(ItemVariant *item, const Json::Value &val) {
     std::string type = val.get("type", "shaped").asString();
 
     int outCount = val.get("count", 1).asInt();
@@ -267,12 +267,12 @@ void JSONItemLoader::processItemRecipe(ItemVariant* item, const Json::Value& val
     if (type == "shaped") {
         recipe.type = JSONRecipe::Type::SHAPED;
 
-        const Json::Value& ingredients = val["ingredients"];
+        const Json::Value &ingredients = val["ingredients"];
         recipe.shapedSizeY = ingredients.size();
         recipe.shapedSizeX = ingredients[0].size();
 
         for (int y = 0; y < recipe.shapedSizeY; y++) {
-            const Json::Value& i = ingredients[y];
+            const Json::Value &i = ingredients[y];
             for (int x = 0; x < recipe.shapedSizeX; x++) {
                 recipe.input.push_back(getRecipeItem(i[x]));
             }
@@ -280,21 +280,21 @@ void JSONItemLoader::processItemRecipe(ItemVariant* item, const Json::Value& val
     } else if (type == "shapeless") {
         recipe.type = JSONRecipe::Type::SHAPELESS;
 
-        const Json::Value& ingredients = val["ingredients"];
-        for (const Json::Value& ingredient : ingredients) {
+        const Json::Value &ingredients = val["ingredients"];
+        for (const Json::Value &ingredient : ingredients) {
             recipe.input.push_back(getRecipeItem(ingredient));
         }
     }
 
-    const Json::Value& extra_result = val["extra_result"];
-    for (const Json::Value& extra : extra_result) {
+    const Json::Value &extra_result = val["extra_result"];
+    for (const Json::Value &extra : extra_result) {
         recipe.extraOutput.push_back(getRecipeItem(extra));
     }
 
     recipes.push_back(std::move(recipe));
 }
 
-JSONItemLoader::JSONItemDef JSONItemLoader::getRecipeItem(const Json::Value& val) {
+JSONItemLoader::JSONItemDef JSONItemLoader::getRecipeItem(const Json::Value &val) {
     if (val.isArray()) {
         return { val[0].asString(), val.get(1, 1).asInt() };
     } else {
@@ -303,15 +303,15 @@ JSONItemLoader::JSONItemDef JSONItemLoader::getRecipeItem(const Json::Value& val
 }
 
 void JSONItemLoader::registerRecipes() {
-    for (JSONRecipe const& recipe : recipes) {
-        Recipe* r = nullptr;
+    for (JSONRecipe const &recipe : recipes) {
+        Recipe *r = nullptr;
         if (recipe.type == JSONRecipe::Type::SHAPED) {
-            ShapedRecipe* shaped = new ShapedRecipe(recipe.output, recipe.shapedSizeX, recipe.shapedSizeY);
+            ShapedRecipe *shaped = new ShapedRecipe(recipe.output, recipe.shapedSizeX, recipe.shapedSizeY);
             r = shaped;
 
             int x = 0;
             int y = 0;
-            for (JSONItemDef const& i : recipe.input) {
+            for (JSONItemDef const &i : recipe.input) {
                 ItemInstance itm = i.getItemInstance();
                 if (!itm.isEmpty())
                     shaped->addIngredient(x, y, itm);
@@ -322,10 +322,10 @@ void JSONItemLoader::registerRecipes() {
                 }
             }
         } else if (recipe.type == JSONRecipe::Type::SHAPELESS) {
-            ShapelessRecipe* shapeless = new ShapelessRecipe(recipe.output);
+            ShapelessRecipe *shapeless = new ShapelessRecipe(recipe.output);
             r = shapeless;
 
-            for (JSONItemDef const& i : recipe.input) {
+            for (JSONItemDef const &i : recipe.input) {
                 ItemInstance itm = i.getItemInstance();
                 if (!itm.isEmpty())
                     shapeless->addIngredient(itm);
@@ -334,21 +334,21 @@ void JSONItemLoader::registerRecipes() {
 
         if (r == nullptr)
             continue;
-        for (JSONItemDef const& i : recipe.extraOutput) {
+        for (JSONItemDef const &i : recipe.extraOutput) {
             r->result.push_back(i.getItemInstance());
         }
     }
 }
 
 ItemInstance JSONItemLoader::JSONItemDef::getItemInstance() const {
-    ItemVariant* v = ItemRegister::getItemVariant(name);
+    ItemVariant *v = ItemRegister::getItemVariant(name);
     if (v == nullptr)
         return ItemInstance ();
     return ItemInstance (v, (byte) count, v->getVariantDataId());
 }
 
 void JSONItemLoader::callActionLoadCallbacks() {
-    for (auto const& e : actionCallbacksToCall) {
+    for (auto const &e : actionCallbacksToCall) {
         e.storePtr = std::move(e.handler(e.value));
     }
     actionCallbacksToCall.clear();

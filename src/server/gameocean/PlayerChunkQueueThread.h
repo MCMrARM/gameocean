@@ -10,9 +10,9 @@ protected:
     bool shouldStop = false;
 
 public:
-    Server& server;
+    Server &server;
 
-    PlayerChunkQueueThread(Server& server) : server(server) { };
+    PlayerChunkQueueThread(Server &server) : server(server) { };
 
     virtual void run();
     virtual void stop() { shouldStop = true; };

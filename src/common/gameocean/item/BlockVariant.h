@@ -16,10 +16,10 @@ class BlockVariant : public ItemVariant {
 public:
     bool replaceable = false; // determines if the block can be replaced as it was air
     float hardness = 100;
-    BlockGroup* blockGroup = nullptr;
+    BlockGroup *blockGroup = nullptr;
     bool needsTool = false;
     bool fluid = false;
-    Model* model = nullptr;
+    Model *model = nullptr;
     bool dropItself = true;
     std::vector<ItemDrop> drops;
 
@@ -30,21 +30,21 @@ public:
 
     BlockVariant(int id, short variantDataId, std::string stringId);
 
-    void copyBlockProperties(BlockVariant const& item) {
+    void copyBlockProperties(BlockVariant const &item) {
         this->replaceable = item.replaceable;
         this->hardness = item.hardness;
         this->blockGroup = item.blockGroup;
         this->needsTool = item.needsTool;
         this->model = item.model;
         this->drops = item.drops;
-    };
+    }
 
     virtual std::string getNameId() { return std::string("block.") + stringId + ".name"; };
 
-    virtual bool use(UseItemAction& action);
-    bool useOn(UseItemAction& action);
+    virtual bool use(UseItemAction &action);
+    bool useOn(UseItemAction &action);
 
-    void dropItems(World& world, BlockPos pos, ItemVariant* heldItem);
+    void dropItems(World &world, BlockPos pos, ItemVariant *heldItem);
 
 };
 

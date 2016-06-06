@@ -16,23 +16,23 @@ protected:
     const char* format;
 
 public:
-    ChatEvent(Player& player, std::string const& message, const char* format) : PlayerEvent(player), message(message), format(format) {
+    ChatEvent(Player &player, std::string const &message, const char *format) : PlayerEvent(player), message(message), format(format) {
         //
     }
 
-    inline std::string& getMessage() {
+    inline std::string &getMessage() {
         return message;
     }
 
-    inline void setMessage(std::string const& message) {
+    inline void setMessage(std::string const &message) {
         this->message = message;
     }
 
-    inline const char* getFormat() {
+    inline const char *getFormat() {
         return format;
     }
 
-    inline void setFormat(const char* format) {
+    inline void setFormat(const char *format) {
         this->format = format;
     }
 

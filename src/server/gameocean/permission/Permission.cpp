@@ -1,22 +1,22 @@
 #include "Permission.h"
 
-std::map<std::string, Permission*> Permission::permissions;
-std::set<Permission*> Permission::defaultPermissions;
-std::set<Permission*> Permission::operatorPermissions;
-Permission* Permission::defaultCommands;
-Permission* Permission::defaultPlayerCommands;
-Permission* Permission::defaultOperatorCommands;
-Permission* Permission::helpCommand;
-Permission* Permission::suicideCommand;
-Permission* Permission::stopServerCommand;
-Permission* Permission::reloadServerCommand;
-Permission* Permission::serverVersionCommand;
-Permission* Permission::pingCommand;
-Permission* Permission::teleportPlayerCommand;
-Permission* Permission::giveItemCommand;
-Permission* Permission::worldTimeCommand;
+std::map<std::string, Permission *> Permission::permissions;
+std::set<Permission *> Permission::defaultPermissions;
+std::set<Permission *> Permission::operatorPermissions;
+Permission *Permission::defaultCommands;
+Permission *Permission::defaultPlayerCommands;
+Permission *Permission::defaultOperatorCommands;
+Permission *Permission::helpCommand;
+Permission *Permission::suicideCommand;
+Permission *Permission::stopServerCommand;
+Permission *Permission::reloadServerCommand;
+Permission *Permission::serverVersionCommand;
+Permission *Permission::pingCommand;
+Permission *Permission::teleportPlayerCommand;
+Permission *Permission::giveItemCommand;
+Permission *Permission::worldTimeCommand;
 
-Permission* Permission::getPermission(std::string name) {
+Permission *Permission::getPermission(std::string name) {
     if (permissions.count(name) > 0)
         return permissions[name];
     return nullptr;

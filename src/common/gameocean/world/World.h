@@ -32,11 +32,11 @@ private:
     std::string name;
     std::recursive_mutex chunkMutex;
     std::recursive_mutex miscMutex;
-    std::unordered_map<ChunkPos, Chunk*> chunks;
-    std::set<Player*> players;
-    std::set<WorldListener*> listeners;
+    std::unordered_map<ChunkPos, Chunk *> chunks;
+    std::set<Player *> players;
+    std::set<WorldListener *> listeners;
     std::vector<ChunkPtr> spawnTerrain;
-    WorldProvider* provider;
+    WorldProvider *provider;
     int startTime;
     long long startTimeMS;
     bool timeStopped = false;
@@ -57,14 +57,14 @@ public:
 
     inline std::string getName() { return name; };
 
-    inline void addListener(WorldListener* listener) {
+    inline void addListener(WorldListener *listener) {
         listeners.insert(listener);
     }
-    inline void removeListener(WorldListener* listener) {
+    inline void removeListener(WorldListener *listener) {
         listeners.erase(listener);
     }
 
-    inline void setWorldProvider(WorldProvider* provider) {
+    inline void setWorldProvider(WorldProvider *provider) {
         this->provider = provider;
     }
 
@@ -86,16 +86,16 @@ public:
 #ifdef SERVER
         broadcastBlockUpdate({x, y, z});
 #endif
-    };
+    }
     inline void setBlock(BlockPos pos, BlockId id, byte data) {
         setBlock(pos.x, pos.y, pos.z, id, data);
-    };
-    inline void setBlock(int x, int y, int z, BlockVariant* variant) {
+    }
+    inline void setBlock(int x, int y, int z, BlockVariant *variant) {
         setBlock(x, y, z, (BlockId) variant->getId(), (byte) variant->getVariantDataId());
-    };
-    inline void setBlock(BlockPos pos, BlockVariant* variant) {
+    }
+    inline void setBlock(BlockPos pos, BlockVariant *variant) {
         setBlock(pos.x, pos.y, pos.z, variant);
-    };
+    }
 
     WorldBlock getBlock(int x, int y, int z) {
         ChunkPtr c = getChunkAt(x >> 4, z >> 4, false);
@@ -103,10 +103,10 @@ public:
             return { 0, 0 };
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         return c->getBlock(x & 0xf, y, z & 0xf);
-    };
+    }
     inline WorldBlock getBlock(BlockPos pos) {
         return getBlock(pos.x, pos.y, pos.z);
-    };
+    }
 
     inline std::shared_ptr<Tile> getTile(int x, int y, int z) {
         ChunkPtr c = getChunkAt(x >> 4, z >> 4, false);
@@ -114,38 +114,30 @@ public:
             return nullptr;
         std::lock_guard<std::recursive_mutex> guard (c->mutex);
         return c->getTile(x, y, z);
-    };
+    }
     inline std::shared_ptr<Tile> getTile(BlockPos pos) {
         return getTile(pos.x, pos.y, pos.z);
-    };
+    }
 
     ChunkPtr getChunkAt(ChunkPos pos, bool create);
     inline ChunkPtr getChunkAt(ChunkPos pos) {
         return getChunkAt(pos, false);
-    };
+    }
     inline ChunkPtr getChunkAt(int x, int z, bool create) {
         return getChunkAt(ChunkPos(x, z), create);
-    };
+    }
     inline ChunkPtr getChunkAt(int x, int z) {
         return getChunkAt(x, z, false);
-    };
+    }
 
     inline bool isChunkLoaded(ChunkPos pos) {
         std::lock_guard<std::recursive_mutex> guard (chunkMutex);
         return (chunks.count(pos) > 0);
-    };
+    }
     inline bool isChunkLoaded(int x, int z) {
         return isChunkLoaded(ChunkPos(x, z));
-    };
+    }
 
-    /**
-     * @deprecated
-     * Please use getChunkPtrs instead if possible.
-     */
-    inline std::unordered_map<ChunkPos, Chunk*> getChunks() {
-        std::lock_guard<std::recursive_mutex> guard (chunkMutex);
-        return chunks;
-    };
     inline std::vector<ChunkPtr> getChunkPtrs() {
         std::lock_guard<std::recursive_mutex> guard (chunkMutex);
         std::vector<ChunkPtr> ptrs;
@@ -168,9 +160,9 @@ public:
                 spawnTerrain.push_back(getChunkAt(spawnChunkX, spawnChunkZ, true));
             }
         }
-    };
+    }
 
-    void setChunk(Chunk* chunk) {
+    void setChunk(Chunk *chunk) {
         chunkMutex.lock();
         if (isChunkLoaded(chunk->pos)) {
             removeChunk(chunks[chunk->pos]);
@@ -178,20 +170,20 @@ public:
         chunks[chunk->pos] = chunk;
         chunkMutex.unlock();
 
-        for (WorldListener* listener : listeners) {
+        for (WorldListener *listener : listeners) {
             listener->onChunkAdded(*this, *chunk);
         }
-    };
+    }
 
-    void markChunkLoaded(Chunk* chunk) {
+    void markChunkLoaded(Chunk *chunk) {
         if (chunk == nullptr || &*getChunkAt(chunk->pos, false) != chunk)
             return;
-        for (WorldListener* listener : listeners) {
+        for (WorldListener *listener : listeners) {
             listener->onChunkLoaded(*this, *chunk);
         }
-    };
+    }
 
-    bool removeChunk(Chunk* chunk) {
+    bool removeChunk(Chunk *chunk) {
         chunkMutex.lock();
         if (chunk == nullptr || !isChunkLoaded(chunk->pos) || chunks[chunk->pos] != chunk) {
             chunkMutex.unlock();
@@ -200,13 +192,13 @@ public:
         chunk->markedDead = true;
         chunks.erase(chunk->pos);
         chunkMutex.unlock();
-        for (WorldListener* listener : listeners) {
+        for (WorldListener *listener : listeners) {
             listener->onChunkUnloaded(*this, *chunk);
         }
         return true;
-    };
+    }
 
-    void notifyChunkDead(Chunk* chunk) {
+    void notifyChunkDead(Chunk *chunk) {
         chunkMutex.lock();
         if (unloadPolicy == ChunkUnloadPolicy::AS_SOON_AS_POSSIBLE) {
             removeChunk(chunk);
@@ -215,22 +207,22 @@ public:
         chunkMutex.unlock();
     }
 
-    void addPlayer(Player* player) {
+    void addPlayer(Player *player) {
         chunkMutex.lock();
         players.insert(player);
         chunkMutex.unlock();
-    };
+    }
 
-    void removePlayer(Player* player) {
+    void removePlayer(Player *player) {
         chunkMutex.lock();
         players.erase(player);
         chunkMutex.unlock();
-    };
+    }
 
-    std::set<Player*> getPlayers() {
+    std::set<Player *> getPlayers() {
         std::lock_guard<std::recursive_mutex> guard (chunkMutex);
         return players;
-    };
+    }
 
     void dropItem(Vector3D pos, ItemInstance item);
 

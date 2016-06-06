@@ -15,11 +15,11 @@ protected:
 public:
     static CallbackList<PlayerMoveEvent> callbacks;
 
-    PlayerMoveEvent(Player& player, Vector3D newPos) : PlayerEvent(player), newPos(newPos) {
+    PlayerMoveEvent(Player &player, Vector3D newPos) : PlayerEvent(player), newPos(newPos) {
         //
     }
 
-    inline Vector3D& getPos() {
+    inline Vector3D &getPos() {
         return newPos;
     }
 

@@ -172,7 +172,7 @@ public:
     static void swapBytes(byte *array, size_t size) {
         byte* array2 = new byte[size];
         memcpy(array2, array, size);
-        for (int i = size - 1; i >= 0; i--) {
+        for (size_t i = size - 1; i >= 0; i--) {
             array[size - 1 - i] = array2[i];
         }
     }
@@ -187,10 +187,10 @@ protected:
     unsigned int pos = 0;
     bool allowRealloc = false;
 
-    virtual void resize(unsigned int minimalSize) { };
+    virtual void resize(unsigned int minimalSize) { }
 
 public:
-    MemoryBinaryStream(byte *data, int size);
+    MemoryBinaryStream(byte *data, unsigned int size);
 
     /**
      * This function returns the current used buffer size when writing or the current buffer position when reading.
@@ -232,7 +232,7 @@ protected:
     virtual void resize(unsigned int minimalSize);
 
 public:
-    DynamicMemoryBinaryStream(int size);
+    DynamicMemoryBinaryStream(unsigned int size);
     DynamicMemoryBinaryStream() : DynamicMemoryBinaryStream(1024) {
         //
     }
@@ -256,11 +256,11 @@ class FileBinaryStream : public BinaryStream {
     bool closeFdOnDestroy = false;
 
 public:
-    FileBinaryStream() {};
+    FileBinaryStream() {}
     FileBinaryStream(int fd);
     FileBinaryStream(int fd, bool closeFdOnDestroy) : FileBinaryStream(fd) {
         this->closeFdOnDestroy = closeFdOnDestroy;
-    };
+    }
     virtual ~FileBinaryStream();
 
     void setFileDescriptor(int fd) { this->fd = fd; }
@@ -280,15 +280,15 @@ protected:
 public:
     WrapperBinaryStream(std::unique_ptr<BinaryStream> stream) : stream(std::move(stream)) {
         //
-    };
+    }
 
     virtual void write(const byte *data, unsigned int size) {
         stream->write(data, size);
-    };
+    }
 
     virtual unsigned int read(byte *data, unsigned int size) {
-        stream->read(data, size);
-    };
+        return stream->read(data, size);
+    }
 
 };
 

@@ -20,7 +20,7 @@ class Entity : public std::enable_shared_from_this<Entity> {
 
 protected:
     unsigned int typeId = 0;
-    World* world;
+    World *world;
     EntityId id;
     ChunkPtr chunk;
 
@@ -29,7 +29,7 @@ protected:
     bool closed = false;
 
 #ifdef SERVER
-    std::set<Player*> spawnedTo;
+    std::set<Player *> spawnedTo;
 #endif
 
     std::recursive_mutex generalMutex;
@@ -67,34 +67,34 @@ protected:
 public:
     static EntityId currentId;
 
-    Entity(World& world) : world(&world) {
+    Entity(World &world) : world(&world) {
         id = Entity::currentId++;
         spawnedTime = std::chrono::high_resolution_clock::now();
         prevPhysicsTick = std::chrono::high_resolution_clock::now();
-    };
-    virtual ~Entity() { close(); };
+    }
+    virtual ~Entity() { close(); }
 
     /**
      * This is rather an internal function. To delete this entity please just use the delete operator.
      */
     virtual void close();
 
-    virtual const char* getTypeName() { return "Entity"; };
-    virtual bool isLiving() { return true; };
+    virtual const char *getTypeName() { return "Entity"; }
+    virtual bool isLiving() { return true; }
 
     float getExistenceTime();
 
-    inline EntityId getId() { return id; };
-    inline World& getWorld() {
+    inline EntityId getId() { return id; }
+    inline World &getWorld() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return *world;
-    };
+    }
     inline ChunkPtr getChunk() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return chunk;
-    };
+    }
 
-    virtual void setWorld(World& world, float x, float y, float z);
+    virtual void setWorld(World &world, float x, float y, float z);
     virtual void setPos(float x, float y, float z);
 
     virtual void moveRelative(float x, float y, float z);
@@ -102,19 +102,19 @@ public:
     virtual void setMotion(Vector3D motion) {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         this->motion = motion;
-    };
+    }
 
     inline Vector3D getPos() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return Vector3D(x, y, z);
-    };
+    }
     inline Vector3D getHeadPos() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return Vector3D(x, y + getHeadY(), z);
-    };
+    }
     inline float getHeadY() {
         return headY;
-    };
+    }
     AABB getAABB() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return aabb;
@@ -122,20 +122,20 @@ public:
     inline Vector3D getMotion() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return motion;
-    };
+    }
 
     virtual void setRot(float yaw, float pitch);
 
     inline Vector2D getRot() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return Vector2D(yaw, pitch);
-    };
+    }
 
 #ifdef SERVER
     void updateViewers();
 
-    void spawnTo(Player* player);
-    void despawnFrom(Player* player);
+    void spawnTo(Player *player);
+    void despawnFrom(Player *player);
     void spawnToAll();
     void despawnFromAll();
 #endif
@@ -143,11 +143,11 @@ public:
     inline float getHealth() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return hp;
-    };
+    }
     inline float getMaxHealth() {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         return maxHp;
-    };
+    }
     virtual void setHealth(float hp) {
         std::unique_lock<std::recursive_mutex> lock (generalMutex);
         if (hp <= 0) {
@@ -155,13 +155,13 @@ public:
             return;
         }
         this->hp = hp;
-    };
+    }
 
-    virtual void damage(EntityDamageEvent& event);
+    virtual void damage(EntityDamageEvent &event);
 
     virtual void kill() {
         close();
-    };
+    }
 
     std::vector<std::shared_ptr<Entity>> getNearbyEntities(float range);
 

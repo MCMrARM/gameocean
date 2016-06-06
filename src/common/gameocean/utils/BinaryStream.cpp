@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 
-MemoryBinaryStream::MemoryBinaryStream(byte *data, int size) {
+MemoryBinaryStream::MemoryBinaryStream(byte *data, unsigned int size) {
     this->data = data;
     this->size = size;
 }
@@ -15,7 +15,6 @@ void MemoryBinaryStream::write(const byte *data, unsigned int size) {
             Logger::main->error("MemoryBinaryStream",
                                 "Attempting to write %i bytes to a buffer with only %i bytes remaining!", size,
                                 this->size - pos);
-            abort();
             throw EOFException();
         }
     }
@@ -34,7 +33,7 @@ unsigned int MemoryBinaryStream::read(byte *data, unsigned int size) {
     return size;
 }
 
-DynamicMemoryBinaryStream::DynamicMemoryBinaryStream(int size) : MemoryBinaryStream(new byte[size], size) {
+DynamicMemoryBinaryStream::DynamicMemoryBinaryStream(unsigned int size) : MemoryBinaryStream(new byte[size], size) {
     allowRealloc = true;
 }
 
@@ -45,15 +44,15 @@ void DynamicMemoryBinaryStream::resize(unsigned int minimalSize) {
     }
     if (newSize == size)
         return;
-    byte* newBuf = new byte[newSize];
+    byte *newBuf = new byte[newSize];
     memcpy(&newBuf[0], &data[0], size);
     delete data;
     data = newBuf;
     size = newSize;
 }
 
-byte* DynamicMemoryBinaryStream::getBuffer(bool release) {
-    byte* b = data;
+byte *DynamicMemoryBinaryStream::getBuffer(bool release) {
+    byte *b = data;
     if (release)
         data = nullptr;
     return b;

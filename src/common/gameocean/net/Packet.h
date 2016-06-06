@@ -15,13 +15,6 @@ class Connection;
 
 class Packet {
 
-private:
-    typedef Packet* CreatePacket();
-    template<typename T> static Packet* packet() { return new T(); };
-
-    static std::map<int, CreatePacket*> clientPackets;
-    static std::map<int, CreatePacket*> serverPackets;
-
 public:
     virtual ~Packet() {};
 

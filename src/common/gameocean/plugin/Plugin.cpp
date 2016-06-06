@@ -15,13 +15,13 @@ void Plugin::unregisterPermissions() {
     for (std::shared_ptr<Player> p : server->getPlayers()) {
         p->removePermissions(permissions, false);
     }
-    for (Permission* perm : permissions) {
+    for (Permission *perm : permissions) {
         delete perm;
     }
     permissions.clear();
 }
 void Plugin::unregisterCommands() {
-    for (Command* c : commands) {
+    for (Command *c : commands) {
         Command::unregisterCommand(c);
         delete c;
     }

@@ -9,11 +9,11 @@ protected:
     Inventory inventory;
 
 public:
-    Container(World& world, BlockPos pos, int slots) : Tile(world, pos), inventory(slots) {
+    Container(World &world, BlockPos pos, int slots) : Tile(world, pos), inventory(slots) {
         //
     }
 
-    inline Inventory& getInventory() {
+    inline Inventory &getInventory() {
         return inventory;
     }
 

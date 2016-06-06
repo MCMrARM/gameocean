@@ -9,7 +9,7 @@
 class ResourceManager {
 
 public:
-    static ResourceManager* instance;
+    static ResourceManager *instance;
 
     struct DirEntry {
         std::string name;
@@ -20,14 +20,14 @@ public:
         std::unique_ptr<std::vector<byte>> data;
         unsigned int width, height, dataSize;
 
-        bool init(std::vector<byte>& pngData);
-        bool init(std::istream& dataStream);
+        bool init(std::vector<byte> &pngData);
+        bool init(std::istream &dataStream);
     };
 
     virtual std::vector<DirEntry> getAssetDirectoryFiles(std::string path) = 0;
     virtual std::unique_ptr<std::istream> openAssetFile(std::string name, std::ios_base::openmode mode) = 0;
     virtual std::unique_ptr<BinaryStream> openBinaryAssetFile(std::string name) = 0;
-    virtual std::vector<byte> readAssetFile(std::string name)  {
+    virtual std::vector<byte> readAssetFile(std::string name) {
         std::unique_ptr<std::istream> s = openAssetFile(name, std::ios_base::in | std::ios::binary);
         std::vector<byte> val (std::istreambuf_iterator<char>(*s), (std::istreambuf_iterator<char>()));
         return val;
@@ -52,7 +52,7 @@ public:
         std::vector<byte> val (std::istreambuf_iterator<char>(*s), (std::istreambuf_iterator<char>()));
         return val;
     };
-    virtual void writeDataTextFile(std::string name, std::string& val) {
+    virtual void writeDataTextFile(std::string name, std::string &val) {
         std::unique_ptr<std::iostream> s = std::move(openDataFile(name, std::ios_base::out));
         *s << val;
     };

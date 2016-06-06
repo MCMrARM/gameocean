@@ -39,8 +39,8 @@ bool MCPEPlayer::sendChunk(int x, int z) {
     std::unique_ptr<MCPEFullChunkDataPacket> pk (new MCPEFullChunkDataPacket());
     pk->chunk = chunk;
     pk->needsACK = true;
-    batchPacketCallback(std::move(pk), [this](MCPEPacket* pk, int pkId) {
-        MCPEFullChunkDataPacket* fpk = (MCPEFullChunkDataPacket*) pk;
+    batchPacketCallback(std::move(pk), [this](MCPEPacket *pk, int pkId) {
+        MCPEFullChunkDataPacket *fpk = (MCPEFullChunkDataPacket *) pk;
         chunkArrayMutex.lock();
         raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
         chunkArrayMutex.unlock();
@@ -145,7 +145,7 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
         std::unique_ptr<MCPEAddPlayerPacket> pk (new MCPEAddPlayerPacket());
         pk->uuid = uuid;
         pk->eid = entity->getId();
-        pk->username = ((Player*) entity)->getName().c_str();
+        pk->username = ((Player *) entity)->getName().c_str();
         Vector3D v = entity->getHeadPos();
         Vector2D r = entity->getRot();
         pk->x = v.x;
@@ -162,7 +162,7 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
     } else if (entity->getTypeName() == ItemEntity::TYPE_NAME) {
         std::unique_ptr<MCPEAddItemEntityPacket> pk (new MCPEAddItemEntityPacket());
         pk->eid = entity->getId();
-        pk->item = ((ItemEntity*) entity)->getItem();
+        pk->item = ((ItemEntity *) entity)->getItem();
         Vector3D v = entity->getHeadPos();
         Vector3D m = entity->getMotion();
         pk->x = v.x;
@@ -194,7 +194,7 @@ void MCPEPlayer::spawnEntity(Entity *entity) {
         pk->metadata.setByte(MCPEEntityMetadata::SHOW_NAMETAG, 0);
         pk->metadata.setByte(MCPEEntityMetadata::SILENT, 0);
         pk->metadata.setByte(MCPEEntityMetadata::NO_AI, 0);
-        if (((Snowball*) entity)->getThrownBy() != nullptr)
+        if (((Snowball *) entity)->getThrownBy() != nullptr)
             pk->metadata.setLong(17, ((Snowball*) entity)->getThrownBy()->getId());
         writePacket(std::move(pk));
         return;
@@ -264,7 +264,7 @@ void MCPEPlayer::sendInventory() {
     sendHeldItem();
 }
 
-void MCPEPlayer::sendPlayerHeldItem(Player* player) {
+void MCPEPlayer::sendPlayerHeldItem(Player *player) {
     std::unique_ptr<MCPEMobEquipmentPacket> pk (new MCPEMobEquipmentPacket());
     pk->eid = (player == this ? 0 : player->getId());
     pk->item = player->inventory.getHeldItem();
@@ -283,7 +283,7 @@ void MCPEPlayer::linkHeldItem(int hotbarSlot, int inventorySlot) {
     generalMutex.unlock();
 }
 
-void MCPEPlayer::sendPlayerArmor(Player* player) {
+void MCPEPlayer::sendPlayerArmor(Player *player) {
     std::unique_ptr<MCPEMobArmorEquipmentPacket> pk (new MCPEMobArmorEquipmentPacket());
     pk->eid = (player == this ? 0 : player->getId());
     for (int i = 0; i < 4; i++)

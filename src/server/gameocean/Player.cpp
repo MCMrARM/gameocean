@@ -17,9 +17,9 @@
 #include <gameocean/entity/ItemEntity.h>
 #include "permission/Permission.h"
 
-const char* Player::TYPE_NAME = "Player";
+const char *Player::TYPE_NAME = "Player";
 
-Player::Player(Server& server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), spawned(false), teleporting(false), inventory(*this, 36), transaction(*this) {
+Player::Player(Server &server) : Entity(*server.mainWorld), server(server), shouldUpdateChunkQueue(false), spawned(false), teleporting(false), inventory(*this, 36), transaction(*this) {
     maxHp = hp = 20.f;
     sizeX = 0.6f;
     sizeY = 1.8f;
@@ -50,7 +50,7 @@ void Player::close(std::string reason, bool sendToPlayer) {
     }
 }
 
-void Player::addTransaction(Inventory& inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to) {
+void Player::addTransaction(Inventory &inventory, InventoryTransaction::InventoryKind kind, int slot, ItemInstance to) {
     if (transaction.elements.size() <= 0)
         transactionStart = Time::now();
     else if (Time::now() - transactionStart > 500) {
@@ -70,14 +70,14 @@ void Player::addTransaction(Inventory& inventory, InventoryTransaction::Inventor
 
 void Player::broadcastArmorChange() {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
-    for (Player* viewer : spawnedTo) {
+    for (Player *viewer : spawnedTo) {
         viewer->sendPlayerArmor(this);
     }
 }
 
 void Player::broadcastHeldItem() {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
-    for (Player* viewer : spawnedTo) {
+    for (Player *viewer : spawnedTo) {
         viewer->sendPlayerHeldItem(this);
     }
 }
@@ -116,7 +116,7 @@ void Player::setSpawned() {
 
     spawned = true;
     chunkArrayMutex.lock();
-    for (auto const& entry : sentChunks) {
+    for (auto const &entry : sentChunks) {
         ChunkPtr c = entry.second;
         std::lock_guard<std::recursive_mutex> guard (c->entityMutex);
         for (auto e : c->entities) {
@@ -145,7 +145,7 @@ void Player::respawn() {
     chunkArrayMutex.unlock();
 }
 
-void Player::setWorld(World& world, float x, float y, float z) {
+void Player::setWorld(World &world, float x, float y, float z) {
     this->world->removePlayer(this);
     Entity::setWorld(world, x, y, z);
     shouldUpdateChunkQueue = true;
@@ -203,7 +203,7 @@ bool Player::isInFluid() {
     std::lock_guard<std::recursive_mutex> lock (generalMutex);
     if (y < 0.f)
         return false;
-    BlockVariant* v = world->getBlock((int) (x + 0.5f), (int) (y + 0.5f), (int) (z + 0.5f)).getBlockVariant();
+    BlockVariant *v = world->getBlock((int) (x + 0.5f), (int) (y + 0.5f), (int) (z + 0.5f)).getBlockVariant();
     return (v != nullptr && v->fluid);
 }
 
@@ -211,7 +211,7 @@ bool Player::isUnderFluid() {
     std::lock_guard<std::recursive_mutex> lock (generalMutex);
     if (y < 0.f)
         return false;
-    BlockVariant* v = world->getBlock((int) (x + 0.5f), (int) (aabb.maxY), (int) (z + 0.5f)).getBlockVariant();
+    BlockVariant *v = world->getBlock((int) (x + 0.5f), (int) (aabb.maxY), (int) (z + 0.5f)).getBlockVariant();
     return (v != nullptr && v->fluid);
 }
 
@@ -369,7 +369,7 @@ void Player::finishedMining() {
 int Player::getRemainingMiningTime() {
     if (miningBlock == nullptr)
         return -1;
-    return miningTime - (Time::now() - miningStarted);
+    return (int) (miningTime - (Time::now() - miningStarted));
 }
 
 int Player::calculateMiningTime() {
@@ -378,7 +378,7 @@ int Player::calculateMiningTime() {
 
     float r = miningBlock->hardness * 1500.0f;
     bool hasTool = false;
-    ItemVariant* held = inventory.getHeldItem().getItem();
+    ItemVariant *held = inventory.getHeldItem().getItem();
     if (held != nullptr && miningBlock->blockGroup != nullptr) {
         if (held->toolAffects.count(miningBlock->blockGroup) > 0) {
             hasTool = true;
@@ -406,15 +406,15 @@ void Player::processMessage(std::string text) {
 
         std::string commandName = v[0];
 
-        Command* c = Command::getCommand(commandName);
+        Command *c = Command::getCommand(commandName);
         if (c == nullptr) {
             sendMessage("Command not found.");
             return;
         }
-        Permission* p = c->getRequiredPermission();
+        Permission *p = c->getRequiredPermission();
         if (p != nullptr && !hasPermission(p)) {
             sendMessage("You don't have enough permissions!");
-            //return;
+            return;
         }
         c->process(*this, v);
     } else if (spawned) {
@@ -424,7 +424,7 @@ void Player::processMessage(std::string text) {
     }
 }
 
-void Player::attack(Entity& entity) {
+void Player::attack(Entity &entity) {
     float damage = 1.f;
     if (!inventory.getHeldItem().isEmpty())
         damage = inventory.getHeldItem().getItem()->attackDamage;
@@ -448,7 +448,7 @@ void Player::attack(Entity& entity) {
     entity.damage(event);
 }
 
-void Player::damage(EntityDamageEvent& event) {
+void Player::damage(EntityDamageEvent &event) {
     event.setDamage(std::round(event.getDamage() * getArmorReductionMultiplier()));
 
     PlayerDamageEvent damageEvent (*this, event);
@@ -514,43 +514,43 @@ void Player::setOperator(bool op) {
         removePermissions(Permission::getOperatorPermissions(), false);
 }
 
-bool Player::hasPermission(Permission* perm) {
+bool Player::hasPermission(Permission *perm) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
     return (permissions.count(perm) > 0);
 }
 
-void Player::grantPermissions(std::set<Permission*> perms, bool children) {
+void Player::grantPermissions(std::set<Permission *> perms, bool children) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
-    for (Permission* perm : perms) {
+    for (Permission *perm : perms) {
         permissions.insert(perm);
         if (children) {
-            for (Permission* child : perm->children) {
+            for (Permission *child : perm->children) {
                 perms.insert(child);
             }
         }
     }
 }
 
-void Player::removePermissions(std::set<Permission*> perms, bool children) {
+void Player::removePermissions(std::set<Permission *> perms, bool children) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
-    for (Permission* perm : perms) {
+    for (Permission *perm : perms) {
         permissions.erase(perm);
         if (children) {
-            for (Permission* child : perm->children) {
+            for (Permission *child : perm->children) {
                 perms.insert(child);
             }
         }
     }
 }
 
-void* Player::getPluginData(Plugin* plugin) {
+void* Player::getPluginData(Plugin *plugin) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
     if (pluginData.count(plugin) > 0)
         return pluginData.at(plugin);
     return nullptr;
 }
 
-void Player::setPluginData(Plugin* plugin, void* data) {
+void Player::setPluginData(Plugin *plugin, void *data) {
     std::unique_lock<std::recursive_mutex> lock (generalMutex);
     pluginData[plugin] = data;
 }
@@ -558,7 +558,7 @@ void Player::setPluginData(Plugin* plugin, void* data) {
 void Player::tickPhysics() {
     world->getNearbyEntities(getAABB().expand(1.f, 0.5f, 1.f), [this](std::shared_ptr<Entity> ent) {
         if (ent->getTypeName() == ItemEntity::TYPE_NAME) {
-            inventory.addItem(((ItemEntity*) &*ent)->getItem());
+            inventory.addItem(((ItemEntity *) &*ent)->getItem());
             ent->kill();
         }
     });

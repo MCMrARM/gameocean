@@ -4,7 +4,7 @@
 #include <fstream>
 #include "StringUtils.h"
 
-Config::Config(std::istream& is) {
+Config::Config(std::istream &is) {
     if (!is)
         return;
 
@@ -23,9 +23,9 @@ Config::Config(std::istream& is) {
         if (line.length() <= 0) continue;
 
         // get space count on the line
-        int spaceNum = line.find_first_not_of(" ");
-        int lScope = spaceNum / 2;
-        for (int i = scope.size() - 1; i > lScope; i--) {
+        size_t spaceNum = line.find_first_not_of(" ");
+        size_t lScope = spaceNum / 2;
+        for (size_t i = scope.size() - 1; i > lScope; i--) {
             scope.pop_back();
         }
 
@@ -56,7 +56,7 @@ void Config::print(std::shared_ptr<ConfigNode> node, int scope) {
     }
     std::cout << "\n";
     if (node->type == ConfigNode::Type::CONTAINER) {
-        for (auto& e : (std::static_pointer_cast<ContainerConfigNode>(node))->val) {
+        for (auto &e : (std::static_pointer_cast<ContainerConfigNode>(node))->val) {
             Config::print(e.second, scope + 1);
         }
     }
@@ -69,9 +69,9 @@ ConfigNode::operator std::string() const {
     return "";
 }
 
-std::shared_ptr<ConfigNode> ConfigNode::operator[](const std::string& name) {
+std::shared_ptr<ConfigNode> ConfigNode::operator[](const std::string &name) {
     if (type == Type::CONTAINER) {
-        ContainerConfigNode* t = (ContainerConfigNode*) this;
+        ContainerConfigNode *t = (ContainerConfigNode*) this;
         if (t->val.count(name) <= 0) {
             return nullptr;
         }

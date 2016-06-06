@@ -13,15 +13,15 @@ long long Time::now() {
 std::tm Time::getTimeStruct(long long time) {
     time /= 1000;
     std::tm tm;
-    tm.tm_sec = time % 60;
+    tm.tm_sec = (int) (time % 60);
     time /= 60;
-    tm.tm_min = time % 60;
+    tm.tm_min = (int) (time % 60);
     time /= 60;
-    tm.tm_hour = time % 24;
+    tm.tm_hour = (int) (time % 24);
     time /= 24;
-    tm.tm_mday = (time % 31) + 1;
+    tm.tm_mday = (int) ((time % 31) + 1);
     time /= 31;
-    tm.tm_mon = time % 12;
+    tm.tm_mon = (int) (time % 12);
     time /= 12;
     tm.tm_year = (int) time;
     tm.tm_wday = 0;

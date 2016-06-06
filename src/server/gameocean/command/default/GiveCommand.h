@@ -12,11 +12,11 @@ public:
     virtual std::string getName() { return "give"; };
     virtual std::string getDescription() { return "Gives an item"; };
     virtual std::string getUsage() { return "/give <player> <item[:damage]> [count]"; };
-    virtual Permission* getRequiredPermission() { return Permission::giveItemCommand; };
+    virtual Permission *getRequiredPermission() { return Permission::giveItemCommand; };
 
-    GiveCommand(Server& server) : Command(server) { };
+    GiveCommand(Server &server) : Command(server) { };
 
-    virtual void process(CommandSender& sender, std::vector<std::string> args) {
+    virtual void process(CommandSender &sender, std::vector<std::string> args) {
         if (args.size() < 3 || args[1].length() <= 0 || args[2].length() <= 0) {
             sendUsage(sender);
             return;
@@ -42,7 +42,7 @@ public:
             }
         }
 
-        ItemVariant* item = ItemRegister::findItem(itemName);
+        ItemVariant *item = ItemRegister::findItem(itemName);
         if (item == nullptr) {
             sender.sendMessage("Specified item doesn't exist!");
             return;

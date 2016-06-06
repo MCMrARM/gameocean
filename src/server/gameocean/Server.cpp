@@ -27,7 +27,7 @@ Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
 void Server::start() {
     Logger::main->info("Main", "%s", (std::string("Game: ") + GameInfo::current->name + " v" + GameInfo::current->version.toString()).c_str());
 
-    FileResourceManager* resManager = new FileResourceManager("assets/", ".");
+    FileResourceManager *resManager = new FileResourceManager("assets/", ".");
     ResourceManager::instance = resManager;
 
     Logger::main->info("Main", "Loading server configuration");
@@ -43,7 +43,7 @@ void Server::start() {
 
     Logger::main->info("Main", "Server name: %s", this->name.c_str());
 
-    MCAnvilProvider* provider = new MCAnvilProvider(*mainWorld);
+    MCAnvilProvider *provider = new MCAnvilProvider(*mainWorld);
     mainWorld->setWorldProvider(provider);
     mainWorld->loadSpawnTerrain();
 
@@ -56,7 +56,7 @@ void Server::start() {
     pluginManager.loadPlugins();
     pluginManager.enablePlugins();
 
-    for (Protocol* protocol : enabledProtocols) {
+    for (Protocol *protocol : enabledProtocols) {
         protocol->getServer().start(this);
     }
 
@@ -82,7 +82,7 @@ void Server::start() {
         std::vector<std::string> v = StringUtils::split(command, " ");
         if (v.size() <= 0)
             continue;
-        Command* c = Command::getCommand(v[0]);
+        Command *c = Command::getCommand(v[0]);
         if (c == nullptr) {
             std::cout << "Unknown command: " << v[0] << std::endl;
             continue;
@@ -91,7 +91,7 @@ void Server::start() {
     }
 
     Logger::main->trace("Main", "Stopping...");
-    for (Thread* t : Thread::threads) {
+    for (Thread *t : Thread::threads) {
         t->stop();
     }
 
@@ -111,7 +111,7 @@ void Server::loadConfiguation() {
     EntityPhysicsTickTask::tickRate = c.getInt("physics-tick-rate", EntityPhysicsTickTask::tickRate);
     std::shared_ptr<ContainerConfigNode> protocols = c.getContainer("protocols");
     if (protocols != nullptr) {
-        for (auto const& p : protocols->val) {
+        for (auto const &p : protocols->val) {
             if (p.second->type != ConfigNode::Type::CONTAINER)
                 continue;
 
@@ -124,7 +124,7 @@ void Server::loadConfiguation() {
             if (enabled) {
                 enabledProtocols.insert(protocol);
             }
-            for (auto const& opt : std::static_pointer_cast<ContainerConfigNode>(p.second)->val) {
+            for (auto const &opt : std::static_pointer_cast<ContainerConfigNode>(p.second)->val) {
                 protocol->getServer().setOption(opt.first, *opt.second);
             }
         }
@@ -136,7 +136,7 @@ std::shared_ptr<Player> Server::findPlayer(std::string like) {
     int m = 0;
 
     playersMutex.lock();
-    for (auto& p : players) {
+    for (auto &p : players) {
         std::string n = p->getName();
         if (n == like) {
             return p;
@@ -157,7 +157,7 @@ void Server::broadcastMessage(std::string msg) {
     Logger::main->info("Chat", "%s", msg.c_str());
 
     playersMutex.lock();
-    for (auto& p : players) {
+    for (auto &p : players) {
         p->sendMessage(msg);
     }
     playersMutex.unlock();

@@ -11,7 +11,7 @@ class PlayerJoinEvent : public PlayerEvent, public Cancellable {
 public:
     static CallbackList<PlayerJoinEvent> callbacks;
 
-    PlayerJoinEvent(Player& player) : PlayerEvent(player) {
+    PlayerJoinEvent(Player &player) : PlayerEvent(player) {
         //
     }
 

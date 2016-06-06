@@ -7,10 +7,10 @@
 class BlockGroup {
 
 private:
-    static std::map<std::string, BlockGroup*> groups;
+    static std::map<std::string, BlockGroup *> groups;
 
 public:
-    static BlockGroup* get(std::string group) {
+    static BlockGroup *get(std::string group) {
         if (groups.count(group) > 0) {
             return groups.at(group);
         }

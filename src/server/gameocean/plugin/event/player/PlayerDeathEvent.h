@@ -12,25 +12,25 @@ class World;
 class PlayerDeathEvent : public PlayerEvent, public Cancellable {
 
 protected:
-    World* world;
+    World *world;
     Vector3D pos;
 
 public:
     static CallbackList<PlayerDeathEvent> callbacks;
 
-    PlayerDeathEvent(Player& player, World* world, Vector3D pos) : PlayerEvent(player), world(world), pos(pos) {
+    PlayerDeathEvent(Player &player, World *world, Vector3D pos) : PlayerEvent(player), world(world), pos(pos) {
         //
     }
 
-    inline World* getWorld() {
+    inline World *getWorld() {
         return world;
     }
 
-    inline Vector3D& getRespawnPos() {
+    inline Vector3D &getRespawnPos() {
         return pos;
     }
 
-    inline void setWorld(World* world, Vector3D pos) {
+    inline void setWorld(World *world, Vector3D pos) {
         this->world = world;
         this->pos = pos;
     }
