@@ -2,6 +2,7 @@
 #include <gameocean/net/Socket.h>
 #include "RakNetProtocolServer.h"
 #include "packet/RakNetPingPacket.h"
+#include "packet/RakNetDetectLostConnectionsPacket.h"
 
 RakNetConnection::RakNetConnection(RakNetProtocolServer &server, sockaddr_in addr) : Connection(server.getProtocol(), false),
                                                                                      server(server), addr(addr) {
@@ -10,13 +11,15 @@ RakNetConnection::RakNetConnection(RakNetProtocolServer &server, sockaddr_in add
     memset(receiveOrderIndex, 0, sizeof(receiveOrderIndex));
     for (int i = 0; i < 256; i++)
         receiveSequencedIndex[i] = -1;
+    updateLastPacketReceiveTime();
+    lastTimeoutCheckPacketSentTime = std::chrono::steady_clock::now();
 }
 
 void RakNetConnection::setPrefferedMTU(int mtu) {
     this->mtu = (unsigned int) std::min(mtu, 1492);
 }
 
-void RakNetConnection::close() {
+void RakNetConnection::doClose() {
     server.removeConnection(*this);
 }
 
@@ -284,10 +287,39 @@ void RakNetConnection::resendPackets() {
     }
     for (int pkId : requeued)
         sendFrame(sendReliableFrames[pkId]);
+
+    // also handle ping timeouts
+    packetTimesMutex.lock();
+    if (tp - lastPacketTime > std::chrono::milliseconds(server.timeoutTime)) {
+        bool needsResend = (tp - lastTimeoutCheckPacketSentTime) > std::chrono::milliseconds(server.timeoutResendDelay);
+        if (needsResend) {
+            timeoutPacketAttempts++;
+            if (timeoutPacketAttempts >= server.timeoutAttemptCount) {
+                packetTimesMutex.unlock();
+                close(DisconnectReason::TIMEOUT, "");
+                return;
+            }
+        }
+        packetTimesMutex.unlock();
+        if (needsResend) {
+            RakNetDetectLostConnectionsPacket pk;
+            send(pk, RakNetReliability::UNRELIABLE);
+            std::lock_guard<std::mutex> guard(packetTimesMutex);
+            lastTimeoutCheckPacketSentTime = tp;
+        }
+    } else {
+        packetTimesMutex.unlock();
+    }
 }
 
 void RakNetConnection::sendPing() {
     RakNetPingPacket ping;
     ping.time = RakNetProtocol::getTimeForPing();
     send(ping, RakNetReliability::UNRELIABLE);
+}
+
+void RakNetConnection::updateLastPacketReceiveTime() {
+    std::lock_guard<std::mutex> guard(packetTimesMutex);
+    lastPacketTime = std::chrono::steady_clock::now();
+    timeoutPacketAttempts = 0;
 }

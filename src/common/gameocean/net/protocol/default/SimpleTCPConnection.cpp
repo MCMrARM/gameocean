@@ -19,7 +19,7 @@ namespace DefaultProtocol {
         send(pk);
     }
 
-    void SimpleTCPConnection::close() {
+    void SimpleTCPConnection::doClose() {
         this->socket->close();
     }
 

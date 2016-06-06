@@ -12,10 +12,10 @@ namespace DefaultProtocol {
         SimpleTCPConnection(Protocol& protocol, Socket &socket, bool client);
         SimpleTCPConnection(Protocol& protocol, std::string ip, unsigned short port);
         virtual ~SimpleTCPConnection() {
-            close();
+            doClose();
         }
 
-        virtual void close();
+        virtual void doClose();
         virtual void close(DisconnectReason reason, std::string msg = "");
 
         virtual void send(Packet &packet);

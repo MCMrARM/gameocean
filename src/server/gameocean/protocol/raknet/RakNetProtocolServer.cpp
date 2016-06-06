@@ -82,7 +82,7 @@ void RakNetProtocolServer::loop() {
             if (serverPort != port)
                 continue;
 
-            Logger::main->trace("RakNetProtocolServer", "An client has connected");
+            Logger::main->trace("RakNetProtocolServer", "A client has connected");
 
             std::shared_ptr<RakNetConnection> connection (createRakNetConnection(dg.addr));
             connection->setHandler(getHandler());
@@ -105,12 +105,13 @@ void RakNetProtocolServer::loop() {
                 continue;
             }
             std::shared_ptr<RakNetConnection> connection = clients.at((sockaddr&) dg.addr);
+            connection->updateLastPacketReceiveTime();
             clientsMutex.unlock();
             int index = 0;
             stream.read((byte*) &index, 3);
             {
                 RakNetACKPacket ackPacket;
-                ackPacket.addPacketId(index);
+                ackPacket.addPacketId((unsigned int) index);
                 connection->sendRaw(ackPacket);
             }
             while (stream.getRemainingSize() > 3) {
@@ -184,16 +185,25 @@ void RakNetProtocolServer::loop() {
                     }
                 }
             }
-        } else if (pkId == RAKNET_PACKET_ACK) {
-            std::lock_guard<std::mutex> lock(clientsMutex);
-            RakNetACKPacket pk;
-            pk.read(stream);
-            pk.handleServer(*clients.at((sockaddr&) dg.addr));
-        } else if (pkId == RAKNET_PACKET_NAK) {
-            std::lock_guard<std::mutex> lock(clientsMutex);
-            RakNetNAKPacket pk;
-            pk.read(stream);
-            pk.handleServer(*clients.at((sockaddr&) dg.addr));
+        } else if (pkId == RAKNET_PACKET_ACK || pkId == RAKNET_PACKET_NAK) {
+            clientsMutex.lock();
+            if (clients.count((sockaddr&) dg.addr) <= 0) {
+                Logger::main->trace("RakNetProtocolServer", "Got an ACK/NAK from unconnected client");
+                clientsMutex.unlock();
+                continue;
+            }
+            std::shared_ptr<RakNetConnection> connection = clients.at((sockaddr&) dg.addr);
+            connection->updateLastPacketReceiveTime();
+            clientsMutex.unlock();
+            if (pkId == RAKNET_PACKET_ACK) {
+                RakNetACKPacket pk;
+                pk.read(stream);
+                pk.handleServer(*connection);
+            } else if (pkId == RAKNET_PACKET_NAK) {
+                RakNetNAKPacket pk;
+                pk.read(stream);
+                pk.handleServer(*connection);
+            }
         } else {
             Logger::main->warn("RakNetProtocolServer", "Unknown packet: %i", pkId);
             continue;

@@ -50,6 +50,10 @@ public:
         std::lock_guard<std::mutex> lock (playersMutex);
         players.insert(player);
     }
+    void removePlayer(std::shared_ptr<MCPEPlayer> player) {
+        std::lock_guard<std::mutex> lock (playersMutex);
+        players.erase(player);
+    }
 
 
 };

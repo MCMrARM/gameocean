@@ -40,6 +40,10 @@ protected:
     ClientMap clients;
 
 public:
+    int timeoutTime = 10000; // in ms
+    int timeoutResendDelay = 500; // in ms
+    int timeoutAttemptCount = 5;
+
     RakNetProtocolServer(Protocol& protocol);
 
     inline void setRakNetHandler(RakNetConnectionHandler *handler) {
@@ -75,6 +79,19 @@ public:
     virtual void setOption(std::string key, std::string value) {
         if (key == "resend-interval") {
             resendThread.resendDelay = StringUtils::asInt(value, resendThread.resendDelay);
+        } else if (key == "ping-interval") {
+            pingThread.pingInterval = StringUtils::asInt(value, pingThread.pingInterval);
+        } else if (key == "timeout-start") {
+            // when player should start timeouting - at this stage the server will try to get a reply from client,
+            // resending the timeout packet every timeout-resend ms.
+            pingThread.pingInterval = StringUtils::asInt(value, pingThread.pingInterval);
+        } else if (key == "timeout-check-delay") {
+            // delay between connection check packets sent (they get sent if a client does not reply to any ping within
+            // the value specified in timeout-start)
+            pingThread.pingInterval = StringUtils::asInt(value, pingThread.pingInterval);
+        } else if (key == "timeout-check-attempts") {
+            // how many times the client has not to reply to a timeout check packet before it gets disconnected
+            pingThread.pingInterval = StringUtils::asInt(value, pingThread.pingInterval);
         } else {
             ProtocolServer::setOption(key, value);
         }

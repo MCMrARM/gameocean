@@ -60,7 +60,7 @@ public:
         TIMEOUT, CLOSED, UNKNOWN
     };
 
-    virtual void close() = 0;
+    virtual void doClose() = 0;
     virtual void close(DisconnectReason reason, std::string msg = "");
     virtual void kick(std::string reason);
 

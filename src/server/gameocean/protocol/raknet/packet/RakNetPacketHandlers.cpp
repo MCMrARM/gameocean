@@ -1,6 +1,7 @@
 #include "RakNetOnlineConnectRequestPacket.h"
 #include "RakNetOnlineConnectReplyPacket.h"
 #include "RakNetClientHandshakePacket.h"
+#include "RakNetDisconnectPacket.h"
 #include "RakNetPingPacket.h"
 #include "RakNetPongPacket.h"
 #include "RakNetACKPacket.h"
@@ -17,6 +18,11 @@ void RakNetOnlineConnectRequestPacket::handleServer(Connection &connection) {
 void RakNetClientHandshakePacket::handleServer(Connection &connection) {
     ((RakNetConnection &) connection).pingTime = (int) (RakNetProtocol::getTimeForPing() - requestTime);
     ((RakNetConnection &) connection).setAccepted(true);
+}
+
+void RakNetDisconnectPacket::handleServer(Connection &connection) {
+    Logger::main->trace("RakNet/Disconnect", "A client has disconnected");
+    connection.close(Connection::DisconnectReason::CLOSED);
 }
 
 void RakNetPingPacket::handleServer(Connection &connection) {

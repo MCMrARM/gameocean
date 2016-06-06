@@ -31,13 +31,13 @@ Player::Player(Server &server) : Entity(*server.mainWorld), server(server), shou
 };
 
 void Player::close(std::string reason, bool sendToPlayer) {
+    if (closed)
+        return;
+
     {
         PlayerQuitEvent event(*this, reason);
         Event::broadcast(event);
     }
-
-    if (closed)
-        return;
 
     world->removePlayer(this);
 

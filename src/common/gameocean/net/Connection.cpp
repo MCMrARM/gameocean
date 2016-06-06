@@ -20,10 +20,10 @@ void Connection::loop() {
 }
 
 void Connection::close(DisconnectReason reason, std::string msg) {
-    if (hasHandler())
+    if (hasHandler() && accepted)
         getHandler()->disconnected(*this, reason, msg);
 
-    close();
+    doClose();
 }
 
 void Connection::setAccepted(bool accepted) {

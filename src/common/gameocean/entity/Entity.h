@@ -75,7 +75,7 @@ public:
     virtual ~Entity() { close(); }
 
     /**
-     * This is rather an internal function. To delete this entity please just use the delete operator.
+     * Use this function to destroy this entity.
      */
     virtual void close();
 

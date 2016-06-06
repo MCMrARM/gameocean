@@ -46,6 +46,11 @@ protected:
 
     int pingTime = -1;
 
+    std::mutex packetTimesMutex;
+    std::chrono::steady_clock::time_point lastPacketTime; // what was the time when the last packet (of any time) was received
+    std::chrono::steady_clock::time_point lastTimeoutCheckPacketSentTime; // when was the last timeout check packet sent
+    int timeoutPacketAttempts = 0; // when the client is most likely timeouted, this variable specifies how many times a test packet was already sent
+
     std::recursive_mutex sendReliableMutex;
     std::map<int, SendFrame> sendReliableFrames;
     std::map<int, PacketMeta> sentPackets;
@@ -80,7 +85,7 @@ protected:
 public:
     RakNetConnection(RakNetProtocolServer &server, sockaddr_in addr);
     virtual ~RakNetConnection() {
-        close();
+        doClose();
     }
 
     inline RakNetProtocolServer &getServer() {
@@ -91,7 +96,7 @@ public:
     inline sockaddr_in const &getSockAddr() { return addr; }
     inline int getMTU() { return mtu; }
 
-    virtual void close();
+    virtual void doClose();
 
     /**
      * Deprecated. Please use sendRaw or send(Packet &, RakNetReliability) instead
@@ -159,6 +164,13 @@ public:
      * This function returns the time that took to to receive a pong after sending a ping, in ms.
      */
     inline int getPing() { return pingTime; }
+
+    inline bool isMostLikelyTimeouted() {
+        std::lock_guard<std::mutex> lock (packetTimesMutex);
+        return (timeoutPacketAttempts > 0);
+    }
+
+    void updateLastPacketReceiveTime();
 
 };
 

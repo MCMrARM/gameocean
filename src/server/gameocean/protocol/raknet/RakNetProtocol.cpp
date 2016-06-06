@@ -9,6 +9,7 @@
 #include "packet/RakNetNAKPacket.h"
 #include "packet/RakNetPingPacket.h"
 #include "packet/RakNetPongPacket.h"
+#include "packet/RakNetDisconnectPacket.h"
 
 RakNetProtocol::RakNetProtocol() {
     registerPacket<RakNetConnectReplyPacket>();
@@ -19,6 +20,7 @@ RakNetProtocol::RakNetProtocol() {
     registerPacket<RakNetNAKPacket>();
     registerPacket<RakNetPingPacket>();
     registerPacket<RakNetPongPacket>();
+    registerPacket<RakNetDisconnectPacket>();
 }
 
 Packet *RakNetProtocol::readPacket(BinaryStream &stream, bool client) {
