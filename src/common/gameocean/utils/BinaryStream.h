@@ -172,7 +172,7 @@ public:
     static void swapBytes(byte *array, size_t size) {
         byte* array2 = new byte[size];
         memcpy(array2, array, size);
-        for (size_t i = size - 1; i >= 0; i--) {
+        for (ssize_t i = size - 1; i >= 0; i--) {
             array[size - 1 - i] = array2[i];
         }
     }
