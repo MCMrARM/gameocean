@@ -31,6 +31,7 @@ public:
         return *n;
     }
     int getInt(const std::string &name, int d);
+    float getFloat(const std::string &name, float d);
     bool getBool(const std::string &name, bool d) {
         std::shared_ptr<ConfigNode> n = (*this)[name];
         if (n == nullptr) return d;
@@ -83,6 +84,7 @@ public:
     inline std::shared_ptr<ContainerConfigNode> getContainer(const std::string &name) { return mainNode->getContainer(name); }
     inline std::string getString(const std::string &name, std::string d) { return mainNode->getString(name, d); }
     inline int getInt(const std::string &name, int d) { return mainNode->getInt(name, d); }
+    inline float getFloat(const std::string &name, bool d) { return mainNode->getFloat(name, d); }
     inline bool getBool(const std::string &name, bool d) { return mainNode->getBool(name, d); }
 
 };

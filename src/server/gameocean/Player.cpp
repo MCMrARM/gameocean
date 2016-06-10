@@ -148,7 +148,19 @@ void Player::respawn() {
 void Player::setWorld(World &world, float x, float y, float z) {
     this->world->removePlayer(this);
     Entity::setWorld(world, x, y, z);
+    chunkArrayMutex.lock();
+    for (auto &entry : toSendChunks)
+        entry.second->setUsedBy(this, false);
+    toSendChunks.clear();
+    for (auto &entry : sentChunks)
+        entry.second->setUsedBy(this, false);
+    sentChunks.clear();
+    for (auto &entry : receivedChunks)
+        entry.second->setUsedBy(this, false);
+    receivedChunks.clear();
+    sendChunksQueue.clear();
     shouldUpdateChunkQueue = true;
+    chunkArrayMutex.unlock();
     world.addPlayer(this);
 }
 
@@ -185,6 +197,8 @@ bool Player::tryMove(float x, float y, float z) {
     Event::broadcast(event);
     if (event.isCancelled())
         return false;
+    if (teleporting)
+        return true; // plugins might have teleported the player in the event handler
     generalMutex.lock();
     bool wasOnGround = onGround;
     pos = event.getPos();

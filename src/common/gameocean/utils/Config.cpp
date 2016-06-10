@@ -86,3 +86,10 @@ int ConfigNode::getInt(const std::string &name, int d) {
     std::string nt = *n;
     return StringUtils::asInt(nt, d);
 }
+
+float ConfigNode::getFloat(const std::string &name, float d) {
+    std::shared_ptr<ConfigNode> n = (*this)[name];
+    if (n == nullptr) return d;
+    std::string nt = *n;
+    return (float) std::atof(nt.c_str());
+}
