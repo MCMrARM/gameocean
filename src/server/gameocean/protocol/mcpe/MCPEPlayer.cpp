@@ -241,12 +241,13 @@ void MCPEPlayer::sendHurtAnimation(Entity* entity) {
     writePacket(std::move(pk));
 }
 
-void MCPEPlayer::sendInventorySlot(int slotId) {
+void MCPEPlayer::sendInventorySlot(int slotId) {/*
     std::unique_ptr<MCPEContainerSetSlotPacket> pk (new MCPEContainerSetSlotPacket());
     pk->window = 0;
     pk->slot = (short) slotId;
     pk->item = inventory.getItem(slotId);
-    writePacket(std::move(pk));
+    writePacket(std::move(pk));*/
+    sendInventory();
 }
 
 void MCPEPlayer::sendInventory() {
