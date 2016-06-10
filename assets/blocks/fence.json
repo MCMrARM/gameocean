@@ -1,0 +1,37 @@
+{
+  "type": "block",
+  "name_id": "fence",
+  "id": 85,
+  "model": "none",
+  "hardness": 2,
+  "resistance": 15,
+  "flammable": true,
+  "stack_size": 64,
+  "group": "wood",
+  "variants": [
+    {
+      "name_id": "oak_fence",
+      "data": 0
+    },
+    {
+      "name_id": "spruce_fence",
+      "data": 1
+    },
+    {
+      "name_id": "birch_fence",
+      "data": 2
+    },
+    {
+      "name_id": "jungle_fence",
+      "data": 3
+    },
+    {
+      "name_id": "acacia_fence",
+      "data": 4
+    },
+    {
+      "name_id": "dark_oak_fence",
+      "data": 5
+    }
+  ]
+}
