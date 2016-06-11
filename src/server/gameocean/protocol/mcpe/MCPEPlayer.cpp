@@ -41,9 +41,10 @@ bool MCPEPlayer::sendChunk(int x, int z) {
     pk->needsACK = true;
     batchPacketCallback(std::move(pk), [this](MCPEPacket *pk, int pkId) {
         MCPEFullChunkDataPacket *fpk = (MCPEFullChunkDataPacket *) pk;
-        chunkArrayMutex.lock();
+        std::lock_guard<std::recursive_mutex> lock (chunkArrayMutex);
+        if (&fpk->chunk->world != &getWorld())
+            return;
         raknetChunkQueue[pkId].push_back(ChunkPos(fpk->chunk->pos.x, fpk->chunk->pos.z));
-        chunkArrayMutex.unlock();
     });
     return true;
 }
@@ -53,7 +54,7 @@ void MCPEPlayer::receivedChunk(int x, int z) {
 
     ChunkPtr chunk = world->getChunkAt({x, z}, false);
     if (chunk) {
-        std::unique_lock<std::mutex> lock (chunk->tilesMutex);
+        std::lock_guard<std::mutex> lock (chunk->tilesMutex);
         for (std::shared_ptr<Tile> tile : chunk->tiles) {
             std::unique_ptr<MCPETileEntityDataPacket> pk (new MCPETileEntityDataPacket());
             pk->tile = tile;
@@ -66,6 +67,12 @@ void MCPEPlayer::receivedChunk(int x, int z) {
         setSpawned();
     }
     chunkArrayMutex.unlock();
+}
+
+void MCPEPlayer::forceResendAllChunks() {
+    std::lock_guard<std::recursive_mutex> lock (chunkArrayMutex);
+    Player::forceResendAllChunks();
+    raknetChunkQueue.clear();
 }
 
 void MCPEPlayer::setSpawned() {

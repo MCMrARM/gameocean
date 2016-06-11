@@ -84,6 +84,12 @@ protected:
     void sendQueuedChunks();
     void updateTeleportState();
 
+    /**
+     * This function clears all chunk lists (toSendChunks, sentChunks and receivedChunks) as well as the sendChunksQueue
+     * and sets shouldUpdateChunkQueue flag to true.
+     */
+    virtual void forceResendAllChunks();
+
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
 

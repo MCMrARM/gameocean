@@ -110,6 +110,22 @@ void Player::receivedChunk(int x, int z) {
     chunkArrayMutex.unlock();
 }
 
+void Player::forceResendAllChunks() {
+    chunkArrayMutex.lock();
+    for (auto &entry : toSendChunks)
+        entry.second->setUsedBy(this, false);
+    toSendChunks.clear();
+    for (auto &entry : sentChunks)
+        entry.second->setUsedBy(this, false);
+    sentChunks.clear();
+    for (auto &entry : receivedChunks)
+        entry.second->setUsedBy(this, false);
+    receivedChunks.clear();
+    sendChunksQueue.clear();
+    shouldUpdateChunkQueue = true;
+    chunkArrayMutex.unlock();
+}
+
 void Player::setSpawned() {
     if (spawned)
         return;
@@ -148,19 +164,7 @@ void Player::respawn() {
 void Player::setWorld(World &world, float x, float y, float z) {
     this->world->removePlayer(this);
     Entity::setWorld(world, x, y, z);
-    chunkArrayMutex.lock();
-    for (auto &entry : toSendChunks)
-        entry.second->setUsedBy(this, false);
-    toSendChunks.clear();
-    for (auto &entry : sentChunks)
-        entry.second->setUsedBy(this, false);
-    sentChunks.clear();
-    for (auto &entry : receivedChunks)
-        entry.second->setUsedBy(this, false);
-    receivedChunks.clear();
-    sendChunksQueue.clear();
-    shouldUpdateChunkQueue = true;
-    chunkArrayMutex.unlock();
+    forceResendAllChunks();
     world.addPlayer(this);
 }
 

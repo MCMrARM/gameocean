@@ -44,6 +44,8 @@ protected:
     virtual bool sendChunk(int x, int z);
     virtual void receivedChunk(int x, int z);
 
+    virtual void forceResendAllChunks();
+
     virtual void setSpawned();
 
     virtual void sendPosition(float x, float y, float z);
