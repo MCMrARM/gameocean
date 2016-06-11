@@ -14,10 +14,10 @@ public:
 
     World &world;
 
-    EntityUpdateTickTask(World &world) : world(world) { };
+    EntityUpdateTickTask(World &world) : world(world) { }
 
     virtual void run();
-    virtual void stop() { shouldStop = true; };
+    virtual void stop() { shouldStop = true; }
 
 };
 

@@ -9,12 +9,12 @@
 class GiveCommand : public Command {
 
 public:
-    virtual std::string getName() { return "give"; };
-    virtual std::string getDescription() { return "Gives an item"; };
-    virtual std::string getUsage() { return "/give <player> <item[:damage]> [count]"; };
-    virtual Permission *getRequiredPermission() { return Permission::giveItemCommand; };
+    virtual std::string getName() { return "give"; }
+    virtual std::string getDescription() { return "Gives an item"; }
+    virtual std::string getUsage() { return "/give <player> <item[:damage]> [count]"; }
+    virtual Permission *getRequiredPermission() { return Permission::giveItemCommand; }
 
-    GiveCommand(Server &server) : Command(server) { };
+    GiveCommand(Server &server) : Command(server) { }
 
     virtual void process(CommandSender &sender, std::vector<std::string> args) {
         if (args.size() < 3 || args[1].length() <= 0 || args[2].length() <= 0) {
@@ -36,7 +36,7 @@ public:
                 try {
                     int dmgI = std::stoi(dmgStr);
                     if (dmgI >= 0 && dmgI <= UINT16_MAX)
-                        damage = dmgI;
+                        damage = (short) dmgI;
                 } catch (std::exception e) {
                 }
             }
@@ -71,6 +71,6 @@ public:
         std::stringstream msg;
         msg << "Given " << count << " x " << itemInstance.getName() << " to " << player->getName();
         sender.sendMessage(msg.str());
-    };
+    }
 
 };

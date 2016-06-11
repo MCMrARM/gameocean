@@ -29,12 +29,12 @@ public:
         this->minor = minor;
         this->release = release;
         this->build = build;
-    };
+    }
 
     inline void setNetVersion(int min, int current) {
         minNetVersion = min;
         netVersion = current;
-    };
+    }
 
     std::string toString() {
         std::stringstream ss;

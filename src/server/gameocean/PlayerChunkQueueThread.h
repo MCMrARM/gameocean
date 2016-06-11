@@ -12,10 +12,10 @@ protected:
 public:
     Server &server;
 
-    PlayerChunkQueueThread(Server &server) : server(server) { };
+    PlayerChunkQueueThread(Server &server) : server(server) { }
 
     virtual void run();
-    virtual void stop() { shouldStop = true; };
+    virtual void stop() { shouldStop = true; }
 
 };
 

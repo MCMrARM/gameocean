@@ -9,12 +9,12 @@ class HelpCommand : public Command {
 public:
     static const int COMMANDS_PER_PAGE = 5;
 
-    virtual std::string getName() { return "help"; };
-    virtual std::string getDescription() { return "Displays this help"; };
-    virtual std::string getUsage() { return "/help [command|page]"; };
-    virtual Permission *getRequiredPermission() { return Permission::helpCommand; };
+    virtual std::string getName() { return "help"; }
+    virtual std::string getDescription() { return "Displays this help"; }
+    virtual std::string getUsage() { return "/help [command|page]"; }
+    virtual Permission *getRequiredPermission() { return Permission::helpCommand; }
 
-    HelpCommand(Server &server) : Command(server) { };
+    HelpCommand(Server &server) : Command(server) { }
 
     virtual void process(CommandSender &sender, std::vector<std::string> args) {
         int page = 0;
@@ -63,6 +63,6 @@ public:
             sender.sendMessage(cmd->getName() + ": " + cmd->getDescription());
             i++;
         }
-    };
+    }
 
 };

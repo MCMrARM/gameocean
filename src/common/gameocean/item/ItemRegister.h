@@ -33,10 +33,10 @@ public:
     static BlockVariant *getBlockVariant(std::string id, bool allowVirtual);
     static inline ItemVariant *getItemVariant(std::string id) {
         return getItemVariant(id, false);
-    };
+    }
     static inline BlockVariant *getBlockVariant(std::string id) {
         return getBlockVariant(id, false);
-    };
+    }
     static ItemVariant *getItemVariant(int id, int data);
     static BlockVariant *getBlockVariant(int id, int data);
 

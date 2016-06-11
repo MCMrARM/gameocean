@@ -14,15 +14,15 @@ protected:
 public:
     Server &server;
 
-    PlayerBlockDestroyThread(Server &server) : server(server) { };
+    PlayerBlockDestroyThread(Server &server) : server(server) { }
 
     void notifyChange() {
         std::unique_lock<std::mutex> lock(notifyMutex);
         notify.notify_one();
-    };
+    }
 
     virtual void run();
-    virtual void stop() { shouldStop = true; };
+    virtual void stop() { shouldStop = true; }
 
 };
 

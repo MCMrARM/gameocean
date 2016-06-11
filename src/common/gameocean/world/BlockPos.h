@@ -12,7 +12,7 @@ struct BlockPos {
 
     bool operator==(const BlockPos &o) const {
         return (o.x == x && o.y == y && o.z == z);
-    };
+    }
 
     BlockPos side(Side side) const {
         if (side == Side::DOWN)
@@ -29,6 +29,6 @@ struct BlockPos {
             return { x + 1, y, z };
 
         return { x, y, z };
-    };
+    }
 
 };

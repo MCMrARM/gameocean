@@ -70,7 +70,7 @@ public:
                                                                                      connection(connection) {
         for (int i = 0; i < 9; i++)
             hotbarSlots[i] = i;
-    };
+    }
 
     virtual void close(std::string reason, bool sendToPlayer);
 
@@ -78,7 +78,7 @@ public:
 
     int directPacket(MCPEPacket *packet);
     int writePacket(std::unique_ptr<MCPEPacket> packet, bool batch);
-    inline int writePacket(std::unique_ptr<MCPEPacket> packet) { return writePacket(std::move(packet), !packet->priority); };
+    inline int writePacket(std::unique_ptr<MCPEPacket> packet) { return writePacket(std::move(packet), !packet->priority); }
     void batchPacketCallback(std::unique_ptr<MCPEPacket> packet, QueuedPacketCallback &&sentCallback);
     void receivedACK(int packetId);
 

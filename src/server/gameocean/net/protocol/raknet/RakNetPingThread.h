@@ -12,10 +12,10 @@ public:
     RakNetProtocolServer &server;
     int pingInterval = 5000;
 
-    RakNetPingThread(RakNetProtocolServer &server) : server(server) { };
+    RakNetPingThread(RakNetProtocolServer &server) : server(server) { }
 
     virtual void run();
-    virtual void stop() { shouldStop = true; };
+    virtual void stop() { shouldStop = true; }
 
 };
 

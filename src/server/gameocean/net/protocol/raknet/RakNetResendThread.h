@@ -12,10 +12,10 @@ public:
     RakNetProtocolServer &server;
     int resendDelay = 10; // in ms
 
-    RakNetResendThread(RakNetProtocolServer &server) : server(server) { };
+    RakNetResendThread(RakNetProtocolServer &server) : server(server) { }
 
     virtual void run();
-    virtual void stop() { shouldStop = true; };
+    virtual void stop() { shouldStop = true; }
 
 };
 

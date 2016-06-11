@@ -17,7 +17,7 @@ public:
     std::string name;
     Type type;
 
-    ConfigNode(std::string name, Type type) : name(name), type(type) {};
+    ConfigNode(std::string name, Type type) : name(name), type(type) { }
 
     operator std::string() const;
     std::shared_ptr<ConfigNode> operator[](const std::string &name);
@@ -51,7 +51,7 @@ class StringConfigNode : public ConfigNode {
 public:
     std::string val;
 
-    StringConfigNode(std::string name, std::string val) : ConfigNode(name, ConfigNode::Type::STRING), val(val) {};
+    StringConfigNode(std::string name, std::string val) : ConfigNode(name, ConfigNode::Type::STRING), val(val) { }
 
 };
 
@@ -60,7 +60,7 @@ class ContainerConfigNode : public ConfigNode {
 public:
     std::map<std::string, std::shared_ptr<ConfigNode>> val;
 
-    ContainerConfigNode(std::string name) : ConfigNode(name, ConfigNode::Type::CONTAINER) {};
+    ContainerConfigNode(std::string name) : ConfigNode(name, ConfigNode::Type::CONTAINER) { }
 
 };
 

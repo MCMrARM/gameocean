@@ -11,7 +11,7 @@ protected:
 public:
     MCPEProtocolServer& protocol;
 
-    MCPEPacketBatchThread(MCPEProtocolServer& protocol) : protocol(protocol) { };
+    MCPEPacketBatchThread(MCPEProtocolServer& protocol) : protocol(protocol) { }
 
     virtual void run();
     virtual void stop() { stopping = true; };

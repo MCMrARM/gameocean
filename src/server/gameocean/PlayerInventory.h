@@ -9,7 +9,7 @@ public:
     Player &player;
     int heldSlot = -1;
 
-    PlayerInventory(Player &player, int numSlots) : InventoryWithArmor(numSlots), player(player) { };
+    PlayerInventory(Player &player, int numSlots) : InventoryWithArmor(numSlots), player(player) { }
 
     virtual void setItem(int slot, ItemInstance item);
 
@@ -20,11 +20,11 @@ public:
         int ret = heldSlot;
         mutex.unlock();
         return ret;
-    };
+    }
     void setHeldSlot(int v);
     inline ItemInstance getHeldItem() {
         return getItem(getHeldSlot());
-    };
+    }
 
 };
 

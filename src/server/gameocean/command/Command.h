@@ -48,7 +48,7 @@ public:
 
     void sendUsage(CommandSender &to) {
         to.sendMessage(getUsage());
-    };
+    }
 
 };
 
@@ -59,7 +59,7 @@ public:
 
     virtual void process(CommandSender &sender, std::vector<std::string> args) {
         sender.sendMessage("You must run this command in-game");
-    };
+    }
     virtual void process(Player &sender, std::vector<std::string> args) = 0;
 
 };

@@ -8,12 +8,12 @@
 class TimeCommand : public IngameCommand {
 
 public:
-    virtual std::string getName() { return "time"; };
-    virtual std::string getDescription() { return "Sets the time"; };
-    virtual std::string getUsage() { return "/time <start|stop|set <time>>"; };
-    virtual Permission *getRequiredPermission() { return Permission::worldTimeCommand; };
+    virtual std::string getName() { return "time"; }
+    virtual std::string getDescription() { return "Sets the time"; }
+    virtual std::string getUsage() { return "/time <start|stop|set <time>>"; }
+    virtual Permission *getRequiredPermission() { return Permission::worldTimeCommand; }
 
-    TimeCommand(Server &server) : IngameCommand(server) { };
+    TimeCommand(Server &server) : IngameCommand(server) { }
 
     virtual void process(Player &sender, std::vector<std::string> args) {
         if (args.size() < 2) {
@@ -40,6 +40,6 @@ public:
         } else {
             sendUsage(sender);
         }
-    };
+    }
 
 };

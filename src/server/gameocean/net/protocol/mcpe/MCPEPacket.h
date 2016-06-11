@@ -159,7 +159,7 @@ public:
             return packets[id]();
         }
         return nullptr;
-    };
+    }
 
     virtual ~MCPEPacket() {}
 
@@ -173,7 +173,7 @@ class MCPELoginPacket : public MCPEPacket {
 public:
     MCPELoginPacket() {
         id = MCPE_LOGIN_PACKET;
-    };
+    }
 
     std::string username;
     int protocol1, protocol2;
@@ -192,7 +192,7 @@ public:
         clientSecret = readString(stream);
         skinModel = readString(stream);
         skin = readString(stream);
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -202,7 +202,7 @@ public:
     MCPEPlayStatusPacket() {
         id = MCPE_PLAY_STATUS_PACKET;
         priority = true;
-    };
+    }
 
     enum class Status {
         SUCCESS, FAILED_CLIENT, FAILED_SERVER, PLAYER_SPAWN
@@ -212,7 +212,7 @@ public:
 
     virtual void write(BinaryStream& stream) {
         stream << (int) status;
-    };
+    }
 };
 
 class MCPEDisconnectPacket : public MCPEPacket {
@@ -220,20 +220,20 @@ public:
     MCPEDisconnectPacket() {
         id = MCPE_DISCONNECT_PACKET;
         priority = true;
-    };
+    }
 
     std::string message;
 
     virtual void write(BinaryStream& stream) {
         writeString(stream, message);
-    };
+    }
 };
 
 class MCPETextPacket : public MCPEPacket {
 public:
     MCPETextPacket() {
         id = MCPE_TEXT_PACKET;
-    };
+    }
 
     enum class MessageType {
         RAW, CHAT, TRANSLATION, POPUP, TIP, SYSTEM
@@ -260,7 +260,7 @@ public:
                 parameters.push_back(readString(stream));
             }
         }
-    };
+    }
 
     virtual void write(BinaryStream& stream) {
         stream << (byte) type;
@@ -275,7 +275,7 @@ public:
                 writeString(stream, p);
             }
         }
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -284,7 +284,7 @@ class MCPESetTimePacket : public MCPEPacket {
 public:
     MCPESetTimePacket() {
         id = MCPE_SET_TIME_PACKET;
-    };
+    }
 
     int time;
     bool started;
@@ -292,14 +292,14 @@ public:
     virtual void write(BinaryStream& stream) {
         stream << time;
         writeBool(stream, started);
-    };
+    }
 };
 
 class MCPEStartGamePacket : public MCPEPacket {
 public:
     MCPEStartGamePacket() {
         id = MCPE_START_GAME_PACKET;
-    };
+    }
 
     enum class Generator {
         OLD, INFINITE, FLAT
@@ -339,14 +339,14 @@ public:
         stream << dayCycleStopTime;
         writeBool(stream, isEduMode);
         writeString(stream, levelId);
-    };
+    }
 };
 
 class MCPEAddPlayerPacket : public MCPEPacket {
 public:
     MCPEAddPlayerPacket() {
         id = MCPE_ADD_PLAYER_PACKET;
-    };
+    }
 
     UUID uuid;
     std::string username;
@@ -374,14 +374,14 @@ public:
         writeItemInstance(stream, item);
 
         stream << (byte) 127; // no meta
-    };
+    }
 };
 
 class MCPERemovePlayerPacket : public MCPEPacket {
 public:
     MCPERemovePlayerPacket() {
         id = MCPE_REMOVE_PLAYER_PACKET;
-    };
+    }
 
     long long eid = 0;
     UUID uuid;
@@ -389,27 +389,27 @@ public:
     virtual void write(BinaryStream& stream) {
         stream << eid;
         writeUUID(stream, uuid);
-    };
+    }
 };
 
 class MCPERemoveEntityPacket : public MCPEPacket {
 public:
     MCPERemoveEntityPacket() {
         id = MCPE_REMOVE_ENTITY_PACKET;
-    };
+    }
 
     long long eid = 0;
 
     virtual void write(BinaryStream& stream) {
         stream << eid;
-    };
+    }
 };
 
 class MCPEAddEntityPacket : public MCPEPacket {
 public:
     MCPEAddEntityPacket() {
         id = MCPE_ADD_ENTITY_PACKET;
-    };
+    }
 
     long long eid;
     int typeId;
@@ -431,14 +431,14 @@ public:
         stream << pitch;
         metadata.write(stream);
         stream << (short) 0; // links
-    };
+    }
 };
 
 class MCPEAddItemEntityPacket : public MCPEPacket {
 public:
     MCPEAddItemEntityPacket() {
         id = MCPE_ADD_ITEM_ENTITY_PACKET;
-    };
+    }
 
     long long eid;
     ItemInstance item;
@@ -454,14 +454,14 @@ public:
         stream << motionX;
         stream << motionY;
         stream << motionZ;
-    };
+    }
 };
 
 class MCPEMoveEntityPacket : public MCPEPacket {
 public:
     MCPEMoveEntityPacket() {
         id = MCPE_MOVE_ENTITY_PACKET;
-    };
+    }
 
     struct MoveEntry {
         long long eid;
@@ -482,14 +482,14 @@ public:
             stream << e.headYaw;
             stream << e.pitch;
         }
-    };
+    }
 };
 
 class MCPEMovePlayerPacket : public MCPEPacket {
 public:
     MCPEMovePlayerPacket() {
         id = MCPE_MOVE_PLAYER_PACKET;
-    };
+    }
 
     enum class Mode : byte {
         NORMAL, RESET, ROTATION
@@ -511,7 +511,7 @@ public:
         stream << pitch;
         stream << (byte) mode;
         writeBool(stream, onGround);
-    };
+    }
 
     virtual void read(BinaryStream& stream) {
         stream >> eid;
@@ -523,7 +523,7 @@ public:
         stream >> pitch;
         stream >> (byte&) mode;
         onGround = readBool(stream);
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -532,7 +532,7 @@ class MCPERemoveBlockPacket : public MCPEPacket {
 public:
     MCPERemoveBlockPacket() {
         id = MCPE_REMOVE_BLOCK_PACKET;
-    };
+    }
 
     long long eid;
     int x, z;
@@ -543,7 +543,7 @@ public:
         stream >> x;
         stream >> z;
         stream >> y;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -578,7 +578,7 @@ public:
             stream << entry.blockId;
             stream << (byte) ((entry.flags << 4) | (int) entry.blockMeta);
         }
-    };
+    }
 
     void add(World& world, int x, int y, int z, byte flags);
 };
@@ -612,12 +612,12 @@ public:
     virtual void write(BinaryStream& stream) {
         stream << eid;
         stream << (byte) event;
-    };
+    }
 
     virtual void read(BinaryStream& stream) {
         stream >> eid;
         stream >> (byte&) event;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -626,7 +626,7 @@ class MCPEUpdateAttributesPacket : public MCPEPacket {
 public:
     MCPEUpdateAttributesPacket() {
         id = MCPE_UPDATE_ATTRIBUTES_PACKET;
-    };
+    }
 
     static const char* ATTRIBUTE_HEALTH;
     static const char* ATTRIBUTE_HUNGER;
@@ -651,14 +651,14 @@ public:
             stream << e.value;
             stream << e.attribute;
         }
-    };
+    }
 };
 
 class MCPEMobEquipmentPacket : public MCPEPacket {
 public:
     MCPEMobEquipmentPacket() {
         id = MCPE_MOB_EQUIPMENT_PACKET;
-    };
+    }
 
     long long eid;
     ItemInstance item;
@@ -669,14 +669,14 @@ public:
         writeItemInstance(stream, item);
         stream << slot;
         stream << hotbarSlot;
-    };
+    }
 
     virtual void read(BinaryStream& stream) {
         stream >> eid;
         item = readItemInstance(stream);
         stream >> slot;
         stream >> hotbarSlot;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -685,7 +685,7 @@ class MCPEMobArmorEquipmentPacket : public MCPEPacket {
 public:
     MCPEMobArmorEquipmentPacket() {
         id = MCPE_MOB_ARMOR_EQUIPMENT_PACKET;
-    };
+    }
 
     long long eid;
     ItemInstance slots[4];
@@ -694,20 +694,20 @@ public:
         stream << eid;
         for (int i = 0; i < 4; i++)
             writeItemInstance(stream, slots[i]);
-    };
+    }
 
     virtual void read(BinaryStream& stream) {
         stream >> eid;
         for (int i = 0; i < 4; i++)
             slots[i] = readItemInstance(stream);
-    };
+    }
 };
 
 class MCPEInteractPacket : public MCPEPacket {
 public:
     MCPEInteractPacket() {
         id = MCPE_INTERACT_PACKET;
-    };
+    }
 
     byte actionId;
     long long target;
@@ -715,12 +715,12 @@ public:
     virtual void read(BinaryStream& stream) {
         stream >> actionId;
         stream >> target;
-    };
+    }
 
     virtual void write(BinaryStream& stream) {
         stream << actionId;
         stream << target;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -729,7 +729,7 @@ class MCPEUseItemPacket : public MCPEPacket {
 public:
     MCPEUseItemPacket() {
         id = MCPE_USE_ITEM_PACKET;
-    };
+    }
 
     int x, y, z;
     byte side;
@@ -749,7 +749,7 @@ public:
         stream >> posY;
         stream >> posZ;
         item = readItemInstance(stream);
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -758,7 +758,7 @@ class MCPESetEntityMotionPacket : public MCPEPacket {
 public:
     MCPESetEntityMotionPacket() {
         id = MCPE_SET_ENTITY_MOTION_PACKET;
-    };
+    }
 
     struct Entry {
         long long eid;
@@ -773,14 +773,14 @@ public:
             stream << e.eid;
             stream << e.x << e.y << e.z;
         }
-    };
+    }
 };
 
 class MCPEPlayerActionPacket : public MCPEPacket {
 public:
     MCPEPlayerActionPacket() {
         id = MCPE_PLAYER_ACTION_PACKET;
-    };
+    }
 
     enum class Action {
         START_BREAK,
@@ -807,14 +807,14 @@ public:
         stream >> (int&) action;
         stream >> x >> y >> z;
         stream >> side;
-    };
+    }
 
     virtual void write(BinaryStream& stream) {
         stream << eid;
         stream << (int) action;
         stream << x << y << z;
         stream << side;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -823,33 +823,33 @@ class MCPESetHealthPacket : public MCPEPacket {
 public:
     MCPESetHealthPacket() {
         id = MCPE_SET_HEALTH_PACKET;
-    };
+    }
 
     int health;
 
     virtual void write(BinaryStream& stream) {
         stream << health;
-    };
+    }
 };
 
 class MCPERespawnPacket : public MCPEPacket {
 public:
     MCPERespawnPacket() {
         id = MCPE_RESPAWN_PACKET;
-    };
+    }
 
     float x, y, z;
 
     virtual void write(BinaryStream& stream) {
         stream << x << y << z;
-    };
+    }
 };
 
 class MCPEContainerOpenPacket : public MCPEPacket {
 public:
     MCPEContainerOpenPacket() {
         id = MCPE_CONTAINER_OPEN_PACKET;
-    };
+    }
 
     byte window, type;
     short slots;
@@ -860,24 +860,24 @@ public:
         stream << type;
         stream << slots;
         stream << x << y << z;
-    };
+    }
 };
 
 class MCPEContainerClosePacket : public MCPEPacket {
 public:
     MCPEContainerClosePacket() {
         id = MCPE_CONTAINER_CLOSE_PACKET;
-    };
+    }
 
     byte window;
 
     virtual void read(BinaryStream& stream) {
         stream >> window;
-    };
+    }
 
     virtual void write(BinaryStream& stream) {
         stream << window;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -886,7 +886,7 @@ class MCPEContainerSetSlotPacket : public MCPEPacket {
 public:
     MCPEContainerSetSlotPacket() {
         id = MCPE_CONTAINER_SET_SLOT_PACKET;
-    };
+    }
 
     byte window;
     short slot, hotbar;
@@ -897,14 +897,14 @@ public:
         stream << slot;
         stream << hotbar;
         writeItemInstance(stream, item);
-    };
+    }
 
     virtual void read(BinaryStream& stream) {
         stream >> window;
         stream >> slot;
         stream >> hotbar;
         item = readItemInstance(stream);
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -913,7 +913,7 @@ class MCPEContainerSetContentPacket : public MCPEPacket {
 public:
     MCPEContainerSetContentPacket() {
         id = MCPE_CONTAINER_SET_CONTENT_PACKET;
-    };
+    }
 
     byte window;
     std::vector<ItemInstance> items;
@@ -929,7 +929,7 @@ public:
         for (int i : hotbar) {
             stream << i;
         }
-    };
+    }
 
     virtual void read(BinaryStream& stream) {
         stream >> window;
@@ -945,7 +945,7 @@ public:
         for (int& i : hotbar) {
             stream >> i;
         }
-    };
+    }
 };
 
 class Recipe;
@@ -954,7 +954,7 @@ class MCPECraftingDataPacket : public MCPEPacket {
 public:
     MCPECraftingDataPacket() {
         id = MCPE_CRAFTING_DATA_PACKET;
-    };
+    }
 
     std::map<int, Recipe*> recipes;
     bool clearRecipes = true;
@@ -966,7 +966,7 @@ class MCPECraftingEventPacket : public MCPEPacket {
 public:
     MCPECraftingEventPacket() {
         id = MCPE_CRAFTING_EVENT_PACKET;
-    };
+    }
 
     byte window;
     int type;
@@ -987,7 +987,7 @@ public:
         for (int i = 0; i < count; i++) {
             output.push_back(readItemInstance(stream));
         }
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -997,7 +997,7 @@ public:
     MCPEAdventureSettingsPacket() {
         id = MCPE_ADVENTURE_SETTINGS_PACKET;
         flags.asInt = 0;
-    };
+    }
 
     struct Flags {
         bool worldInmutable : 1;
@@ -1033,7 +1033,7 @@ class MCPETileEntityDataPacket : public MCPEPacket {
 public:
     MCPETileEntityDataPacket() {
         id = MCPE_TILE_ENTITY_DATA_PACKET;
-    };
+    }
 
     std::shared_ptr<Tile> tile;
 
@@ -1047,7 +1047,7 @@ class MCPEFullChunkDataPacket : public MCPEPacket {
 public:
     MCPEFullChunkDataPacket() {
         id = MCPE_FULL_CHUNK_DATA_PACKET;
-    };
+    }
 
     ChunkPtr chunk;
 
@@ -1059,7 +1059,7 @@ class MCPEPlayerListPacket : public MCPEPacket {
 public:
     MCPEPlayerListPacket() {
         id = MCPE_PLAYER_LIST_PACKET;
-    };
+    }
 
     enum class Type : unsigned char {
         ADD, REMOVE
@@ -1096,20 +1096,20 @@ public:
                 writeUUID(stream, e.uuid);
             }
         }
-    };
+    }
 };
 
 class MCPERequestChunkRadiusPacket : public MCPEPacket {
 public:
     MCPERequestChunkRadiusPacket() {
         id = MCPE_REQUEST_CHUNK_RADIUS_PACKET;
-    };
+    }
 
     int radius;
 
     virtual void read(BinaryStream& stream) {
         stream >> radius;
-    };
+    }
 
     virtual void handle(MCPEPlayer& player);
 };
@@ -1118,11 +1118,11 @@ class MCPEChunkRadiusUpdatePacket : public MCPEPacket {
 public:
     MCPEChunkRadiusUpdatePacket() {
         id = MCPE_CHUNK_RADIUS_UPDATE_PACKET;
-    };
+    }
 
     int radius;
 
     virtual void write(BinaryStream& stream) {
         stream << radius;
-    };
+    }
 };

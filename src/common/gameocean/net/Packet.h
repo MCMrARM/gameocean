@@ -16,7 +16,7 @@ class Connection;
 class Packet {
 
 public:
-    virtual ~Packet() {};
+    virtual ~Packet() { }
 
     virtual int getId() const = 0;
 
@@ -40,15 +40,15 @@ class UnknownPacket : public Packet {
 public:
     int id;
 
-    UnknownPacket(int id) : id(id) {};
+    UnknownPacket(int id) : id(id) { }
 
-    virtual Type getType() { return Type::BOTH; };
+    virtual Type getType() { return Type::BOTH; }
 
-    virtual int getId() const { return id; };
+    virtual int getId() const { return id; }
 
     virtual unsigned int getPacketSize() const {
         return 0;
-    };
-    virtual void read(BinaryStream &stream) { };
-    virtual void write(BinaryStream &stream) { };
+    }
+    virtual void read(BinaryStream &stream) { }
+    virtual void write(BinaryStream &stream) { }
 };

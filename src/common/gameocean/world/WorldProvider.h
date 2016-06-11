@@ -13,7 +13,7 @@ protected:
     World &world;
 
 public:
-    WorldProvider(World &world) : world(world) {};
+    WorldProvider(World &world) : world(world) { }
 
     virtual ChunkPtr requestChunk(ChunkPos pos) = 0;
 
@@ -33,11 +33,11 @@ protected:
     virtual void loadChunk(ChunkPos pos) = 0;
 
 public:
-    ThreadedWorldProvider(World &world) : WorldProvider(world) {};
+    ThreadedWorldProvider(World &world) : WorldProvider(world) { }
 
     virtual ChunkPtr requestChunk(ChunkPos pos);
 
-    virtual void stop() { shouldStop = true; queueNotify.notify_all(); };
+    virtual void stop() { shouldStop = true; queueNotify.notify_all(); }
 
 };
 

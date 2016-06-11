@@ -17,12 +17,12 @@ public:
 
     Thread() {
         threads.insert(this);
-    };
-    ~Thread() {
+    }
+    virtual ~Thread() {
         thread->join();
         delete thread;
         threads.erase(this);
-    };
+    }
 
     void start();
 

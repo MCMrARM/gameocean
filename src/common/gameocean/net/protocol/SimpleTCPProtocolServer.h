@@ -10,7 +10,7 @@ protected:
     ServerSocket socket;
 
 public:
-    SimpleTCPProtocolServer(Protocol& protocol) : ProtocolServer(protocol) {
+    SimpleTCPProtocolServer(Protocol &protocol) : ProtocolServer(protocol) {
             //
     }
 

@@ -19,7 +19,7 @@ protected:
     AddressVersion version;
 
 public:
-    Socket() {};
+    Socket() { }
     Socket(int fd);
     ~Socket();
 

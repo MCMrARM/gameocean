@@ -16,9 +16,9 @@ public:
         }
         groups[group] = new BlockGroup(group);
         return groups[group];
-    };
+    }
 
-    BlockGroup(std::string name) : name(name) {};
+    BlockGroup(std::string name) : name(name) { }
     std::string name;
 
 };

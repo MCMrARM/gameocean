@@ -12,10 +12,10 @@ struct ChunkPos {
 
     bool operator<(const ChunkPos &o) const {
         return (o.x < x || (o.x == x && o.z < z));
-    };
+    }
     bool operator==(const ChunkPos &o) const {
         return (o.x == x && o.z == z);
-    };
+    }
 
 };
 

@@ -3,6 +3,7 @@
 
 void SchedulerThread::stop() {
     shouldStop = true;
+    notify.notify_one();
 }
 
 long long SchedulerThread::schedule(std::chrono::high_resolution_clock::duration time, std::function<void()> callback) {

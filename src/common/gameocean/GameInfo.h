@@ -10,6 +10,6 @@ public:
     std::string name;
     Version version;
 
-    GameInfo(std::string name, Version version) : name(name), version(version) { };
+    GameInfo(std::string name, Version version) : name(name), version(version) { }
 
 };
