@@ -8,6 +8,7 @@
 #include "default/StopCommand.h"
 #include "default/ReloadCommand.h"
 #include "default/PingCommand.h"
+#include "default/KillCommand.h"
 #include <gameocean/utils/StringUtils.h>
 
 std::unordered_map<std::string, Command *> Command::commands;
@@ -37,6 +38,7 @@ void Command::registerDefaultCommands(Server &server) {
     Command::registerCommand(new StopCommand(server));
     Command::registerCommand(new ReloadCommand(server));
     Command::registerCommand(new PingCommand(server));
+    Command::registerCommand(new KillCommand(server));
 }
 
 void Command::registerPluginCommand(Plugin *plugin, Command *command) {
