@@ -78,10 +78,10 @@ int RakNetConnection::sendFrame(SendFrame &frame) {
         stream << frame.compound->frameCount << (short) frame.compound->id << frame.compoundIndex;
     }
     if (frame.compound == nullptr && needsACKReceipt) {
+        ret = ackReceiptId++;
         if (RakNetIsTypeReliable(frame.reliability)) {
-            frame.reliableACKReceiptId = ackReceiptId++;
+            frame.reliableACKReceiptId = ret;
         } else {
-            ret = ackReceiptId++;
             sentPackets[myIndex].unreliableAckReceiptId = ret;
         }
     }
