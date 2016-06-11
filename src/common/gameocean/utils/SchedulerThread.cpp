@@ -3,6 +3,7 @@
 
 void SchedulerThread::stop() {
     shouldStop = true;
+    std::unique_lock<std::mutex> lock(notifyMutex);
     notify.notify_one();
 }
 
