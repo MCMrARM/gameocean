@@ -65,7 +65,7 @@ public:
             return;
         }
 
-        ItemInstance itemInstance (item, count, damage);
+        ItemInstance itemInstance (item->getId(), count, damage);
         player->inventory.addItem(itemInstance);
 
         std::stringstream msg;
