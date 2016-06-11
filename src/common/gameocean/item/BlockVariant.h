@@ -11,6 +11,7 @@
 typedef byte BlockId;
 class BlockGroup;
 class Model;
+class DynamicModel;
 
 class BlockVariant : public ItemVariant {
 public:
@@ -19,7 +20,8 @@ public:
     BlockGroup *blockGroup = nullptr;
     bool needsTool = false;
     bool fluid = false;
-    Model *model = nullptr;
+    Model *model = nullptr; // either model or dynamicModel must be set
+    DynamicModel *dynamicModel = nullptr;
     bool dropItself = true;
     std::vector<ItemDrop> drops;
 
@@ -35,7 +37,10 @@ public:
         this->hardness = item.hardness;
         this->blockGroup = item.blockGroup;
         this->needsTool = item.needsTool;
+        this->fluid = item.fluid;
         this->model = item.model;
+        this->dynamicModel = item.dynamicModel;
+        this->dropItself = item.dropItself;
         this->drops = item.drops;
     }
 
@@ -44,6 +49,7 @@ public:
     virtual bool use(UseItemAction &action);
     bool useOn(UseItemAction &action);
 
+    void destroy(DestroyBlockAction &action);
     void dropItems(World &world, BlockPos pos, ItemVariant *heldItem);
 
 };

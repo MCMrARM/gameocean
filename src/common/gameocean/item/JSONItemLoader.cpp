@@ -1,4 +1,5 @@
 #include <gameocean/item/recipes/Recipe.h>
+#include <gameocean/model/DynamicModel.h>
 #include "JSONItemLoader.h"
 
 #include "ItemVariant.h"
@@ -202,8 +203,13 @@ void JSONItemLoader::processBlockVariant(BlockVariant *item, const Json::Value &
     }
     item->needsTool = val.get("needs_tool", item->needsTool).asBool();
 
-    if (item->model == nullptr || !val["model"].isNull())
-        item->model = Model::getModel(val.get("model", "default").asString());
+    if (item->model == nullptr || !val["model"].isNull()) {
+        std::string model = val.get("model", "default").asString();
+        if (model.compare(0, 8, "dynamic:") == 0 && DynamicModel::models.count(model) > 0) {
+            item->dynamicModel = DynamicModel::models.at(model);
+        } else
+            item->model = Model::getModel(model);
+    }
 
     {
         const Json::Value &actions = val["actions"];

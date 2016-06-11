@@ -1,0 +1,12 @@
+{
+  "type": "item",
+  "name_id": "door",
+  "id": 324,
+  "stack_size": 64,
+  "actions": {
+    "use": {
+      "name": "place_door",
+      "block": "door_block"
+    }
+  }
+}

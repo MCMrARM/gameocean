@@ -1,0 +1,25 @@
+[{
+  "type": "model",
+  "name_id": "door_east",
+  "aabbs": [
+    [0, 0, 0, 0.1875, 1, 1]
+  ]
+}, {
+  "type": "model",
+  "name_id": "door_south",
+  "aabbs": [
+    [0, 0, 0, 1, 1, 0.1875]
+  ]
+}, {
+  "type": "model",
+  "name_id": "door_west",
+  "aabbs": [
+    [0.8125, 0, 0, 1, 1, 1]
+  ]
+}, {
+  "type": "model",
+  "name_id": "door_north",
+  "aabbs": [
+    [0, 0, 0.8125, 1, 1, 1]
+  ]
+}]

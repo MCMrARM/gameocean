@@ -12,6 +12,7 @@
 #include <gameocean/item/BlockVariant.h>
 #include "../math/AABB.h"
 #include "../model/Model.h"
+#include "../model/DynamicModel.h"
 #include "EntityPhysicsTickTask.h"
 #include "EntityUpdateTickTask.h"
 #include "WorldListener.h"
@@ -237,11 +238,18 @@ public:
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    BlockVariant* variant = getBlock(x, y, z).getBlockVariant();
+                    BlockVariant *variant = getBlock(x, y, z).getBlockVariant();
                     if (variant != nullptr) {
-                        for (AABB a : variant->model->aabbs) {
-                            a.translate(x, y, z);
-                            callback(a);
+                        if (variant->dynamicModel != nullptr) {
+                            for (AABB a : variant->dynamicModel->getAABBs(*this, {x, y, z}, variant)) {
+                                a.translate(x, y, z);
+                                callback(a);
+                            }
+                        } else if (variant->model != nullptr) {
+                            for (AABB a : variant->model->aabbs) {
+                                a.translate(x, y, z);
+                                callback(a);
+                            }
                         }
                     }
                 }

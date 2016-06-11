@@ -39,6 +39,15 @@ bool BlockVariant::useOn(UseItemAction &action) {
     return false;
 }
 
+void BlockVariant::destroy(DestroyBlockAction &action) {
+    if (destroyAction != nullptr && (*destroyAction)(action, destroyActionData.get())) // if the event was handled, don't do anything here
+        return;
+#ifdef SERVER
+    action.getWorld().setBlock(action.getBlockPos(), 0, 0);
+    dropItems(action.getWorld(), action.getBlockPos(), action.getPlayer()->inventory.getHeldItem().getItem());
+#endif
+}
+
 void BlockVariant::dropItems(World &world, BlockPos pos, ItemVariant *heldItem) {
     Vector3D dropPos (pos.x + 0.5f, pos.y + 0.5f, pos.z + 0.5f);
     if (dropItself) {
@@ -56,7 +65,7 @@ void BlockVariant::dropItems(World &world, BlockPos pos, ItemVariant *heldItem) 
                 continue;
         }
 
-        BlockVariant *variant = ItemRegister::getBlockVariant(drop.dropVariantId);
+        ItemVariant *variant = ItemRegister::getItemVariant(drop.dropVariantId);
         if (variant != nullptr)
             world.dropItem(dropPos, ItemInstance (variant, (byte) drop.dropCount, variant->getVariantDataId()));
     }

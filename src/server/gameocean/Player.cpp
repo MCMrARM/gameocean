@@ -374,8 +374,8 @@ void Player::finishedMining() {
             inventory.setItem(inventory.heldSlot, itm);
         }
     }
-    world->setBlock(miningBlockPos, 0, 0);
-    miningBlock->dropItems(*world, miningBlockPos, inventory.getHeldItem().getItem());
+    DestroyBlockAction action (getWorld(), miningBlock, miningBlockPos, std::static_pointer_cast<Player>(shared_from_this()));
+    miningBlock->destroy(action);
     addFoodExhaustion(0.025f);
     cancelMining();
 }
@@ -428,7 +428,7 @@ void Player::processMessage(std::string text) {
         Permission *p = c->getRequiredPermission();
         if (p != nullptr && !hasPermission(p)) {
             sendMessage("You don't have enough permissions!");
-            return;
+            //return;
         }
         c->process(*this, v);
     } else if (spawned) {

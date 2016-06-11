@@ -1,0 +1,21 @@
+{
+  "type": "block",
+  "name_id": "door_block",
+  "id": 64,
+  "model": "dynamic:door",
+  "hardness": 3,
+  "resistance": 15,
+  "flammable": true,
+  "stack_size": 64,
+  "group": "wood",
+  "actions": {
+    "use_on": "open_door",
+    "destroy": "destroy_door"
+  },
+  "drops": [
+    {
+      "name_id": "door",
+      "count": 1
+    }
+  ]
+}

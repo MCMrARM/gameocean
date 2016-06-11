@@ -3,17 +3,23 @@
 #include "ItemAction.h"
 #include "../../world/BlockPos.h"
 
+class World;
 class BlockVariant;
 
 class BlockAction {
 
 protected:
+    World &world;
     BlockVariant *block;
     BlockPos pos;
 
 public:
-    BlockAction(BlockVariant *block, BlockPos pos) : block(block), pos(pos) {
+    BlockAction(World &world, BlockVariant *block, BlockPos pos) : world(world), block(block), pos(pos) {
         //
+    }
+
+    inline World &getWorld() {
+        return world;
     }
 
     inline BlockVariant *getBlockVariant() {

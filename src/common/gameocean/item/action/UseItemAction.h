@@ -18,7 +18,7 @@ public:
 
 protected:
     std::shared_ptr<Player> player;
-    World& world;
+    World &world;
     BlockVariant *block;
     BlockPos pos;
     BlockPos::Side side;

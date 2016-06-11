@@ -18,6 +18,7 @@
 #include <gameocean/plugin/PluginManager.h>
 #include <gameocean/item/action/default/DefaultActions.h>
 #include <gameocean/protocol/mcpe/MCPEProtocol.h>
+#include <gameocean/model/DefaultModels.h>
 #include "item/action/server/ServerActions.h"
 
 Server::Server() : playerBlockDestroyThread(*this), pluginManager(*this) {
@@ -35,6 +36,7 @@ void Server::start() {
     Command::registerDefaultCommands(*this);
     DefaultActions::registerActions();
     ServerActions::registerActions();
+    DefaultModels::registerModels();
     ItemRegister::registerAssetItems();
     Protocol::registerProtocol(new MCPEProtocol());
     Tile::registerTiles();
