@@ -34,7 +34,18 @@ public:
         if (Command::commands.size() == 0)
             return;
 
-        int pages = (int) (Command::commandSet.size() - 1) / COMMANDS_PER_PAGE + 1;
+        auto it = Command::commandSet.begin();
+        int availableCommandCount = 0;
+        for (auto cmd = Command::commandSet.begin(); cmd != Command::commandSet.end(); cmd++) {
+            auto perm = (*cmd)->getRequiredPermission();
+            if (perm == nullptr || sender.hasPermission(perm)) {
+                if (availableCommandCount % COMMANDS_PER_PAGE == 0 && availableCommandCount / COMMANDS_PER_PAGE == page)
+                    it = cmd;
+                availableCommandCount++;
+            }
+        }
+
+        int pages = (availableCommandCount - 1) / COMMANDS_PER_PAGE + 1;
         if (page < 0 || page >= pages) {
             page = 0;
         }
@@ -43,13 +54,14 @@ public:
             msg << "== Help [" << (page + 1) << "/" << pages << "] ==";
             sender.sendMessage(msg.str());
         }
-        int start = page * COMMANDS_PER_PAGE;
-        auto it = Command::commandSet.begin();
-        std::advance(it, start);
 
-        for (int i = 0; it != Command::commandSet.end() && i < COMMANDS_PER_PAGE; it++, i++) {
+        for (int i = 0; it != Command::commandSet.end() && i < COMMANDS_PER_PAGE; it++) {
             Command *cmd = *it;
+            auto perm = cmd->getRequiredPermission();
+            if (perm != nullptr && !sender.hasPermission(perm))
+                continue;
             sender.sendMessage(cmd->getName() + ": " + cmd->getDescription());
+            i++;
         }
     };
 

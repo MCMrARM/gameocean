@@ -262,7 +262,7 @@ public:
      * Sets the player to be a server operator or remove the privilege from him.
      */
     void setOperator(bool op);
-    bool hasPermission(Permission *perm);
+    virtual bool hasPermission(Permission *perm);
     void grantPermissions(std::set<Permission *> perms, bool children);
     inline void grantPermission(Permission *perm, bool children) {
         grantPermissions({ perm }, children);
