@@ -16,7 +16,8 @@ public:
     byte count = 1;
 
     ItemInstance() : count(0) {}
-    ItemInstance(ItemVariant *item, short data) : item(item), data(data) { }
+    ItemInstance(ItemVariant *item);
+    ItemInstance(ItemVariant *item, byte count) : ItemInstance(item) { this->count = count; }
     ItemInstance(int id, short data) { setItem(id, data); }
     ItemInstance(ItemVariant *item, byte count, short data) : item(item), count(count), data(data) {}
     ItemInstance(int id, byte count, short data) : count(count) { setItem(id, data); }

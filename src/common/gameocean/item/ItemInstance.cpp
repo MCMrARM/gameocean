@@ -2,6 +2,12 @@
 #include "ItemRegister.h"
 #include "ItemVariant.h"
 
+ItemInstance::ItemInstance(ItemVariant *item) : item(item) {
+    data = item->getVariantDataId();
+    if (data == -1)
+        data = 0;
+}
+
 void ItemInstance::setItem(int id, short data) {
     item = ItemRegister::getItemVariant(id, data);
     this->data = data;
