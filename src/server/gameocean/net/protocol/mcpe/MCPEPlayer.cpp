@@ -105,7 +105,6 @@ void MCPEPlayer::receivedACK(int packetId) {
     chunkArrayMutex.unlock();
 }
 
-
 void MCPEPlayer::close(std::string reason, bool sendToPlayer) {
     if (sendToPlayer) {
         std::unique_ptr<MCPEDisconnectPacket> pk (new MCPEDisconnectPacket());

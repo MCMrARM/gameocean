@@ -9,7 +9,7 @@
 #include <gameocean/utils/ResourceManager.h>
 #include <gameocean/GameInfo.h>
 #include <gameocean/utils/Config.h>
-#include "gameocean/net/protocol/Protocol.h"
+#include <gameocean/net/protocol/Protocol.h>
 #include <gameocean/world/World.h>
 #include <gameocean/world/tile/Tile.h>
 #include "world/mcanvil/MCAnvilProvider.h"
@@ -17,7 +17,7 @@
 #include "PlayerChunkQueueThread.h"
 #include <gameocean/plugin/PluginManager.h>
 #include <gameocean/item/action/default/DefaultActions.h>
-#include <gameocean/protocol/mcpe/MCPEProtocol.h>
+#include <gameocean/net/protocol/mcpe/MCPEProtocol.h>
 #include <gameocean/model/DefaultModels.h>
 #include "item/action/server/ServerActions.h"
 

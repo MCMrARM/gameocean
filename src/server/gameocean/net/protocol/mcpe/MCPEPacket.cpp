@@ -9,7 +9,7 @@
 #include <gameocean/world/tile/Tile.h>
 #include <gameocean/world/tile/Chest.h>
 #include <gameocean/item/recipes/Recipe.h>
-#include "../../utils/NBT.h"
+#include "../../../utils/NBT.h"
 
 MCPEPacket::CreatePacket *MCPEPacket::packets[256];
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gameocean/protocol/raknet/RakNetConnectionHandler.h>
+#include "../raknet/RakNetConnectionHandler.h"
 
 class MCPEConnectionHandler : public RakNetConnectionHandler {
 
